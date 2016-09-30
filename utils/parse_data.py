@@ -88,7 +88,7 @@ def parse_dog_data(data_dir):
     parse_minutes_file(awake_path, "awake", "awake_total", data)
     parse_minutes_file(active_path, "active", "active_total", data)
     parse_minutes_file(rest_path, "rest", "rest_total", data)
-    parse_minutes_file(rest_path, "total", "total", data)
+    parse_minutes_file(total_path, "total", "total", data)
     return data
 
 # data print utility
