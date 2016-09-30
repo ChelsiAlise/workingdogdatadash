@@ -10,6 +10,7 @@ class DogData(object):
             self.awake = None
             self.active = None
             self.rest = None
+            self.total = None
 
         def __repr__(self):
             return "<DogData.DayData day:%s awake:%s active:%s rest:%s>" % \
@@ -23,12 +24,7 @@ class DogData(object):
         self.awake_total = 0
         self.active_total = 0
         self.rest_total = 0
-        # TODO: these, plus the dates w/ minutes
-        """
-        self.days_total = None
-        self.days_invalid = None
-        self.days_zero = None
-        """
+        self.total = 0
 
     def __repr__(self):
         return "<DogData name:%s dog_id:%s tattoo_number:%s days:%s awake:%s active:%s rest:%s>" % \
@@ -36,9 +32,8 @@ class DogData(object):
             self.awake_total, self.active_total, self.rest_total)
 
 # method to parse a "cci-puppy_minutes-*.csv" file
-def parse_minutes_file(file_name, minutes_type, data):
+def parse_minutes_file(file_name, minutes_name, total_name, data):
     with open(file_name, 'rb') as csv_file:
-        total_name = minutes_type+"_total"
         # row number
         row_n = 0
         # this tracks the order of the dogs by column 1..n
@@ -79,7 +74,7 @@ def parse_minutes_file(file_name, minutes_type, data):
                         setattr(dog, total_name, curr_minutes + minutes)
                         if not (day in dog.days):
                             dog.days[day] = DogData.DayData(day)
-                        setattr(dog.days[day], minutes_type, minutes)
+                        setattr(dog.days[day], minutes_name, minutes)
             row_n += 1
     return data
 
@@ -88,10 +83,12 @@ def parse_dog_data(data_dir):
     awake_path = os.path.join(data_dir, "cci-puppy_minutes-awake.csv")
     active_path = os.path.join(data_dir, "cci-puppy_minutes-active.csv")
     rest_path = os.path.join(data_dir, "cci-puppy_minutes-rest.csv")
+    total_path = os.path.join(data_dir, "cci-puppy_minutes-total.csv")
     data = {}
-    parse_minutes_file(awake_path, "awake", data)
-    parse_minutes_file(active_path, "active", data)
-    parse_minutes_file(rest_path, "rest", data)
+    parse_minutes_file(awake_path, "awake", "awake_total", data)
+    parse_minutes_file(active_path, "active", "active_total", data)
+    parse_minutes_file(rest_path, "rest", "rest_total", data)
+    parse_minutes_file(rest_path, "total", "total", data)
     return data
 
 # data print utility
@@ -118,9 +115,9 @@ if __name__ == "__main__":
         data_dir = sys.argv[-1]
     # load the data from the files
     dog_data = parse_dog_data(data_dir)
-    # sort dogs by activity
-    by_activity = sorted((v.active_total, v.name, v.dog_id) for v in dog_data.values())
+    # sort dogs by activity percentage
+    by_activity = sorted((float(v.active_total)/v.total, float(v.awake_total)/v.total, v.total, v.name, v.dog_id) for v in dog_data.values())
     # print sorted by activity, most first
-    print("active\t\tname\t\tdog_id")
+    print("active%\tawake%\ttotal\tname\tdog_id")
     print_bar()
-    iterate_and_print(by_activity[::-1], 2)
+    iterate_and_print(by_activity[::-1], 1)
