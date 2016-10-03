@@ -240,6 +240,29 @@ def parse_dog_file(file_name, data):
                 break
     return data
 
+# method to parse all "cci-puppy_minutes-*.csv" files
+def parse_dog_data(data_dir, debug=True):
+    """
+    # this uses the aggregate files. for now we will use indiviudal instead
+    awake_path = os.path.join(data_dir, "cci-puppy_minutes-awake.csv")
+    active_path = os.path.join(data_dir, "cci-puppy_minutes-active.csv")
+    rest_path = os.path.join(data_dir, "cci-puppy_minutes-rest.csv")
+    total_path = os.path.join(data_dir, "cci-puppy_minutes-total.csv")
+    data = {}
+    parse_minutes_file(awake_path, "awake", "awake_total", data)
+    parse_minutes_file(active_path, "active", "active_total", data)
+    parse_minutes_file(rest_path, "rest", "rest_total", data)
+    parse_minutes_file(total_path, "total", "total", data)
+    """
+    data = {}
+    glob_path = os.path.join(data_dir, "[0-9]?[0-9]*_*.csv")
+    files = glob.glob(glob_path)
+    for f in files:
+        if debug:
+            print("Processing: %s"%f)
+        data = parse_dog_file(f, data)
+    return data
+
 def parse_dog_data(data_dir=None, use_individual=True, debug=False):
     """parses all dog data files in data_dir of type cci-puppy_minutes-*.csv
 
