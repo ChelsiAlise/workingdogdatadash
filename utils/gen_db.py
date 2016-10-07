@@ -2,6 +2,8 @@
 # -*- coding: utf8 -*-
 """
 this script generates a local postgres data base with the data
+run like:
+DATABASE_URL=$(heroku config:get DATABASE_URL -a APP_NAME) ./utils/gen_db.py
 """
 
 from __future__ import print_function
@@ -10,12 +12,16 @@ import pwd
 import psycopg2
 import parse_data
 
-
 # create postgres connection
 dbname = "postgres"
 # note this will not work on windows
 user = pwd.getpwuid( os.getuid() )[ 0 ]
-con = psycopg2.connect("dbname='%s' user='%s'" % (dbname, user))
+# get URL
+db_url = os.environ.get("DATABASE_URL")
+if not db_url:
+    db_url = "dbname='%s' user='%s'" % (db_url, dbname, user)
+# connect
+con = psycopg2.connect(db_url)
 # get cursor and print psotgres version
 cur = con.cursor()
 cur.execute('SELECT version()')
@@ -48,6 +54,7 @@ con.commit()
 print("Inserting data.")
 days = {}
 for dog_name in data.keys():
+    print(dog_name)
     dog = data[dog_name]
     # build map of {day:{dog:data}}
     for day in dog.days.keys():
@@ -55,7 +62,9 @@ for dog_name in data.keys():
         days[day][dog.dog_id] = dog.days[day]
     # insert dog data
     cur.execute("INSERT INTO "+dog_table_name+" (dog_id, name, tattoo_number, awake_total, active_total, rest_total, total) VALUES (%s, %s, %s, %s, %s, %s, %s);", (dog.dog_id, dog.name, dog.tattoo_number, dog.awake_total, dog.active_total, dog.rest_total, dog.total))
+con.commit()
 for day in sorted(days.keys()):
+    print(day)
     dogs_data = days[day]
     for dog_id in dogs_data:
         dog = dogs_data[dog_id]
