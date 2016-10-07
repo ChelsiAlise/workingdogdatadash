@@ -58,8 +58,11 @@ for dog_name in data.keys():
     dog = data[dog_name]
     # build map of {day:{dog:data}}
     for day in dog.days.keys():
+        day_data = dog.days[day]
+        # skip days with no data
+        if day_data.total == 0: continue
         if not day in days: days[day] = {}
-        days[day][dog.dog_id] = dog.days[day]
+        days[day][dog.dog_id] = day_data
     # insert dog data
     cur.execute("INSERT INTO "+dog_table_name+" (dog_id, name, tattoo_number, awake_total, active_total, rest_total, total) VALUES (%s, %s, %s, %s, %s, %s, %s);", (dog.dog_id, dog.name, dog.tattoo_number, dog.awake_total, dog.active_total, dog.rest_total, dog.total))
 con.commit()
