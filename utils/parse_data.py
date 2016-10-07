@@ -227,7 +227,7 @@ def parse_dog_file(file_name, data):
             day.awake = awake
             day.rest = rest
             day.total = total
-            dog_data.days[day] = day
+            dog_data.days[date] = day
             # update totals
             dog_data.active_total += active
             dog_data.awake_total += awake
