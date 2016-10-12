@@ -1,0 +1,13 @@
+runtime: go
+api_version: go1
+version: v1
+
+handlers:
+- url: /.*
+  script: _go_app
+
+builtins:
+- remote_api: on
+
+env_variables:
+  GCLOUD_DATASET_ID: working-dog-data-dash
