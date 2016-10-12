@@ -4,7 +4,7 @@ package main
 type Dog struct {
 	Name         string `json:"name"`
 	ID           int    `json:"id"`
-	TattooNumber int    `json:"tatoo_number"`
+	TattooNumber int    `json:"tattoo_number"`
 	Total        int    `json:"total"`
 	Awake        int    `json:"awake"`
 	Rest         int    `json:"rest"`
