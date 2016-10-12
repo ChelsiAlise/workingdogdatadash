@@ -1,13 +1,21 @@
+# use the standard go runtime on appengine
 runtime: go
 api_version: go1
 version: v1
 
+# url handlers
 handlers:
+# map / to static/index.html
+- url: /
+  static_files: static/index.html
+  upload: static/index.html
+# map /static(.*) to /static\1
+- url: /static
+  static_dir: static
+# map everything else to the backend
 - url: /.*
   script: _go_app
 
-builtins:
-- remote_api: on
-
+# set environment variables
 env_variables:
   GCLOUD_DATASET_ID: working-dog-data-dash
