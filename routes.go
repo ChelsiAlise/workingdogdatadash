@@ -9,10 +9,12 @@ import (
 	"appengine"
 )
 
+var apiPaths = make(map[string]bool)
+
 // TODO: login, have "/" be the homepage
 func init() {
 	// set up http handlers
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", RootHandler)
 	// we don't want anyone crawling our site
 	http.HandleFunc("/robots.txt",
 		func(w http.ResponseWriter, r *http.Request) {
@@ -21,16 +23,22 @@ func init() {
 	// health checks
 	http.HandleFunc("/_ah/health", healthCheckHandler)
 	// api routes
-	http.HandleFunc("/api/data/upload", dataUploadHandler)
-	http.HandleFunc("/api/data/blob", dataBlobHandler)
-	http.HandleFunc("/api/data/days", dataDaysHandler)
-	http.HandleFunc("/api/data/dogs", dataDogsHandler)
-	http.HandleFunc("/api/data/filtered/blob", dataFilteredBlobHandler)
-	http.HandleFunc("/api/data/filtered/days", dataFilteredDaysHandler)
-	http.HandleFunc("/api/data/filtered/dogs", dataFilteredDogsHandler)
+	AddApi("data/upload", dataUploadHandler)
+	AddApi("data/blob", dataBlobHandler)
+	AddApi("data/days", dataDaysHandler)
+	AddApi("data/dogs", dataDogsHandler)
+	AddApi("data/filtered/blob", dataFilteredBlobHandler)
+	AddApi("data/filtered/days", dataFilteredDaysHandler)
+	AddApi("data/filtered/dogs", dataFilteredDogsHandler)
 ***REMOVED***
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func AddApi(path string, handler http.HandlerFunc) {
+	http.HandleFunc("/api/"+path, handler)
+	http.HandleFunc("/api/cached/"+path, GetApiCached)
+	apiPaths[path] = true
+***REMOVED***
+
+func RootHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
