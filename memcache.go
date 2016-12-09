@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"appengine"
+	"appengine/datastore"
 	"appengine/memcache"
 )
 
@@ -62,7 +63,12 @@ func (c *CacheResponseWriter) Bytes() []byte {
 	return c.buffer.Bytes()
 }
 
+type cacheEntity struct {
+	Value []byte
+}
+
 func GetApiCached(w http.ResponseWriter, r *http.Request) {
+	// TODO: expire database cache
 	ctx := appengine.NewContext(r)
 	uri := r.URL.RequestURI()
 	item, err := memcache.Get(ctx, uri)
@@ -76,19 +82,49 @@ func GetApiCached(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	key := datastore.NewKey(ctx, "Cache", uri, 0, nil)
+	entity := cacheEntity{}
+	err = datastore.Get(ctx, key, &entity)
+	if err == nil {
+		// put into memcache from DB
+		item := &memcache.Item{
+			Key:        uri,
+			Value:      entity.Value,
+			Expiration: CacheDuration,
+		}
+		if err := memcache.Set(ctx, item); err != nil {
+			ctx.Errorf("error setting item: %v", err)
+		}
+		reader, err := gzip.NewReader(bytes.NewReader(entity.Value))
+		defer reader.Close()
+		if err != nil {
+			ctx.Errorf("error decompressing cache value, err: %v", err)
+		} else {
+			io.Copy(w, reader)
+			return
+		}
+	}
+
 	realPath := "/api/" + strings.TrimPrefix(r.URL.Path, "/api/cached/")
 	r.URL.Path = realPath
 	handler, _ := http.DefaultServeMux.Handler(r)
 	cacheResponseWriter := NewCacheResponseWriter(w)
 	handler.ServeHTTP(cacheResponseWriter, r)
 	if cacheResponseWriter.Code() == http.StatusOK {
+		b := cacheResponseWriter.Bytes()
 		item := &memcache.Item{
 			Key:        uri,
-			Value:      cacheResponseWriter.Bytes(),
+			Value:      b,
 			Expiration: CacheDuration,
 		}
 		if err := memcache.Set(ctx, item); err != nil {
 			ctx.Errorf("error setting item: %v", err)
+		}
+		// also cache in DB
+		key := datastore.NewKey(ctx, "Cache", uri, 0, nil)
+		key, err = datastore.Put(ctx, key, &cacheEntity{b})
+		if err != nil {
+			ctx.Errorf("datastoredb: could not put Cache: %v", err)
 		}
 	} else {
 		ctx.Errorf("cache code is not http.StatusOK: %v", cacheResponseWriter.Code())
