@@ -312,9 +312,9 @@
                 var arr = new Array(); 
                 var arr1 = new Array(); 
                 string1 = data;
-                string1.sort(function(a, b) {
+                /*string1.sort = function(a, b) {
                     return (a.active/a.total) - (b.active/b.total);
-                });
+                };*/
 
                 for (var i =0; i < string1.length; i++) {
                    arr[i] = string1[i].name;
@@ -347,9 +347,9 @@
                 var arr = new Array(); 
                 var arr1 = new Array(); 
                 string1 = data;
-                string1.sort(function(a, b){
+                /*string1.sort = function(a, b){
                     return (a.rest/a.total) - (b.rest/b.total);
-                });
+                };*/
                 var j = 0;
                 for (var i =string1.length - 5; i < string1.length; i++) {
                    arr[j] = string1[i].name;
@@ -388,9 +388,9 @@
                 var arr1 = new Array(); 
                 var arr2 = new Array();
                 string1 = data;
-                string1.sort(function(a, b){
+                /*string1.sort = function(a, b){
                     return (a.active/a.total) - (b.active/b.total);
-                });
+                };*/
                 var j = 0;
                 for (var i =string1.length - 10; i < string1.length; i++) {
                    arr[j] = string1[i].name;
