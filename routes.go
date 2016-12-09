@@ -131,6 +131,10 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "static/index.html")
 		return
 	}
+	if r.URL.Path == "/customChart.html" {
+		http.ServeFile(w, r, "static/customChart.html")
+		return
+	}
 	authRequiredMux.ServeHTTP(w, r)
 ***REMOVED***
 
