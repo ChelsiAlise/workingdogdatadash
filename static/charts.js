@@ -53,7 +53,7 @@ $(document).ready(function() {
         }]
     };
 
-    $.getJSON('/api/cached/data/dogs', function(data) {
+    $.getJSON('/api/cached/data/filtered/dogs', function(data) {
         for (i = 0; i < data.length; i++) {
             processed_json_rest.push([data[i].name, data[i].rest]);
             processed_json_active.push([data[i].name, data[i].active]);
@@ -141,7 +141,7 @@ $(document).ready(function() {
         }]
     };
 
-    $.getJSON('/api/cached/data/dogs', function(data) {
+    $.getJSON('/api/cached/data/filtered/dogs', function(data) {
         for (i = 0; i < data.length; i++) {
             processed_json.push([data[i].awake, data[i].rest]);
             processed_json_name.push([data[i].name]);
@@ -584,7 +584,7 @@ $(document).ready(function() {
         }]
     };
 
-    $.getJSON('/api/cached/data/dogs', function(data) {
+    $.getJSON('/api/cached/data/filtered/dogs', function(data) {
         
          data.sort(function(a, b) {
             return (a.active/a.total) - (b.active/b.total);
