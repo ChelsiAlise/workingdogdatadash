@@ -181,7 +181,7 @@
       var barchoices2 = [{"value": "Active", "text": "Active"}, {"value": "Awake", "text": "Awake"}, {"value": "Rest", "text": "Rest"}, {"value": "Total", "text": "Total"}];
       $.ajax({
                 type: "GET",
-                url: "/api/cached/data/dogs",
+                url: "/api/cached/data/filtered/dogs",
                 async: true,
                 datatype: 'json',
                 success : function(data) {
