@@ -310,13 +310,14 @@
                 var arr = new Array(); 
                 var arr1 = new Array(); 
                 string1 = data/*.dogs*/;
-                console.log(string1);
+                //console.log(string1);
                 /*string1.sort = function(a, b){
                     return (getBarInfo(a,type)) - (getBarInfo(b,type));
                 };*/
                 var j = 0;
                 for (var i =0; i < string1.length; i++) {
                    arr[j] = string1[i].name;
+                   console.log(string1[i].name);
                    var ratio = getRest(string1[i]);
                    arr1[j] = ratio;
                    j++;

@@ -78,6 +78,7 @@ func GetApiCached(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Errorf("error decompressing cache value, err: %v", err)
 		} else {
+			w.Header().Set("Content-Type", "application/json")
 			io.Copy(w, reader)
 			return
 		}
@@ -100,6 +101,7 @@ func GetApiCached(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Errorf("error decompressing cache value, err: %v", err)
 		} else {
+			w.Header().Set("Content-Type", "application/json")
 			io.Copy(w, reader)
 			return
 		}
