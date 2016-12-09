@@ -175,6 +175,7 @@ func dataBlobHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
 ***REMOVED***
 
@@ -184,6 +185,7 @@ func dataDaysHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
 ***REMOVED***
 
@@ -193,6 +195,7 @@ func dataDogsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
 ***REMOVED***
 
@@ -202,6 +205,7 @@ func dataFilteredBlobHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
 ***REMOVED***
 
@@ -211,6 +215,7 @@ func dataFilteredDaysHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
 ***REMOVED***
 
@@ -220,5 +225,6 @@ func dataFilteredDogsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
 ***REMOVED***
