@@ -1,7 +1,7 @@
 # use the standard go runtime on appengine
 runtime: go
 api_version: go1
-version: v1
+version: v1-beta
 
 # url handlers
 handlers:

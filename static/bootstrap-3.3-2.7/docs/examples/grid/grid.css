@@ -1,0 +1,23 @@
+h4 {
+  margin-top: 25px;
+***REMOVED***
+.row {
+  margin-bottom: 20px;
+***REMOVED***
+.row .row {
+  margin-top: 10px;
+  margin-bottom: 0;
+***REMOVED***
+[class*="col-"] {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #eee;
+  background-color: rgba(86,61,124,.15);
+  border: 1px solid #ddd;
+  border: 1px solid rgba(86,61,124,.2);
+***REMOVED***
+
+hr {
+  margin-top: 40px;
+  margin-bottom: 40px;
+***REMOVED***
