@@ -1,5 +1,16 @@
 #!/usr/bin/env python
 
+"""
+local development server for working dog data dash
+
+This implements a python 2.7 script with no dependencies
+that forwards api requests to the real server and serves static content
+from the local working directory.
+
+run like `./dev_server.py` from the project root.
+then provide login credentials for the P.A.W.S. service
+"""
+
 import os
 import SocketServer
 import SimpleHTTPServer
@@ -7,14 +18,18 @@ import cookielib
 import urllib
 import urllib2
 
+# the hosted service address
 HOST = "https://working-dog-data-dash.appspot.com"
 
 def create_opener():
+    """creates a urllib2.OpenerDirector with a CookieJar"""
     cj = cookielib.CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     return opener
 
 class DevHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+    # opener should be an opener with a CookieJar, and is used to make
+    # authenticated requests to the hosted service.
     opener = create_opener()
 
     def send_head(self):
@@ -27,9 +42,24 @@ class DevHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         and must be closed by the caller under all circumstances), or
         None, in which case the caller has nothing further to do.
 
+        NOTE:
+             This method is based on: https://gist.github.com/enjalot/2904124
         """
+        # special case the index
         if self.path == "/":
             self.path = "static/index.html"
+        # proxy /api* requests to the hosted service
+        if self.path.startswith("/api"):
+            url = HOST + self.path
+            response = DevHTTPRequestHandler.opener.open(url)
+            self.send_response(response.getcode())
+            headers = response.info()
+            for header in headers:
+                self.send_header(header, headers[header])
+            self.end_headers()
+            self.copyfile(response, self.wfile)
+            return
+        # otherwise, attempt to serve a local file
         file_path = self.translate_path(self.path)
         f = None
         if os.path.isdir(file_path):
@@ -46,23 +76,6 @@ class DevHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                     break
             else:
                 return self.list_directory(file_path)
-        elif self.path.startswith("/api"):
-            url = HOST + self.path
-            response = DevHTTPRequestHandler.opener.open(url)
-            self.send_response(response.getcode())
-            headers = response.info()
-            for header in headers:
-                self.send_header(header, headers[header])
-            self.end_headers()
-            self.copyfile(response, self.wfile)
-            """
-            self.send_response(301)
-            self.send_header("Access-Control-Allow-Origin", "*")
-            remote_path = '%s%s'%('https://working-dog-data-dash.appspot.com', self.path)
-            self.send_header('Location', remote_path)
-            self.end_headers()
-            """
-            return
         ctype = self.guess_type(file_path)
         try:
             # Always read in binary mode. Opening files in text mode may cause
@@ -82,6 +95,12 @@ class DevHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         return f
 
 def login(opener):
+    """prompts the cli user for login credentials to P.A.W.S.
+     then sends a login request to the real server using opener.
+
+    Arguments:
+        opener - a urllib2.OpenerDirector, this should have a cookier jar.
+    """
     login_url = HOST+"/login"
     print("please enter credentials for P.A.W.S.")
     user = raw_input("user: ")
@@ -93,7 +112,8 @@ def login(opener):
     if code != 200:
         raise Exception("Failed to login!")
 
-if __name__ == "__main__":
+def main():
+    """main runs login, and then starts the local server"""
     port = 8080
     handler = DevHTTPRequestHandler
     httpd = SocketServer.TCPServer(("", port), handler)
@@ -103,4 +123,7 @@ if __name__ == "__main__":
         httpd.serve_forever()
     except:
         httpd.server_close()
+
+if __name__ == "__main__":
+    main()
 
