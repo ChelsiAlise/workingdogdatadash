@@ -53,7 +53,7 @@ $(document).ready(function () {
         }]
     };
 
-    $.getJSON('/api/cached/data/filtered/dogs', function (data) {
+    $.getJSON('/api/data/filtered/dogs', function (data) {
         for (i = 0; i < data.length; i++) {
             processed_json_rest.push([data[i].name, data[i].rest]);
             processed_json_active.push([data[i].name, data[i].active]);
