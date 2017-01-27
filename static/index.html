@@ -1,198 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <!-- TODO: get a real favicon -->
-    <!--<link rel="icon" href="/static/favicon.ico">-->
 
-    <title>P.A.W.S.</title>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <!-- TODO: get a real favicon -->
+  <!--<link rel="icon" href="/static/favicon.ico">-->
 
-    <!-- Bootstrap core CSS -->
-    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>P.A.W.S.</title>
 
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+  <!-- Bootstrap core CSS -->
+  <link href="dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Custom styles for this template -->
-    <link href="dashboard.css" rel="stylesheet">
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <link href="assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="assets/js/ie-emulation-modes-warning.js"></script>
+  <!-- Custom styles for this template -->
+  <link href="dashboard.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
+  <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+  <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+  <script src="assets/js/ie-emulation-modes-warning.js"></script>
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- Highcharts -->
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/highcharts-more.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <!--<script src="../highcharts/js/highcharts.js"></script>
+  <!-- Highcharts -->
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-more.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <!--<script src="../highcharts/js/highcharts.js"></script>
     <script src="../highcharts/js/highstock.js"></script>
     <script src="../highcharts/js/modules/map.js"></script>
     <script type="text/javascript" src="../highcharts/js/themes/gray.js"></script>-->
 
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+          aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">P.A.W.S.</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" id ="searchbar" placeholder=" Search Dog Name">
-            <button class="btn btn-round" type="button" onclick="search()">Search</button>
-          </form>
-        </div>
+        <a class="navbar-brand" href="#">P.A.W.S.</a>
       </div>
-    </nav>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Settings</a></li>
+          <li><a href="#">Profile</a></li>
+          <li><a href="#">Help</a></li>
+        </ul>
+        <form class="navbar-form navbar-right">
+          <input type="text" class="form-control" id="searchbar" placeholder=" Search Dog Name">
+          <button class="btn btn-round" type="button" onclick="search()">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>
 
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-            <li><a href="customChart.html">Custom Graphs</a></li>
-            <li><a href="#">Analytics</a></li>
-            <li><a href="#">Export</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Nav item</a></li>
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-            <li><a href="">More navigation</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-          </ul>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-3 col-md-2 sidebar">
+        <ul class="nav nav-sidebar">
+          <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+          <li><a href="customChart.html">Custom Graphs</a></li>
+          <li><a href="#">Analytics</a></li>
+          <li><a href="#">Export</a></li>
+        </ul>
+        <ul class="nav nav-sidebar">
+          <li><a href="">Nav item</a></li>
+          <li><a href="">Nav item again</a></li>
+          <li><a href="">One more nav</a></li>
+          <li><a href="">Another nav item</a></li>
+          <li><a href="">More navigation</a></li>
+        </ul>
+        <ul class="nav nav-sidebar">
+          <li><a href="">Nav item again</a></li>
+          <li><a href="">One more nav</a></li>
+          <li><a href="">Another nav item</a></li>
+        </ul>
+      </div>
+
+      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+        <h1 class="page-header">Dashboard</h1>
+
+        <div class="row">
+          <div class="col-xs-6 col-sm-3">
+            <div class="card">
+              <div class="card-block">
+                <h3 class="card-title" id="most_active_card_title">Special title treatment</h3>
+                <p class="card-text" id="most_active_card">With supporting text below as a natural lead-in to additional content.</p>
+                <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div class="card">
+              <div class="card-block">
+                <h3 class="card-title" id="least_active_card_title">Special title treatment</h3>
+                <p class="card-text" id="least_active_card">With supporting text below as a natural lead-in to additional content.</p>
+                <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div class="card">
+              <div class="card-block">
+                <h3 class="card-title" id="most_rest_card_title">Special title treatment</h3>
+                <p class="card-text" id="most_rest_card">With supporting text below as a natural lead-in to additional content.</p>
+                <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div class="card">
+              <div class="card-block">
+                <h3 class="card-title">Special title treatment</h3>
+                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Dashboard</h1>
 
-          <div class="row placeholders">
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
+        ` <br><br>
+
+        <h2 class="sub-header">Graphical Visualizations</h2>
+
+
+        <!--<div class="clearfix"></div>
+        <div class="row">
+          <div id="result1" style="display:none" class="col-sm-12">
+
+            <div class="x_title">
+              <h4>Results From Searchs <small>Lists of Recent Searches for Dogs in The Database</small></h4>
+              <div class="clearfix"></div>
             </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
+            <div class="x_content">
+              <p id="displayString"></p>
             </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
+
           </div>
-          
-          <!-- add a new dog -->
-          
-          <div class ="row">
-            <div class="col-lg-12">
-                
-              <div class="x_title">
-                <h4>Add a New Dog </h4>
-                <div class="clearfix"></div>
-              </div>
-              <div class="x_content">
-                Name:
-                <input type="text" id="name" name="name" placeholder="Name" style="width: 4%;">
+        </div>-->
 
-                ID:
-                <input type="text" id="id" name="ID" placeholder="ID" style="width: 4%; ">
+        <br><br>
 
-                Total Min:
-                <input type="text" id="total" name="total" placeholder="Total" style="width: 4%; ">
+        <!-- Highcharts -->
 
-                Active Min:
-                <input type="text" id="active" name="active" placeholder="Active" style="width: 4%; ">
-
-                Awake Min:
-                <input type="text" id="awake" name="awake" placeholder="Awake" style="width: 4%;">
-
-                Region:
-                <input type="text" id="region" name="region" placeholder="Region" style="width: 4%; ">
-
-                Job:
-                <input type="text" id="job" name="job" placeholder="Job" style="width: 4%; ">
-
-                Rest Min:
-                <input type="text" id="rest" name="rest" placeholder="Rest" style="width: 4%; ">
-
-                Tattoo:
-                <input type="text" id="tattoo" name="tattoo" placeholder="Tattoo" style="width: 4%; ">
-                <br><br>
-                <button class="btn btn-round" type="button" onclick="add()">Add Dog</button>
-                <br><br>
-              </div>
-            
-            </div>
-          </div>
-
-
-          <!-- /add a new dog -->
-
-          <h2 class="sub-header">Graphical Visualizations</h2>
-        
-
-          <div class="clearfix"></div>
-            <div class ="row">
-              <div id="result1" style="display:none" class="col-sm-12">
-                  
-                    <div class="x_title">
-                      <h4>Results From Searchs <small>Lists of Recent Searches for Dogs in The Database</small></h4>
-                      <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                      <p id="displayString"></p>
-                    </div>
-                  
-                </div>
-              </div>
-
-          <!-- Highcharts -->
-
+        <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
               <div id="chart1" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
             </div>
           </div>
-          
-<br><br>
+        </div>
 
+        <br><br>
+
+        <div class="row">
           <div class="container-fluid">
             <div class="col-md-6 col-sm-6 col-xs-6">
               <div id="chart2" style="min-width: 310px; height: 400px; max-width: 800px; margin: 0 auto"></div>
@@ -202,92 +182,103 @@
               <div id="chart5" style="min-width: 310px; height: 400px; max-width: 800px; margin: 0 auto"></div>
             </div>
           </div>
-  
-  <br><br>
+        </div>
 
+        <br><br>
+
+        <div class="row">
           <div class="container-fluid">
 
             <div class="col-md-6 col-sm-6 col-xs-6">
               <div id="chart3" style="height: 400px; margin: auto; min-width: 310px; max-width: 600px"></div>
-              <p>This graph is not using CCI's dog data but is however using a tutorial example from HighCharts to show the functionlity
-                of boxplots and that we would have abililty to create them with the dog data.</p>
+              <p>This graph is not using CCI's dog data but is however using a tutorial example from HighCharts to show the
+                functionlity of boxplots and that we would have abililty to create them with the dog data.</p>
             </div>
 
             <div class="col-md-6 col-sm-6 col-xs-6">
               <div id="chart4" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-              <p>This graph is not using CCI's dog data but is however using a tutorial example from HighCharts to show the functionlity
-                of being able to have combination data graphs. Since we do not yet have time data we held off on implementing this graph
-                with CCI's data because for time efficieny purposes.</p>
+              <p>This graph is not using CCI's dog data but is however using a tutorial example from HighCharts to show the
+                functionlity of being able to have combination data graphs. Since we do not yet have time data we held off
+                on implementing this graph with CCI's data because for time efficieny purposes.</p>
             </div>
-
           </div>
-          <!-- /Highcharts -->
-
-          <div class="row"><!--row-->
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                  
-                  <h4 align="center">Dog Activity Percentages</h4>
-                  <div class="clearfix"></div>
-                  
-                  <div class="x_content">
-                    <canvas id="lineChart"></canvas>
-                    <p>Currently using percentages to showcase which dogs have been the most active regardless of the total amount of time. Some dogs have much high total time being recorded and strictly using raw minutes active will not indicate which dogs have been active most because newer dogs will have lower time active because they haven't had a large amount of total time.</p>
-                  </div>
-                </div>
-            </div>
-          </div><!--/row-->
-
-          <div class="clearfix"></div>
-          
-          <div class="row"><!--row-->
-            <div class="col-md-6 col-sm-6 col-xs-12">
-              <div class="x_panel">
-                
-                <h4 align="center">Top 5 Resting Dogs</h4>
-                <div class="clearfix"></div>
-                
-                <div class="x_content">
-                  <canvas id="mybarChart"></canvas>
-                </div>
-              </div>
-            </div> 
-
-            <div class="col-md-6 col-sm-6 col-xs-12">
-              <div class="x_panel">
-                
-                <h4 align="center">Rest VS Active</h4>
-                <div class="clearfix"></div>
-                
-                <div class="x_content">
-                  <canvas id="mybarChart1"></canvas>
-                </div>
-              </div>
-            </div>
-          </div><!--/row-->
-
         </div>
+
+
+        <!-- /Highcharts -->
+
+        <div class="row">
+          <!--row-->
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+
+              <h4 align="center">Dog Activity Percentages</h4>
+              <div class="clearfix"></div>
+
+              <div class="x_content">
+                <canvas id="lineChart"></canvas>
+                <p>Currently using percentages to showcase which dogs have been the most active regardless of the total amount
+                  of time. Some dogs have much high total time being recorded and strictly using raw minutes active will
+                  not indicate which dogs have been active most because newer dogs will have lower time active because they
+                  haven't had a large amount of total time.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--/row-->
+
+        <div class="clearfix"></div>
+
+        <div class="row">
+          <!--row-->
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="x_panel">
+
+              <h4 align="center">Top 5 Resting Dogs</h4>
+              <div class="clearfix"></div>
+
+              <div class="x_content">
+                <canvas id="mybarChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="x_panel">
+
+              <h4 align="center">Rest VS Active</h4>
+              <div class="clearfix"></div>
+
+              <div class="x_content">
+                <canvas id="mybarChart1"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--/row-->
+
       </div>
     </div>
+  </div>
 
 
-    <!-- Bootstrap core JavaScript
+  <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="dist/js/bootstrap.min.js"></script>
-    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-    <script src="assets/js/vendor/holder.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
-    <script type="text/javascript" src="charts.js"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
-    <script src="Chart.js"></script>
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.min.js"><\/script>')</script>
+  <script src="dist/js/bootstrap.min.js"></script>
+  <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+  <script src="assets/js/vendor/holder.min.js"></script>
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
+  <script type="text/javascript" src="dashboard.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="Chart.js"></script>
 
-    <!-- Chart.js graphs and search and add dog -->
-    <script>
+  <!-- Chart.js graphs and search and add dog -->
+  <script>
       
       var searched = [];
       var lineChart;
@@ -508,5 +499,6 @@
             }      
   </script>
 
-  </body>
+</body>
+
 </html>
