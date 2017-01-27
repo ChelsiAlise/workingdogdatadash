@@ -48,6 +48,9 @@ class DevHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         # special case the index
         if self.path == "/":
             self.path = "static/index.html"
+        # special case customChart.html (temporarily)
+        elif self.path == "/customChart.html":
+            self.path = "static/customChart.html"
         # proxy /api* requests to the hosted service
         if self.path.startswith("/api"):
             url = HOST + self.path
