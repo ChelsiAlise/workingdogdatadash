@@ -50,6 +50,12 @@ def data_to_json(data):
             "awake": dog.awake_total,
             "active": dog.active_total,
             "rest": dog.rest_total,
+            # outcome data:
+            "birth_date": dog.birth_date,
+            "breed": dog.breed,
+            "sex": dog.sex,
+            "dog_status": dog.dog_status,
+            "regional_center": dog.regional_center,
         }
         dataBlob["dogs"].append(upload_dog)
     for day in days:
