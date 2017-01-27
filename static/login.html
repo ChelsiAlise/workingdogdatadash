@@ -1,67 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <!-- TODO: get a real favicon -->
-    <!--<link rel="icon" href="/static/favicon.ico">-->
 
-    <title>Sign In to P.A.W.S.</title>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <!-- TODO: get a real favicon -->
+  <!--<link rel="icon" href="/static/favicon.ico">-->
 
-    <!-- Bootstrap core CSS -->
-    <link href="/static/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Sign In to P.A.W.S.</title>
 
-    <!-- Custom styles for this template -->
-    <link href="/static/signin.css" rel="stylesheet">
+  <!-- Bootstrap core CSS -->
+  <link href="/static/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link href="/static/animate.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="/static/login.css" rel="stylesheet">
 
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+  <link href="/static/animate.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
+  <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+  <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <body class="login">
+  <body class="login">
     <div>
 
       <div class="login_wrapper">
         <div class="animate form login_form">
           <section class="login_content">
             <h1 class="no-before-after">&nbsp;P. A. W. S.</h2>
-            <form action="/login" method="post">
-              <h1>Login</h1>
-              <div>
-                <input type="text" class="form-control" id= "user"placeholder="your.email@cci.org" required="" name="username"/>
-              </div>
-              <div>
-                <input type="password" class="form-control" id="password" placeholder="Password" required="" name="password"/>
-              </div>
-              <div>
-                <a class="btn btn-round"  type="button"><button type="submit">Log in</button></a>
-              </div>
-
-              <div class="clearfix"></div>
-
-              <div class="separator">
+              <form action="/login" method="post">
+                <h1>Login</h1>
+                <div>
+                  <input type="text" class="form-control" id="user" placeholder="your.email@cci.org" required="" name="username" />
+                </div>
+                <div>
+                  <input type="password" class="form-control" id="password" placeholder="Password" required="" name="password" />
+                </div>
+                <div>
+                  <a class="btn btn-round" type="button"><button type="submit">Log in</button></a>
+                </div>
 
                 <div class="clearfix"></div>
-                <br />
 
-                <div>
+                <div class="separator">
+
+                  <div class="clearfix"></div>
+                  <br />
+
+                  <div>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
           </section>
         </div>
 
@@ -77,4 +78,5 @@
     }
     window.onload = checkIsRetry
   </script>
+
 </html>
