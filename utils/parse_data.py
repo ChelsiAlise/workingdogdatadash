@@ -44,8 +44,15 @@ class DogData(object):
         self.rest_total = 0
         # total of all minutes
         self.total = 0
+        # outcome data fields
+        self.birth_date = None
+        self.breed = None
+        self.sex = None
+        self.dog_status = None
+        self.regional_center = None
 
     def __repr__(self):
+        # NOTE! this no longer contains all fields
         return "<DogData name:%s dog_id:%s tattoo_number:%s days:%s awake:%s active:%s rest:%s>" % \
             (self.name, self.dog_id, self.tattoo_number, self.days,\
             self.awake_total, self.active_total, self.rest_total)
@@ -61,6 +68,63 @@ def parse_date_string(date_string):
     """
     parts = date_string.split('-')
     return datetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
+
+def compare_dog_names(n1, n2):
+    """compares two dog names
+
+    Args:
+        n1 (str): the first name
+        n2 (str): the second name
+
+    Returns:
+        true if the names are considered the same
+    """
+    return n1.lower() == n2.lower()
+
+
+def parse_outcomes_file(file_name, data):
+    """parses the outcomes data file (outcomes.csv)
+
+    Args:
+        file_name (string): the path of the file to process
+        data (dict of str: DogData): dog name to DogData
+
+    Returns:
+        data (dict of str: DogData): dog name to DogData
+    """
+    with open(file_name, 'rb') as csv_file:
+        # row number
+        reader = csv.reader(csv_file, delimiter=',')
+        # skip first row
+        reader.next()
+        # process remaining rows
+        while True:
+            # get next row
+            try:
+                row = reader.next()
+            except StopIteration:
+                break
+            # get the name of this dog
+            # note that this is sometimes in different format
+            # (capitalized)
+            name = row[0]
+            # find the dog the name matches
+            key = None
+            for dog in data:
+                if compare_dog_names(name, dog):
+                    key = dog
+                    break
+            if key is None:
+                print("Failed to match dog name! (%s)"%(name))
+                continue
+            # add the outcome data
+            dog = data[key]
+            dog.birth_date = row[1]
+            dog.breed = row[2]
+            dog.sex = row[3]
+            dog.dog_status = row[4]
+            dog.regional_center = row[5]
+    return data
 
 # method to parse a "cci-puppy_minutes-*.csv" file
 def parse_minutes_file(file_name, minutes_name, total_name, data):
@@ -121,6 +185,16 @@ def parse_minutes_file(file_name, minutes_name, total_name, data):
             row_n += 1
     return data
 
+def normalize_dog_name(name):
+    """removes adjacent spaces as seen in one of the dogs' data.
+    Args:
+        name (string): the name to normalize
+    
+    Returns:
+        the normalized name (string)
+    """
+    return " ".join(name.split())
+
 def parse_dog_file(file_name, data):
     """parses an individual dog data file ([0-9]+_*.csv)
 
@@ -151,6 +225,7 @@ def parse_dog_file(file_name, data):
                 (len(row), str(row)))
             return data
         dog_id, tattoo_number, dog_name = None, None, row[2]
+        dog_name = normalize_dog_name(dog_name)
         try:
             dog_id = int(float(row[0]))
         except:
@@ -182,7 +257,7 @@ def parse_dog_file(file_name, data):
                 print("Read bad row! (length = %d)" % len(row))
                 continue
             # check that the id, tatoo #, and name match
-            did, tn, dn = row[0], row[1], row[2]
+            did, tn, dn = row[0], row[1], normalize_dog_name(row[2])
             if tn and tn != "n/a":
                 try:
                     tn = int(float(tn))
@@ -240,7 +315,8 @@ def parse_dog_file(file_name, data):
                 break
     return data
 
-def parse_dog_data(data_dir=None, use_individual=True, debug=False):
+def parse_dog_data(data_dir=None, use_individual=True,
+                   parse_outcomes=True, debug=False):
     """parses all dog data files in data_dir of type cci-puppy_minutes-*.csv
 
     Args:
@@ -248,6 +324,7 @@ def parse_dog_data(data_dir=None, use_individual=True, debug=False):
             in which case ./../../CCI Puppy Data/Dailies/ will be used.
         use_individual (bool): whether to use indivudual files or the aggregate
             files. Defaults to True.
+        parse_outcomes (bool): if True, parses the outcomes file.
         debug (bool): whether to print additional debug information while
             processing. Defaults to False.
 
@@ -281,6 +358,9 @@ def parse_dog_data(data_dir=None, use_individual=True, debug=False):
             if debug:
                 print("Processing: %s" % file_name)
             data = parse_dog_file(file_name, data)
+    if parse_outcomes:
+        outcomes_path = path.join(data_dir, "..", "outcomes.csv")
+        parse_outcomes_file(outcomes_path, data)
     return data
 
 def main():
