@@ -4,6 +4,11 @@ body {
   background-color: #eee;
 }
 
+input
+{
+    font-size: 22px;
+}
+
 .form-signin {
   max-width: 330px;
   padding: 15px;
@@ -172,6 +177,9 @@ a.hiddenanchor {
   background: #7e7e7e;
   background: linear-gradient(right, #7e7e7e 0%, white 100%);
   left: 0; }
+
+.login_content h1.no-before-after:after{content:none;}
+.login_content h1.no-before-after:before{content:none;}
 
 .login_content form {
   margin: 20px 0;
