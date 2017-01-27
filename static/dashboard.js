@@ -508,8 +508,8 @@ $.ajax({
         document.getElementById("most_rest_card").innerHTML = mostRestDog(data);
         document.getElementById("most_rest_card_title").innerHTML = "Dog With the Most Rest Time";
 
-        document.getElementById("most_rest_card").innerHTML = mostAwakeDog(data);
-        document.getElementById("most_rest_card_title").innerHTML = "Dog With the Most Awake Time";
+        document.getElementById("most_awake_card").innerHTML = mostAwakeDog(data);
+        document.getElementById("most_awake_card_title").innerHTML = "Dog With the Most Awake Time";
     }
 });
 
@@ -608,7 +608,7 @@ function mostAwakeDog(data) {
     }
 
     //sort from lowest to highest
-    hashMostRestDog.sort(function (a, b) {
+    hashMostAwakeDog.sort(function (a, b) {
         return a.val - b.val;
     });
 
