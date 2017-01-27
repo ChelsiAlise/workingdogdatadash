@@ -9,6 +9,12 @@ type Dog struct {
 	Awake        int    `json:"awake"`
 	Rest         int    `json:"rest"`
 	Active       int    `json:"active"`
+	// outcome data
+	BirthDate      string `json:"birth_date"`
+	Breed          string `json:"breed"`
+	Sex            string `json:"sex"`
+	DogStatus      string `json:"dog_status"`
+	RegionalCenter string `json:"regional_center"`
 ***REMOVED***
 
 // DayData represents one dog's data for a day
