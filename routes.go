@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -153,19 +152,37 @@ func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ctx := appengine.NewContext(r)
+	ctx.Infof("upload request!")
 	decoder := json.NewDecoder(r.Body)
 	var data DataBlob
 	err := decoder.Decode(&data)
 	defer r.Body.Close()
 	if err != nil {
-		log.Println("Failed to handle import!")
+		http.Error(w, "Failed to handle import! "+err.Error(),
+			http.StatusInternalServerError)
 		return
 	}
+	ctx.Infof("dogs: %d", len(data.Dogs))
+	if len(data.Dogs) < 1 {
+		http.Error(w, "Failed to handle import! (no dogs!)",
+			http.StatusInternalServerError)
+	}
 	for _, dog := range data.Dogs {
-		AddDataDog(ctx, dog)
+		_, err = AddDataDog(ctx, dog)
+		ctx.Infof("Dog: %s, %v", dog.Name, err)
+		if err != nil {
+			http.Error(w, "Failed to handle import! "+err.Error(),
+				http.StatusInternalServerError)
+			return
+		}
 	}
 	for _, day := range data.Days {
-		AddDataDay(ctx, day)
+		_, err = AddDataDay(ctx, day)
+		if err != nil {
+			http.Error(w, "Failed to handle import! "+err.Error(),
+				http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
