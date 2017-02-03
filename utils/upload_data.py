@@ -10,7 +10,9 @@ from __future__ import print_function
 import parse_data
 import sys
 import json
+import urllib
 import urllib2
+import cookielib
 
 key = sys.argv[-1]
 
@@ -63,6 +65,20 @@ def data_to_json(data):
     # convert to json
     return json.dumps(dataBlob)
 
+# login
+cj = cookielib.CookieJar()
+opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+login_url = "https://working-dog-data-dash.appspot.com/login"
+print("please enter credentials for P.A.W.S.")
+user = raw_input("user: ")
+password = raw_input("password: ")
+form_data = {"username": user, "password": password}
+params = urllib.urlencode(form_data)
+response = opener.open(login_url, data=params)
+code = response.getcode()
+if code != 200:
+    raise Exception("Failed to login!")
+
 # load data
 print("Loading Data")
 data = parse_data.parse_dog_data()
@@ -70,12 +86,15 @@ data = parse_data.parse_dog_data()
 # convert to json
 print("Converting Data")
 json_data = data_to_json(data)
+print(json_data)
 
 # upload
 print("Uploading.")
 req = urllib2.Request('https://working-dog-data-dash.appspot.com/api/data/upload')
 req.add_header('Content-Type', 'application/json')
 req.add_header('Upload-Key', key)
-response = urllib2.urlopen(req, json_data)
+response = opener.open(req, json_data)
+print(response.info())
+print(response.code)
 
 print("Done.")
