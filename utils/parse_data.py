@@ -45,11 +45,11 @@ class DogData(object):
         # total of all minutes
         self.total = 0
         # outcome data fields
-        self.birth_date = None
-        self.breed = None
-        self.sex = None
-        self.dog_status = None
-        self.regional_center = None
+        self.birth_date = ""
+        self.breed = ""
+        self.sex = ""
+        self.dog_status = ""
+        self.regional_center = ""
 
     def __repr__(self):
         # NOTE! this no longer contains all fields
