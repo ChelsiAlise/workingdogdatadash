@@ -40,6 +40,9 @@
   <script src="/static/highcharts/highcharts-more.js"></script>
   <script src="/static/highcharts/modules/exporting.js"></script>
 
+  <!-- jStat -->
+  <script src="/static/dist/js/jstat.min.js"></script>
+
 </head>
 
 <body>
@@ -141,6 +144,45 @@
         <div class='row'>
           <div class="col-md-12 col-sm-12 col-xs-12">
             <canvas id="mybarChart"></canvas>
+          </div>
+        </div>
+        <div id="popupStats" style='display:none'>
+          <div class="stats">
+            <table id = "t01" border="1" cellpadding="5" width="50%">
+                <thead>
+                <tr>
+                <th colspan="2">General Statistics</th>
+                </tr>
+                </thead>
+                <tr>
+                    <th>Statistic</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Mean</td>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <td>Range</td>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <td>Min,Max</td>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <td>Variance</td>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <td>Standard Deviation</td>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <td>Quartiles</td>
+                    <td>test</td>
+                </tr>
+            </table>
           </div>
         </div>
       </div>
@@ -338,6 +380,8 @@
                 //alert("test");
                 var temp1 = $("#mySelect option:selected").text();
                 console.log(temp1);
+
+                document.getElementById('popupStats').style.display='block';
                 //alert("test");
                 if (temp1 == "Bar") {
                     var select1 = $("#mySelect2 option:selected").text();
@@ -379,6 +423,23 @@
               fieldcheck();
               //mybarChart.destroy();
             }
+            function stats(arr,arr1){
+                var avg = Math.trunc(jStat.mean(arr1))
+                var tbl = document.getElementById('t01');
+                tbl.rows[2].cells[1].innerHTML = (avg);
+                var rng = jStat.range(arr1);
+                var ymax = jStat.max(arr1);
+                tbl.rows[3].cells[1].innerHTML = (rng);
+                var ymin = jStat.min(arr1);
+                var ymax = jStat.max(arr1);
+                tbl.rows[4].cells[1].innerHTML = (ymin + ", " + ymax);
+                var variance = Math.trunc(jStat.variance(arr1))
+                tbl.rows[5].cells[1].innerHTML = (variance);
+                var std = Math.trunc(jStat.stdev(arr1))
+                tbl.rows[6].cells[1].innerHTML = (std);
+                var qrt = jStat.quartiles(arr1);
+                tbl.rows[7].cells[1].innerHTML = (qrt);
+            }
             function makeBar(data,type){
                         var arr = new Array();
                         var arr1 = new Array();
@@ -394,7 +455,8 @@
                            var ratio = getBarInfo(string1[i], type);
                            arr1[j] = ratio;
                            j++;
-                       };
+                        }
+                        stats(arr,arr1);
                        //mybarChart.destroy();
                        Highcharts.chart('container', {
        chart: {
@@ -569,6 +631,8 @@
                                      var ratioC = data3/dataT;
                                  }
                              };
+
+                             stats(arr,arr1);
 
                               var ctx = document.getElementById("mybarChart");
                             //   var myChart = new Chart(ctx, {
