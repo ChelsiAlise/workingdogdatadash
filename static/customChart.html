@@ -107,6 +107,7 @@
                 <select id="mySelect" onchange="fieldcheck()" style="width: 25%">
                             <option value = "Select" selected>Select One</option>
                             <option value = "Bar">Bar</option>
+                            <option value = "Pie">Pie</option>
                             <option value = "Line">Line</option>
                             <option value ="Change Over Time">Change Over Time</option>
                         </select>
@@ -170,7 +171,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
   <script>
-      
+
       var string1 = '';
       var string2 = '';
       var searched = [];
@@ -178,6 +179,8 @@
       var isValidBar = false;
       var mybarChart;
       var mybarChart2;
+      var barchoices3 = [];
+
       var barchoices1 = [{"value": "Raw Data", "text": "Raw Data"}, {"value": "Comparisons", "text": "Comparisons"}];
       var barchoices2 = [{"value": "Active", "text": "Active"}, {"value": "Awake", "text": "Awake"}, {"value": "Rest", "text": "Rest"}, {"value": "Total", "text": "Total"}];
       $.ajax({
@@ -190,186 +193,395 @@
                 }
             });
 
-    function fieldcheck(){
-        var temp = $("#mySelect option:selected").text();
-        isValidbar = false;
-        console.log(isValidBar);
-        if(temp != "Select One") {
-            $('#mySelect2').show();
-            if(temp == "Bar"){
-                barOptions('#mySelect2', barchoices1);
-                
-            }
-        }  else {
-          isValidBar = false;
-            $('#mySelect2').hide();
-            $('#mySelect3').hide();
-            $('#mySelect4').hide();
-            
-        }
-    }
-    
-    function fieldcheck2(){
-        var temp = $("#mySelect2 option:selected").text();
-        if(temp != "Select One") {
-            $('#mySelect3').show();
-            
-            if(temp == "Raw Data"){
-              isValidBar = false;
-                barOptions('#mySelect3', barchoices2);
-                $('#mySelect4').hide();
-                //isValidBar = true;
-            } else if(temp == "Comparisons"){
-                isValidBar = false;
-                $('#mySelect4').show();
-                barOptions('#mySelect3', barchoices2);
-                barOptions('#mySelect4', barchoices2);
-            }
-        }  else {
-            $('#mySelect3').hide();
-            $('#mySelect4').hide();
-            isValidBar = false;
-            
-        }
-    }
+            function fieldcheck(){
 
-    function fieldcheck3(){
-      var select1 = $("#mySelect2 option:selected").text();
-      var temp = $("#mySelect3 option:selected").text();
-      if(temp != "Select One") {
-            if(select1 == "Raw Data"){
-                isValidBar = true;
-            } else {
-              idValiBar = false;
-            }
-        }  else {
-            isValidBar = false;
-            
-        }
-    }
+               console.log("TEST");
+               console.log(barchoices3);
+                var temp = $("#mySelect option:selected").text();
+                isValidbar = false;
+                console.log(isValidBar);
+                if(temp != "Select One") {
+                    $('#mySelect2').show();
+                    if(temp == "Bar"){
+                        barOptions('#mySelect2', barchoices1);
 
-    function fieldcheck4(){
-      var select1 = $("#mySelect2 option:selected").text();
-      var temp = $("#mySelect4 option:selected").text();
-      var temp1 = $("#mySelect3 option:selected").text();
-      if(temp != "Select One" && temp != temp1 && temp1 != "Select One") {
-            if(select1 == "Comparisons"){
-                isValidBar = true;
-            } else {
-              idValiBar = false;
-            }
-        }  else {
-            isValidBar = false;
-            
-        }
-    }
+                    } else if (temp == "Pie"){
+                        barOptions('#mySelect2', barchoices1);
 
-    function barOptions(item, options){
-        $(item).empty();
-        $(item).append($('<option>', {
-                value: "Select" ,
-                text: "Select One"
-                }));
-        for(var i = 0; i < options.length ; i ++){
-            $(item).append($('<option>', {
-                value: options[i].value ,
-                text: options[i].text
-                }));
-        }
-    }
-
-    function generateGraph(){
-
-      if(isValidBar){
-        console.log("generate graph here");
-        var select1 = $("#mySelect2 option:selected").text();
-        if(select1 == "Raw Data"){
-          var type = $("#mySelect3 option:selected").text();
-          makeBar(string2, type);
-        }
-        
-      } else {
-        alert("Must Set Up A Proper Graph");
-      }
-    }
-
-    function reset(){
-      document.getElementById('popup1').style.display='none'; 
-      document.getElementById('graphButton').style.display='block'; 
-      $('#mySelect2').hide(); 
-      $('#mySelect').val('Select'); 
-      $('#mySelect2').val('Select'); 
-      $('#mySelect3').val('Select'); 
-      $('#mySelect4').val('Select'); 
-      $('#mySelect3').hide(); 
-      $('#mySelect4').hide(); 
-      isValdBar = false;
-      fieldcheck();
-    }
-
-    function makeBar(data,type){
-                var arr = new Array(); 
-                var arr1 = new Array(); 
-                string1 = data/*.dogs*/;
-                //console.log(string1);
-                /*string1.sort = function(a, b){
-                    return (getBarInfo(a,type)) - (getBarInfo(b,type));
-                };*/
-                var j = 0;
-                for (var i =0; i < string1.length; i++) {
-                   arr[j] = string1[i].name;
-                   console.log(string1[i].name);
-                   var ratio = getRest(string1[i]);
-                   arr1[j] = ratio;
-                   j++;
-               };
-
-                var ctx = document.getElementById("mybarChart");
-                mybarChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                      labels: arr,
-                      datasets: [{
-                        label: type,
-                        backgroundColor: "blue",
-                        data: arr1
-                      }]
-                    },
-
-                    options: {
-                      scales: {
-                        yAxes: [{
-                          ticks: {
-                            beginAtZero: true
-                          }
-                        }]
-                      }
                     }
-                });
-           }
+                }  else {
+                  isValidBar = false;
+                    $('#mySelect2').hide();
+                    $('#mySelect3').hide();
+                    $('#mySelect4').hide();
 
-           function getRest(dog){
-             return dog.rest;
-           }
+                }
+            }
 
-           function getBarInfo(dog,type){
-             if(type == 'Rest'){
-               return dog.rest;
-             } else if(type == 'Active'){
-               return dog.active;
-             } else if(type == 'Awake'){
-               return dog.awake;
-             } else if(type == 'Total'){
-               return dog.total;
-             }
-           }
+            function fieldcheck2(){
+                var temp = $("#mySelect2 option:selected").text();
+                var temp2 = $("#mySelect option:selected").text();
 
-        
-        
+                if(temp != "Select One") {
+                    $('#mySelect3').show();
 
-           
-  </script>
+                    if(temp == "Raw Data"){
+                        if (temp2 == "Bar") {
+                            isValidBar = false;
+                              barOptions('#mySelect3', barchoices2);
+                              $('#mySelect4').hide();
+                              //isValidBar = true;
+                        } else if (temp2 == "Pie") {
+                            var j = 0;
+                            string1 = string2;
+                            for (var i = 0; i < string2.length; i++) {
+                               helper = {"value": string1[i].name, "text": string1[i].name}
+                               barchoices3[j] = helper;
+                               j++;
+                           }
+                            isValidBar = false;
+                              barOptions('#mySelect3', barchoices3);
+                              $('#mySelect4').hide();
+                        }
 
-</body>
+                    } else if(temp == "Comparisons"){
+                        if (temp2 == "Bar") {
+                            isValidBar = false;
+                            $('#mySelect4').show();
+                            barOptions('#mySelect3', barchoices2);
+                            barOptions('#mySelect4', barchoices2);
+                        } else if (temp2 == "Pie") {
+                            var j = 0;
+                            string1 = string2;
+                            for (var i = 0; i < string2.length; i++) {
+                               helper = {"value": string1[i].name, "text": string1[i].name}
+                               barchoices3[j] = helper;
+                               j++;
+                           }
+                           isValidBar = false;
+                           $('#mySelect4').show();
+                           barOptions('#mySelect3', barchoices3);
+                           barOptions('#mySelect4', barchoices3);
+                        }
 
-</html>
+                    }
+                }  else {
+                    $('#mySelect3').hide();
+                    $('#mySelect4').hide();
+                    isValidBar = false;
+
+                }
+            }
+
+            function fieldcheck3(){
+              var select1 = $("#mySelect2 option:selected").text();
+              var temp = $("#mySelect3 option:selected").text();
+              if(temp != "Select One") {
+                    if(select1 == "Raw Data"){
+                        isValidBar = true;
+                    } else {
+                      idValiBar = false;
+                    }
+                }  else {
+                    isValidBar = false;
+
+                }
+            }
+
+            function fieldcheck4(){
+              var select1 = $("#mySelect2 option:selected").text();
+              var temp = $("#mySelect4 option:selected").text();
+              var temp1 = $("#mySelect3 option:selected").text();
+              if(temp != "Select One" && temp != temp1 && temp1 != "Select One") {
+                    if(select1 == "Comparisons"){
+                        isValidBar = true;
+                    } else {
+                      idValiBar = false;
+                    }
+                }  else {
+                    isValidBar = false;
+
+                }
+            }
+
+            function barOptions(item, options){
+                $(item).empty();
+                $(item).append($('<option>', {
+                        value: "Select" ,
+                        text: "Select One"
+                        }));
+                for(var i = 0; i < options.length ; i ++){
+                    $(item).append($('<option>', {
+                        value: options[i].value ,
+                        text: options[i].text
+                        }));
+                }
+            }
+
+            function generateGraph(){
+                //mybarChart.destroy();
+
+              if(isValidBar){
+                console.log("generate graph here");
+                name1 = $("#mySelect1 option:selected").text();
+                //alert("test");
+                var temp1 = $("#mySelect option:selected").text();
+                console.log(temp1);
+                //alert("test");
+                if (temp1 == "Bar") {
+                    var select1 = $("#mySelect2 option:selected").text();
+                    if(select1 == "Raw Data"){
+                      var type = $("#mySelect3 option:selected").text();
+                      makeBar(string2, type);
+                    }
+                    if(select1 == "Comparisons"){
+                        var typeA = $("#mySelect3 option:selected").text();
+                        var typeB = $("#mySelect4 option:selected").text();
+                        makeBar2(string2, typeA, typeB);
+                    }
+
+                } else if (temp1 == "Pie") {
+                    var select1 = $("#mySelect2 option:selected").text();
+                    if(select1 == "Raw Data"){
+                      var type = $("#mySelect3 option:selected").text();
+                      makePie(string2, type);
+                    }
+                    if(select1 == "Comparisons"){
+                        var typeA = $("#mySelect3 option:selected").text();
+                        var typeB = $("#mySelect4 option:selected").text();
+                        makePie2(string2, typeA, typeB);
+                    }
+                }
+              } else {
+                alert("Must Set Up A Proper Graph");
+              }
+            }
+
+            function reset(){
+              document.getElementById('popup1').style.display='none';
+              document.getElementById('graphButton').style.display='block';
+              $('#mySelect2').hide();
+              $('#mySelect').val('Select');
+              $('#mySelect2').val('Select');
+              $('#mySelect3').val('Select');
+              $('#mySelect4').val('Select');
+              $('#mySelect3').hide();
+              $('#mySelect4').hide();
+              isValdBar = false;
+              fieldcheck();
+              mybarChart.destroy();
+
+
+            }
+
+            function makeBar(data,type){
+                        var arr = new Array();
+                        var arr1 = new Array();
+                        string1 = data/*.dogs*/;
+                        //console.log(string1);
+                        /*string1.sort = function(a, b){
+                            return (getBarInfo(a,type)) - (getBarInfo(b,type));
+                        };*/
+                        var j = 0;
+                        for (var i =0; i < string1.length; i++) {
+                           arr[j] = string1[i].name;
+                           console.log(string1[i].name);
+                           var ratio = getBarInfo(string1[i], type);
+                           arr1[j] = ratio;
+                           j++;
+                       };
+                        var ctx = document.getElementById("mybarChart");
+                        mybarChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                              labels: arr,
+                              datasets: [{
+                                label: type,
+                                backgroundColor: "blue",
+                                data: arr1
+                              }]
+                            },
+
+                            options: {
+                              scales: {
+                                yAxes: [{
+                                  ticks: {
+                                    beginAtZero: true
+                                  }
+                                }]
+                              }
+                            }
+                        });
+
+                   }
+
+
+                   function makeBar2(data,typeA, typeB){
+                               var arr = new Array();
+                               var arr1 = new Array();
+                               var arr2 = new Array();
+                               string1 = data/*.dogs*/;
+                               //console.log(string1);
+                               /*string1.sort = function(a, b){
+                                   return (getBarInfo(a,type)) - (getBarInfo(b,type));
+                               };*/
+                               var j = 0;
+                               for (var i =0; i < string1.length; i++) {
+                                  arr[j] = string1[i].name;
+                                  console.log(string1[i].name);
+                                  var ratio = getBarInfo(string1[i], typeA);
+                                  var ratio2 = getBarInfo(string1[i], typeB);
+                                  arr1[j] = ratio;
+                                  arr2[j] = ratio2;
+                                  j++;
+                              };
+
+                               var ctx = document.getElementById("mybarChart");
+                               mybarChart = new Chart(ctx, {
+                                   type: 'bar',
+                                   data: {
+                                     labels: arr,
+                                     datasets: [{
+                                       label: typeA,
+                                       backgroundColor: "blue",
+                                       data: arr1
+                                   },{
+                                     label: typeB,
+                                     backgroundColor: "red",
+                                     data: arr2
+                                   }]
+                                   },
+
+                                   options: {
+                                     scales: {
+                                       yAxes: [{
+                                         ticks: {
+                                           beginAtZero: true
+                                         }
+                                       }]
+                                     }
+                                   }
+                               });
+                          }
+
+                          function makePie(data, dog){
+                              var arr = new Array();
+                              var arr1 = new Array();
+                              string1 = data/*.dogs*/;
+                              //console.log(string1);
+                              /*string1.sort = function(a, b){
+                                  return (getBarInfo(a,type)) - (getBarInfo(b,type));
+                              };*/
+                              var j = 0;
+                              for (var i =0; i < string1.length; i++) {
+                                 if (string1[i].name == dog) {
+                                     console.log(string1[i].name);
+                                     var data1 = getBarInfo(string1[i], "Rest");
+                                     var data2 = getBarInfo(string1[i], "Active");
+                                     var data3 = getBarInfo(string1[i], "Awake");
+                                 }
+
+                             };
+                              var ctx = document.getElementById("mybarChart");
+                              var myChart = new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                  labels: ["Rest", "Active", "Awake"],
+                                  datasets: [{
+                                    backgroundColor: [
+                                      "#2ecc71",
+                                      "#3498db",
+                                      "#95a5a6"
+
+                                    ],
+                                    data: [data1, data2, data3]
+                                  }]
+                                }
+                              });
+
+                         }
+
+                         function makePie2(data, dog1, dog2){
+                             var arr = new Array();
+                             var arr1 = new Array();
+                             string1 = data/*.dogs*/;
+                             //console.log(string1);
+                             /*string1.sort = function(a, b){
+                                 return (getBarInfo(a,type)) - (getBarInfo(b,type));
+                             };*/
+                             var j = 0;
+                             for (var i =0; i < string1.length; i++) {
+                                if (string1[i].name == dog1) {
+                                    console.log(string1[i].name);
+                                    var data1 = getBarInfo(string1[i], "Rest");
+                                    var data2 = getBarInfo(string1[i], "Active");
+                                    var data3 = getBarInfo(string1[i], "Awake");
+                                }
+                                if (string1[i].name == dog2) {
+                                    console.log(string1[i].name);
+                                    var data4 = getBarInfo(string1[i], "Rest");
+                                    var data5 = getBarInfo(string1[i], "Active");
+                                    var data6 = getBarInfo(string1[i], "Awake");
+                                }
+
+                            };
+                             var ctx = document.getElementById("mybarChart");
+                             var myChart = new Chart(ctx, {
+                               type: 'pie',
+                               data: {
+                                 labels: ["Rest", "Active", "Awake"],
+                                 datasets: [{
+                                   backgroundColor: [
+                                     "#2ecc71",
+                                     "#3498db",
+                                     "#95a5a6"
+
+                                   ],
+                                   data: [data1, data2, data3]
+                                 }]
+                               }
+                             });
+                             var ctx = document.getElementById("mybarChart");
+                             var myChart = new Chart(ctx, {
+                               type: 'pie',
+                               data: {
+                                 labels: ["Rest", "Active", "Awake"],
+                                 datasets: [{
+                                   backgroundColor: [
+                                     "#2ecc71",
+                                     "#3498db",
+                                     "#95a5a6"
+
+                                   ],
+                                   data: [data4, data5, data6]
+                                 }]
+                               }
+                             });
+
+                        }
+
+
+                   function getRest(dog){
+                     return dog.rest;
+                   }
+
+                   function getBarInfo(dog,type){
+                     if(type == 'Rest'){
+                       return dog.rest;
+                     } else if(type == 'Active'){
+                       return dog.active;
+                     } else if(type == 'Awake'){
+                       return dog.awake;
+                     } else if(type == 'Total'){
+                       return dog.total;
+                     }
+                   }
+
+
+
+
+
+          </script>
+
+          </body>
+        </html>
