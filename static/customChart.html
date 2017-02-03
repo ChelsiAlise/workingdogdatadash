@@ -173,6 +173,7 @@
   <script>
       var string1 = '';
       var string2 = '';
+      var string3 = '';
       var searched = [];
       var lineChart;
       var isValidBar = false;
@@ -632,6 +633,7 @@
                              var arr = new Array();
                              var arr1 = new Array();
                              var dates = [];
+                             var index;
                              string1 = data/*.dogs*/;
                              //console.log(string1);
                              /*string1.sort = function(a, b){
@@ -642,6 +644,7 @@
                                     id = string3.dogs[k].id;
                                  }
                              }
+
                              console.log(id);
                              var j = 0;
                              for (var i =0; i < Object.keys(string3.days).length; i++) {
@@ -650,15 +653,16 @@
                                     if (string3.days[i].dogs[m].id == id) {
                                         console.log(string3.days[i].date);
                                         if (type == "Total") {
-                                            dates[i] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].total];
+                                            dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].total];
                                         } else if (type == "Rest") {
-                                            dates[i] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].rest];
+                                            dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].rest];
                                         } else if (type == "Active") {
-                                            dates[i] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].active];
+                                            dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].active];
                                         } else {
-                                            dates[i] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].awake];
+                                            dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].awake];
 
                                         }
+                                        j++;
                                     }
                                 }
                                 //console.log(dates[i]);
