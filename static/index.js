@@ -1048,10 +1048,6 @@ function makePie2(data, dog1, dog2){
     var chart = new Highcharts.Chart(options);
 }
 
-function getRest(dog){
-    return dog.rest;
-}
-
 function getBarInfo(dog,type){
     if(type == 'Rest'){
     return dog.rest;
