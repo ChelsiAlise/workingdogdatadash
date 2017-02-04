@@ -193,7 +193,8 @@ body {
 
 .row {
   margin-right: -10px;
-  margin-left: -10px; 
+  margin-left: -10px;
+  clear: both;
 }
 
 .clearfix:after, form:after {
@@ -268,4 +269,8 @@ ul.nav > li > a:hover, .selected {
 ul.nav > li > .selected {
     background-color: #014971 !important;
     color: white !important;
+}
+
+.delete-button {
+  float:right;
 }

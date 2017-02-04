@@ -221,12 +221,9 @@
               </div>
             </div>
           </div>
-          <div class="row">
-            <!--<div class="col-md-12 col-sm-12 col-xs-12">
-              <canvas id="mybarChart"></canvas>
-            </div>-->
+          <div id="custom-graphs">
           </div>
-          <div id="container" style="width: 100%; height: 40em; margin: 0 auto"></div>
+          
       </div><!--/custom-chart-content-->
 
 
@@ -252,7 +249,6 @@
   <script>
     var current_display = 'dashboard-content';
     function display(id) {
-      console.log(current_display);
       var old_elem = document.getElementById(current_display);
       var new_elem = document.getElementById(id);
       var old_nav_elem = document.getElementById(current_display+'-nav');

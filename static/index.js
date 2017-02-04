@@ -11,8 +11,16 @@ This script is our application, the organization is as follows:
 var filtered_dogs;
 var filtered_blob;
 
-// load the data
+// page setup, and data loading
 $(document).ready(function () {
+    // animation interacts poorly with inserting graphs
+    Highcharts.setOptions({
+        plotOptions: {
+            series: {
+                animation: false
+            }
+        }
+    });
     // load the smaller dog dataset first
     $.ajax({
         type: "GET",
@@ -654,43 +662,60 @@ function barOptions(item, options){
 
 function generateGraph(){
     //mybarChart.destroy();
-    if(isValidBar){
-    console.log("generate graph here");
-    name1 = $("#mySelect1 option:selected").text();
-    //alert("test");
-    var temp1 = $("#mySelect option:selected").text();
-    console.log(temp1);
-    //alert("test");
-    if (temp1 == "Bar") {
-        var select1 = $("#mySelect2 option:selected").text();
-        if(select1 == "Raw Data"){
+    if (isValidBar) {
+            console.log("generate graph here");
+            name1 = $("#mySelect1 option:selected").text();
+            //alert("test");
+            var temp1 = $("#mySelect option:selected").text();
+            console.log(temp1);
+        //alert("test");
+        if (temp1 == "Bar") {
+            var select1 = $("#mySelect2 option:selected").text();
+            if (select1 == "Raw Data"){
+                var type = $("#mySelect3 option:selected").text();
+                makeBar(string2, type);
+            }
+            if (select1 == "Comparisons"){
+                var typeA = $("#mySelect3 option:selected").text();
+                var typeB = $("#mySelect4 option:selected").text();
+                makeBar2(string2, typeA, typeB);
+            }
+        } else if (temp1 == "Pie") {
+            var select1 = $("#mySelect2 option:selected").text();
+            if (select1 == "Raw Data"){
+                var type = $("#mySelect3 option:selected").text();
+                makePie(string2, type);
+            }
+        } else if (temp1 == "Line") {
+            var select1 = $("#mySelect2 option:selected").text();
             var type = $("#mySelect3 option:selected").text();
-            makeBar(string2, type);
+            makeLine(string3, select1, type);
         }
-        if(select1 == "Comparisons"){
-            var typeA = $("#mySelect3 option:selected").text();
-            var typeB = $("#mySelect4 option:selected").text();
-            makeBar2(string2, typeA, typeB);
-        }
-    } else if (temp1 == "Pie") {
-        var select1 = $("#mySelect2 option:selected").text();
-        if(select1 == "Raw Data"){
-            var type = $("#mySelect3 option:selected").text();
-            makePie(string2, type);
-        }
-    } else if (temp1 == "Line") {
-        var select1 = $("#mySelect2 option:selected").text();
-        var type = $("#mySelect3 option:selected").text();
-        makeLine(string3, select1, type);
-    }
     } else {
-    alert("Must Set Up A Proper Graph");
+        alert("You must make a selection for each option first.");
     }
 }
 
+
+var custom_graph_id = 0;
+
+// this inserts a new row with a graph container and returns the element
+// custom graphs should be placed in these
+function insertNewGraphRow() {
+    custom_graph_id += 1;
+    var id = "custom-graph-"+custom_graph_id.toString();
+    var graphs = document.getElementById("custom-graphs");
+    graphs.innerHTML = '<div class="row"><button class="delete-button" onclick="delete_graph(this)" align="right">x</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto; padding: 1em;"></div></div>' + graphs.innerHTML;
+    return id;
+}
+
+function delete_graph(e) {
+    e.parentNode.parentNode.removeChild(e.parentNode);
+}
+
 function reset(){
-    document.getElementById('popup1').style.display='none';
-    document.getElementById('graphButton').style.display='block';
+    //document.getElementById('popup1').style.display='none';
+    //document.getElementById('graphButton').style.display='block';
     $('#mySelect2').hide();
     $('#mySelect').val('Select');
     $('#mySelect2').val('Select');
@@ -700,17 +725,12 @@ function reset(){
     $('#mySelect4').hide();
     isValdBar = false;
     fieldcheck();
-    //mybarChart.destroy();
 }
 
 function makeBar(data,type){
     var arr = new Array();
     var arr1 = new Array();
-    string1 = data/*.dogs*/;
-    //console.log(string1);
-    /*string1.sort = function(a, b){
-        return (getBarInfo(a,type)) - (getBarInfo(b,type));
-    };*/
+    string1 = data;
     var j = 0;
     for (var i =0; i < string1.length; i++) {
         arr[j] = string1[i].name;
@@ -719,8 +739,7 @@ function makeBar(data,type){
         arr1[j] = ratio;
         j++;
     };
-    //mybarChart.destroy();
-    Highcharts.chart('container', {
+    var options = {
         chart: {
             type: 'column'
         },
@@ -759,39 +778,17 @@ function makeBar(data,type){
             data: arr1
 
         }]
-    });
-    // var ctx = document.getElementById("mybarChart");
-    // mybarChart = new Chart(ctx, {
-    //     type: 'bar',
-    //     data: {
-    //       labels: arr,
-    //       datasets: [{
-    //         label: type,
-    //         backgroundColor: "blue",
-    //         data: arr1
-    //       }]
-    //     },
-    //     options: {
-    //       scales: {
-    //         yAxes: [{
-    //           ticks: {
-    //             beginAtZero: true
-    //           }
-    //         }]
-    //       }
-    //     }
-    // });
+    };
+    var id = insertNewGraphRow();
+    options.chart.renderTo = id;
+    var chart = new Highcharts.Chart(options);
 }
 
 function makeBar2(data,typeA, typeB){
     var arr = new Array();
     var arr1 = new Array();
     var arr2 = new Array();
-    string1 = data/*.dogs*/;
-    //console.log(string1);
-    /*string1.sort = function(a, b){
-        return (getBarInfo(a,type)) - (getBarInfo(b,type));
-    };*/
+    string1 = data;
     var j = 0;
     for (var i =0; i < string1.length; i++) {
         arr[j] = string1[i].name;
@@ -802,32 +799,7 @@ function makeBar2(data,typeA, typeB){
         arr2[j] = ratio2;
         j++;
     }
-    //    var ctx = document.getElementById("mybarChart");
-    //    mybarChart = new Chart(ctx, {
-    //        type: 'bar',
-    //        data: {
-    //          labels: arr,
-    //          datasets: [{
-    //            label: typeA,
-    //            backgroundColor: "blue",
-    //            data: arr1
-    //        },{
-    //          label: typeB,
-    //          backgroundColor: "red",
-    //          data: arr2
-    //        }]
-    //        },
-    //        options: {
-    //          scales: {
-    //            yAxes: [{
-    //              ticks: {
-    //                beginAtZero: true
-    //              }
-    //            }]
-    //          }
-    //        }
-    //    });
-    Highcharts.chart('container', {
+    var options = {
             chart: {
                 type: 'column'
             },
@@ -870,17 +842,16 @@ function makeBar2(data,typeA, typeB){
             data: arr2
 
         }]
-    });
+    };
+    var id = insertNewGraphRow();
+    options.chart.renderTo = id;
+    var chart = new Highcharts.Chart(options);
 }
 
 function makePie(data, dog){
     var arr = new Array();
     var arr1 = new Array();
-    string1 = data/*.dogs*/;
-    //console.log(string1);
-    /*string1.sort = function(a, b){
-        return (getBarInfo(a,type)) - (getBarInfo(b,type));
-    };*/
+    string1 = data;
     var j = 0;
     for (var i =0; i < string1.length; i++) {
         if (string1[i].name == dog) {
@@ -895,23 +866,7 @@ function makePie(data, dog){
             var ratioC = data3/dataT;
         }
     };
-
-    var ctx = document.getElementById("mybarChart");
-    //   var myChart = new Chart(ctx, {
-    //     type: 'pie',
-    //     data: {
-    //       labels: ["Rest", "Active", "Awake"],
-    //       datasets: [{
-    //         backgroundColor: [
-    //           "#2ecc71",
-    //           "#3498db",
-    //           "#95a5a6"
-    //         ],
-    //         data: [data1, data2, data3]
-    //       }]
-    //     }
-    //   });
-    Highcharts.chart('container', {
+    var options = {
         chart: {
             plotBackgroundColor: null,
             plotBorderWidth: null,
@@ -951,7 +906,10 @@ function makePie(data, dog){
                 y: ratioC
             }]
         }]
-    });
+    };
+    var id = insertNewGraphRow();
+    options.chart.renderTo = id;
+    var chart = new Highcharts.Chart(options);
 }
 
 function makeLine(data, dog, type){
@@ -960,11 +918,7 @@ function makeLine(data, dog, type){
     var arr1 = new Array();
     var dates = [];
     var index;
-    string1 = data/*.dogs*/;
-    //console.log(string1);
-    /*string1.sort = function(a, b){
-        return (getBarInfo(a,type)) - (getBarInfo(b,type));
-    };*/
+    string1 = data;
     for (var k =0; k < Object.keys(string3.dogs).length; k++) {
         if (string3.dogs[k].name == dog) {
         id = string3.dogs[k].id;
@@ -991,11 +945,9 @@ function makeLine(data, dog, type){
                 j++;
             }
         }
-        //console.log(dates[i]);
     }
     console.log(dateSplit);
-    //console.log(dateSplit);
-    Highcharts.chart('container', {
+    var options = {
         chart: {
             zoomType: 'x'
         },
@@ -1049,62 +1001,48 @@ function makeLine(data, dog, type){
             name: 'Minutes spent ' + type,
             data: dates
         }]
-    });
+    };
+    var id = insertNewGraphRow();
+    options.chart.renderTo = id;
+    var chart = new Highcharts.Chart(options);
 }
 
 function makePie2(data, dog1, dog2){
     var arr = new Array();
     var arr1 = new Array();
-    string1 = data/*.dogs*/;
-    //console.log(string1);
-    /*string1.sort = function(a, b){
-        return (getBarInfo(a,type)) - (getBarInfo(b,type));
-    };*/
+    string1 = data;
     var j = 0;
     for (var i =0; i < string1.length; i++) {
-    if (string1[i].name == dog1) {
-        console.log(string1[i].name);
-        var data1 = getBarInfo(string1[i], "Rest");
-        var data2 = getBarInfo(string1[i], "Active");
-        var data3 = getBarInfo(string1[i], "Awake");
+        if (string1[i].name == dog1) {
+            console.log(string1[i].name);
+            var data1 = getBarInfo(string1[i], "Rest");
+            var data2 = getBarInfo(string1[i], "Active");
+            var data3 = getBarInfo(string1[i], "Awake");
+        }
+        if (string1[i].name == dog2) {
+            console.log(string1[i].name);
+            var data4 = getBarInfo(string1[i], "Rest");
+            var data5 = getBarInfo(string1[i], "Active");
+            var data6 = getBarInfo(string1[i], "Awake");
+        }
     }
-    if (string1[i].name == dog2) {
-        console.log(string1[i].name);
-        var data4 = getBarInfo(string1[i], "Rest");
-        var data5 = getBarInfo(string1[i], "Active");
-        var data6 = getBarInfo(string1[i], "Awake");
-    }
-};
-    var ctx = document.getElementById("mybarChart");
-    var myChart = new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: ["Rest", "Active", "Awake"],
-        datasets: [{
-        backgroundColor: [
-            "#2ecc71",
-            "#3498db",
-            "#95a5a6"
-        ],
-        data: [data1, data2, data3]
-        }]
-    }
-    });
-    var ctx = document.getElementById("mybarChart");
-    var myChart = new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: ["Rest", "Active", "Awake"],
-        datasets: [{
-        backgroundColor: [
-            "#2ecc71",
-            "#3498db",
-            "#95a5a6"
-        ],
-        data: [data4, data5, data6]
-        }]
-    }
-    });
+    var options = {
+        type: 'pie',
+        data: {
+            labels: ["Rest", "Active", "Awake"],
+            datasets: [{
+            backgroundColor: [
+                "#2ecc71",
+                "#3498db",
+                "#95a5a6"
+            ],
+            data: [data4, data5, data6]
+            }]
+        }
+    };
+    var id = insertNewGraphRow();
+    options.chart.renderTo = id;
+    var chart = new Highcharts.Chart(options);
 }
 
 function getRest(dog){
