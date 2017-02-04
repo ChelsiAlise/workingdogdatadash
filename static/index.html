@@ -170,60 +170,10 @@
           </div>
         </div>
 
-        
+
 
 
         <!-- /Highcharts -->
-
-        <div class="row">
-          <!--row-->
-          <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="x_panel">
-
-              <h4 align="center">Dog Activity Percentages</h4>
-              <div class="clearfix"></div>
-
-              <div class="x_content">
-                <canvas id="lineChart"></canvas>
-                <p>Currently using percentages to showcase which dogs have been the most active regardless of the total amount
-                  of time. Some dogs have much high total time being recorded and strictly using raw minutes active will
-                  not indicate which dogs have been active most because newer dogs will have lower time active because they
-                  haven't had a large amount of total time.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--/row-->
-
-        <div class="clearfix"></div>
-
-        <div class="row">
-          <!--row-->
-          <div class="col-md-6 col-sm-6 col-xs-12">
-            <div class="x_panel">
-
-              <h4 align="center">Top 5 Resting Dogs</h4>
-              <div class="clearfix"></div>
-
-              <div class="x_content">
-                <canvas id="mybarChart"></canvas>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-sm-6 col-xs-12">
-            <div class="x_panel">
-
-              <h4 align="center">Rest VS Active</h4>
-              <div class="clearfix"></div>
-
-              <div class="x_content">
-                <canvas id="mybarChart1"></canvas>
-              </div>
-            </div>
-          </div>
-
-        </div>
 
       </div><!--/dashboard-content-->
 
@@ -232,9 +182,9 @@
         <div id="custom-chart-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%; display: none;">
           <h1 class="page-header">Custom Graphs</h1>
           <div class="row">
-            <button id='graphButton' class='btn btn-round' style='background:blue; color:yellow'><a type = 'button'  href="javascript:void(0)" onclick="document.getElementById('popup1').style.display='block'; document.getElementById('graphButton').style.display='none'"><font color="yellow">Make A Graph</font></a></button>
+            <button id="graphButton" class="btn btn-round" style="background:blue; color:yellow"><a type="button"  href="javascript:void(0)" onclick="document.getElementById('popup1').style.display='block'; document.getElementById('graphButton').style.display='none'"><font color="yellow">Make A Graph</font></a></button>
           </div>
-          <div id="popup1" style='display:none'>
+          <div id="popup1" style="display:none">
             <div class="popup">
               <h2>Select Graph Options:</h2>
               <p class="close" onclick="reset()">×</p>
@@ -274,7 +224,7 @@
               </div>
             </div>
           </div>
-          <div class='row'>
+          <div class="row">
             <!--<div class="col-md-12 col-sm-12 col-xs-12">
               <canvas id="mybarChart"></canvas>
             </div>-->
@@ -300,8 +250,7 @@
   <script type="text/javascript" src="/static/index.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
-  <script src="/static/Chart.js"></script>
-  
+
   <!-- Small script to make the Single Page App Links Function -->
   <script>
     var current_display = 'dashboard-content';

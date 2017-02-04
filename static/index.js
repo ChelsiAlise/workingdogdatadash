@@ -1,3 +1,12 @@
+/*
+This script is our application, the organization is as follows:
+- The first section contains shared variables and the document.ready method,
+ and helper methods.
+- Next is the code for the dashboard graphs
+- Followed by the code for the dashboard cards
+- And finally the code for the custom graphs
+*/
+
 // we will store the data pulled from the server in these
 var filtered_dogs;
 var filtered_blob;
@@ -14,10 +23,6 @@ $(document).ready(function () {
             // store the data
             filtered_dogs = data;
             string2 = data; // TODO: remove this
-            // TODO: store({2,3})? should be rewritten
-            store(data);
-            store1(data);
-            store2(data);
             // update the cards
             update_cards();
             // create all graphs that use this data.
@@ -39,6 +44,11 @@ $(document).ready(function () {
         }
     });
 });
+
+
+
+
+//============= javascript for dashboard graphs ================================
 
 // chart 1 - Rest, Active, and Awake Times for Each Dog
 function create_chart_one() {
@@ -276,7 +286,7 @@ var lineChart;
 var mybarChart;
 var mybarChart2;
 
-
+/*
 function store(data){
     var string1 = '';
     var arr = new Array();
@@ -285,7 +295,7 @@ function store(data){
     /*string1.sort = function(a, b) {
         return (a.active/a.total) - (b.active/b.total);
     };*/
-
+/*
     for (var i =0; i < string1.length; i++) {
         arr[i] = string1[i].name;
         var ratio = string1[i].active / string1[i].total ;
@@ -310,8 +320,9 @@ function store(data){
             },]
         }
         });
-}
+}*/
 
+/*
 function store1(data){
     var string1 = '';
     var arr = new Array();
@@ -319,7 +330,7 @@ function store1(data){
     string1 = data;
     /*string1.sort = function(a, b){
         return (a.rest/a.total) - (b.rest/b.total);
-    };*/
+    };*//*
     var j = 0;
     for (var i =string1.length - 5; i < string1.length; i++) {
         arr[j] = string1[i].name;
@@ -351,7 +362,9 @@ function store1(data){
         }
     });
 }
+*/
 
+/*
 function store2(data){
     var string1 = '';
     var arr = new Array();
@@ -360,7 +373,7 @@ function store2(data){
     string1 = data;
     /*string1.sort = function(a, b){
         return (a.active/a.total) - (b.active/b.total);
-    };*/
+    };*//*
     var j = 0;
     for (var i =string1.length - 10; i < string1.length; i++) {
         arr[j] = string1[i].name;
@@ -398,6 +411,7 @@ function store2(data){
         }
     });
 }
+*/
 
 function search(){
     var name = document.getElementById("searchbar").value;
@@ -474,6 +488,11 @@ function add(){
 
     }
 }
+
+//============= /javascript for dashboard graphs ===============================
+
+
+
 
 
 //============= javascript for cards at top of dashboard =======================
@@ -607,6 +626,10 @@ function mostAwakeDog(data) {
 }
 
 //============= /javascript for cards at top of dashboard ======================
+
+
+
+
 
 
 //============= javascript for custom graphs ===================================
@@ -1226,3 +1249,5 @@ function getBarInfo(dog,type){
     return dog.total;
     }
 }
+
+//============= /javascript for custom graphs ==================================
