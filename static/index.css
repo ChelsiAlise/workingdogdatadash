@@ -259,8 +259,13 @@ body {
   opacity: 1;
 }
 
-/*nav .navbar-nav .navbar-right > li > a:hover, nav .navbar-nav .navbar-right > li > a:focus*/
-ul.nav > li > a:hover {
+/* nav button hover */
+ul.nav > li > a:hover, .selected {
     background-color: white !important;
     color: #016197 !important;
+}
+
+ul.nav > li > .selected {
+    background-color: #014971 !important;
+    color: white !important;
 }

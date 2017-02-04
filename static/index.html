@@ -56,8 +56,8 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="#" onclick="display('dashboard-content'); return false;">Dashboard</a></li>
-          <li><a href="#" onclick="display('custom-chart-content'); return false;">Custom Graphs</a></li>
+          <li><a id="dashboard-content-nav" class="selected" href="#" onclick="display('dashboard-content'); return false;">Dashboard</a></li>
+          <li><a id="custom-chart-content-nav" href="#" onclick="display('custom-chart-content'); return false;">Custom Graphs</a></li>
           <!-- TODO: these are not used !-->
           <li><a href="#">Profile</a></li>
           <li><a href="#">Help</a></li>
@@ -75,7 +75,7 @@
 
 
       <!-- The actual dashboard content is in this div -->
-      <div id ="dashboard-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left: 20%;">
+      <div id ="dashboard-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%;">
 
         <h1 class="page-header">Dashboard</h1>
 
@@ -145,7 +145,7 @@
         <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
-              <div id="chart1" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+              <div id="chart1" style="min-width: 310px; height: 40em; margin: 0 auto"></div>
             </div>
           </div>
         </div>
@@ -154,17 +154,23 @@
 
         <div class="row">
           <div class="container-fluid">
-            <div class="col-md-6 col-sm-6 col-xs-6">
-              <div id="chart2" style="min-width: 310px; height: 400px; max-width: 800px; margin: 0 auto"></div>
-            </div>
-
-            <div class="col-md-6 col-sm-6 col-xs-6">
-              <div id="chart3" style="min-width: 310px; height: 400px; max-width: 800px; margin: 0 auto"></div>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div id="chart2" style="min-width: 310px; height: 40em; margin: 0 auto"></div>
             </div>
           </div>
         </div>
 
         <br><br>
+
+        <div class="row">
+          <div class="container-fluid">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div id="chart3" style="min-width: 310px; height: 40em; margin: 0 auto"></div>
+            </div>
+          </div>
+        </div>
+
+        
 
 
         <!-- /Highcharts -->
@@ -223,7 +229,7 @@
 
 
       <!-- the custom chart content is in this div -->
-        <div id="custom-chart-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left: 20%; display: none;">
+        <div id="custom-chart-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%; display: none;">
           <h1 class="page-header">Custom Graphs</h1>
           <div class="row">
             <button id='graphButton' class='btn btn-round' style='background:blue; color:yellow'><a type = 'button'  href="javascript:void(0)" onclick="document.getElementById('popup1').style.display='block'; document.getElementById('graphButton').style.display='none'"><font color="yellow">Make A Graph</font></a></button>
@@ -234,7 +240,7 @@
               <p class="close" onclick="reset()">×</p>
               <div class="content">
                 <div>
-                  <select id="mySelect" onchange="fieldcheck()" style="width: 25%">
+                  <select id="mySelect" onchange="fieldcheck()" style="">
                               <option value = "Select" selected>Select One</option>
                               <option value = "Bar">Bar</option>
                               <option value = "Pie">Pie</option>
@@ -273,7 +279,7 @@
               <canvas id="mybarChart"></canvas>
             </div>-->
           </div>
-          <div id="container" style="max-width: 800px; height: 400px; margin: 0 auto"></div>
+          <div id="container" style="width: 100%; height: 40em; margin: 0 auto"></div>
       </div><!--/custom-chart-content-->
 
 
@@ -300,11 +306,16 @@
   <script>
     var current_display = 'dashboard-content';
     function display(id) {
-      old_elem = document.getElementById(current_display);
-      new_elem = document.getElementById(id);
+      console.log(current_display);
+      var old_elem = document.getElementById(current_display);
+      var new_elem = document.getElementById(id);
+      var old_nav_elem = document.getElementById(current_display+'-nav');
+      var new_nav_elem = document.getElementById(id+'-nav');
+      current_display = id;
       old_elem.style.display = 'none';
       new_elem.style.display = 'initial';
-      current_display = id;
+      old_nav_elem.className = '';
+      new_nav_elem.className = 'selected';
     }
   </script>
 </body>

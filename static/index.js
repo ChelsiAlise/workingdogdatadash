@@ -486,10 +486,10 @@ function update_cards() {
     document.getElementById("least_active_card_title").innerHTML = "Least Active Dog";
 
     document.getElementById("most_rest_card").innerHTML = mostRestDog(filtered_dogs);
-    document.getElementById("most_rest_card_title").innerHTML = "Dog With the Most Rest Time";
+    document.getElementById("most_rest_card_title").innerHTML = "Most Rested Dog";
 
     document.getElementById("most_awake_card").innerHTML = mostAwakeDog(filtered_dogs);
-    document.getElementById("most_awake_card_title").innerHTML = "Dog With the Most Awake Time";
+    document.getElementById("most_awake_card_title").innerHTML = "Most Awake Dog";
 };
 
 // most active dog card
