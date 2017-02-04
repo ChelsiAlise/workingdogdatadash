@@ -258,3 +258,9 @@ body {
   visibility: visible;
   opacity: 1;
 }
+
+/*nav .navbar-nav .navbar-right > li > a:hover, nav .navbar-nav .navbar-right > li > a:focus*/
+ul.nav > li > a:hover {
+    background-color: white !important;
+    color: #016197 !important;
+}

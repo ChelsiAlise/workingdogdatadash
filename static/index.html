@@ -33,9 +33,6 @@
     <![endif]-->
 
   <!-- Highcharts -->
-  <!--<script src="https://code.highcharts.com/highcharts.js"></script>
-  <script src="https://code.highcharts.com/highcharts-more.js"></script>
-  <script src="https://code.highcharts.com/modules/exporting.js"></script>-->
   <script src="/static/highcharts/highcharts.js"></script>
   <script src="/static/highcharts/highcharts-more.js"></script>
   <script src="/static/highcharts/modules/exporting.js"></script>
@@ -59,8 +56,9 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="#">Dashboard</a></li>
-          <li><a href="customChart.html">Custom Graphs</a></li>
+          <li><a href="#" onclick="display('dashboard-content'); return false;">Dashboard</a></li>
+          <li><a href="#" onclick="display('custom-chart-content'); return false;">Custom Graphs</a></li>
+          <!-- TODO: these are not used !-->
           <li><a href="#">Profile</a></li>
           <li><a href="#">Help</a></li>
         </ul>
@@ -76,7 +74,7 @@
     <div class="row">
 
       <!-- The actual dashboard content is in this div -->
-      <div id ="dashboard-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left: 20%; display:none">
+      <div id ="dashboard-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left: 20%;">
 
         <h1 class="page-header">Dashboard</h1>
 
@@ -167,24 +165,6 @@
 
         <br><br>
 
-        <div class="row">
-          <div class="container-fluid">
-
-            <div class="col-md-6 col-sm-6 col-xs-6">
-              <div id="chart3" style="height: 400px; margin: auto; min-width: 310px; max-width: 600px"></div>
-              <p>This graph is not using CCI's dog data but is however using a tutorial example from HighCharts to show the
-                functionlity of boxplots and that we would have abililty to create them with the dog data.</p>
-            </div>
-
-            <div class="col-md-6 col-sm-6 col-xs-6">
-              <div id="chart4" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-              <p>This graph is not using CCI's dog data but is however using a tutorial example from HighCharts to show the
-                functionlity of being able to have combination data graphs. Since we do not yet have time data we held off
-                on implementing this graph with CCI's data because for time efficieny purposes.</p>
-            </div>
-          </div>
-        </div>
-
 
         <!-- /Highcharts -->
 
@@ -240,7 +220,7 @@
 
       </div><!--/dashboard-content-->
 
-        <div id="custom-chart-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left: 20%;">
+        <div id="custom-chart-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left: 20%; display: none;">
           <h1 class="page-header">Custom Graphs</h1>
           <div class="row">
             <button id='graphButton' class='btn btn-round' style='background:blue; color:yellow'><a type = 'button'  href="javascript:void(0)" onclick="document.getElementById('popup1').style.display='block'; document.getElementById('graphButton').style.display='none'"><font color="yellow">Make A Graph</font></a></button>
@@ -311,6 +291,17 @@
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
   <script src="/static/Chart.js"></script>
+  <!-- Single page app code -->
+  <script>
+    current_display = 'dashboard-content';
+    function display(id) {
+      old_elem = document.getElementById(current_display);
+      new_elem = document.getElementById(id);
+      old_elem.style.display = 'none';
+      new_elem.style.display = 'initial';
+      current_display = id;
+    }
+  </script>
 
   <!-- Chart.js graphs and search and add dog -->
   <script>
