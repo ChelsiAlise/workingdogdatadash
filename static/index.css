@@ -215,8 +215,8 @@ body {
   padding: 20px;
   background: lightyellow;
   border-radius: 5px;
-  height: 400px;
-  width: 80%;
+  height: 200px;
+  width: 100%;
   position: relative;
   transition: all 5s ease-in-out;
 }
