@@ -181,14 +181,11 @@
       <!-- the custom chart content is in this div -->
         <div id="custom-chart-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%; display: none;">
           <h1 class="page-header">Custom Graphs</h1>
-          <div class="row">
-            <button id="graphButton" class="btn btn-round" style="background:blue; color:yellow"><a type="button"  href="javascript:void(0)" onclick="document.getElementById('popup1').style.display='block'; document.getElementById('graphButton').style.display='none'"><font color="yellow">Make A Graph</font></a></button>
-          </div>
-          <div id="popup1" style="display:none">
+          <div class="row"></div>
+          <div id="popup1">
             <div class="popup">
               <h2>Select Graph Options:</h2>
-              <p class="close" onclick="reset()">×</p>
-              <div class="content">
+              <div class="content" style="font-size:1.5em">
                 <div>
                   <select id="mySelect" onchange="fieldcheck()" style="">
                               <option value = "Select" selected>Select One</option>
@@ -219,7 +216,7 @@
                           </select>
 
 
-                  <button onclick="generateGraph()">Create</button>
+                  <button onclick="generateGraph()" style="color:white;">Create</button>
                 </div>
               </div>
             </div>
