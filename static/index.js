@@ -878,7 +878,7 @@ function makePie(data, dog){
             type: 'pie'
         },
         title: {
-            text: 'Ratio of minutes spent in each activity for ' + dog
+            text: 'Time Spent As a Percentage of Total Time For ' + dog
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -929,7 +929,6 @@ function makeLine(data, dog, type){
         }
     }
 
-    console.log(id);
     var j = 0;
     for (var i =0; i < Object.keys(string3.days).length; i++) {
         var dateSplit = string3.days[i].date.split("-");
@@ -950,13 +949,13 @@ function makeLine(data, dog, type){
             }
         }
     }
-    console.log(dateSplit);
+
     var options = {
         chart: {
             zoomType: 'x'
         },
         title: {
-            text: 'Graph of dog activity over time'
+            text: dog+' '+type+' Minutes Over Time'
         },
         subtitle: {
             text: document.ontouchstart === undefined ?
