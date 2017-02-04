@@ -274,3 +274,7 @@ ul.nav > li > .selected {
 .delete-button {
   float:right;
 }
+
+p.card-text {
+  font-size: 24px;
+}

@@ -87,7 +87,7 @@ function create_chart_one() {
         yAxis: {
             min: 0,
             title: {
-                text: 'Time /min(s)'
+                text: 'Total Minutes'
             }
         },
         tooltip: {
@@ -140,7 +140,7 @@ function create_chart_two() {
             zoomType: 'xy'
         },
         title: {
-            text: 'Awake Versus Rest of All Dogs by Name'
+            text: 'Total Minutes Awake Versus Total Minutes Resting'
         },
         subtitle: {
             text: document.ontouchstart === undefined ?
@@ -149,7 +149,7 @@ function create_chart_two() {
         xAxis: {
             title: {
                 enabled: true,
-                text: 'Awake /min(s)'
+                text: 'Total Awake Minutes'
             },
             startOnTick: true,
             endOnTick: true,
@@ -157,7 +157,7 @@ function create_chart_two() {
         },
         yAxis: {
             title: {
-                text: 'Rest /min(s)'
+                text: 'Total Rest Minutes'
             }
         },
         legend: {
@@ -225,18 +225,21 @@ function create_chart_three() {
             zoomType: 'x'
         },
         title: {
-            text: 'Dog Activity Percentages'
+            text: 'Dogs By Activity As a Percentage of Total Time'
         },
         subtitle: {
             text: document.ontouchstart === undefined ?
                 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
         },
         xAxis: {
-            type: 'Dog Name'
+            type: 'Dog Name',
+            title: {
+                text: 'Dogs, Sorted From Least to Most Activity'
+            }
         },
         yAxis: {
             title: {
-                text: 'Activity Percentage /%'
+                text: 'Activity Percentage of Total Time'
             }
         },
         legend: {
