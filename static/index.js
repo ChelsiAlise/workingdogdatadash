@@ -32,11 +32,11 @@ $(document).ready(function () {
             filtered_dogs = data;
             string2 = data; // TODO: remove this
             // update the cards
-            update_cards();
+            updateCards();
             // create all graphs that use this data.
-            create_chart_one();
-            create_chart_two();
-            create_chart_three();
+            createChartOne();
+            createChartTwo();
+            createChartThree();
         }
     });
     // load the full data set next
@@ -55,11 +55,10 @@ $(document).ready(function () {
 
 
 
-
 //============= javascript for dashboard graphs ================================
 
 // chart 1 - Rest, Active, and Awake Times for Each Dog
-function create_chart_one() {
+function createChartOne() {
     var processed_json_rest = new Array();
     var processed_json_active = new Array();
     var processed_json_awake = new Array();
@@ -112,14 +111,12 @@ function create_chart_one() {
             name: 'Awake',
         }]
     };
-
     // convert the filtered_data to the appropriate arrays
     for (i = 0; i < filtered_dogs.length; i++) {
         processed_json_rest.push([filtered_dogs[i].name, filtered_dogs[i].rest]);
         processed_json_active.push([filtered_dogs[i].name, filtered_dogs[i].active]);
         processed_json_awake.push([filtered_dogs[i].name, filtered_dogs[i].awake]);
     }
-
     // create the chart
     options.series[0].data = processed_json_rest;
     options.series[1].data = processed_json_active;
@@ -129,9 +126,31 @@ function create_chart_one() {
 
 
 // chart 2 - Awake Versus Rest of All Dogs by Name
-function create_chart_two() {
-    var processed_json = new Array();
-    var processed_json_name = new Array();
+function createChartTwo() {
+    var series_data = new Array();
+    // get max total minutes for scaling points
+    var max_total = 0;
+    for (i = 0; i < filtered_dogs.length; i++) {
+        var t = filtered_dogs[i].total;
+        if (t > max_total) {
+            max_total = t;
+        }
+    }
+    // convert the data to series points
+    for (i = 0; i < filtered_dogs.length; i++) {
+        // scale points non-linearly with total minutes
+        // (total/max_total)^.2 * 6 is a pretty good scale.
+        // this is sub-linear scaling to prevent points from being tiny,
+        // with 6 as the maximum size
+        var scale = filtered_dogs[i].total / max_total;
+        scale = Math.pow(scale, .2) * 6;
+        series_data.push({
+            name: filtered_dogs[i].name,
+            x: filtered_dogs[i].awake,
+            y: filtered_dogs[i].rest,
+            marker: {radius: scale},
+        })
+    }
     // chart options
     var options = {
         chart: {
@@ -140,7 +159,7 @@ function create_chart_two() {
             zoomType: 'xy'
         },
         title: {
-            text: 'Total Minutes Awake Versus Total Minutes Resting'
+            text: 'Total Minutes Awake Versus Total Minutes Resting, Scaled by Total Minutes'
         },
         subtitle: {
             text: document.ontouchstart === undefined ?
@@ -189,33 +208,23 @@ function create_chart_two() {
                     }
                 },
                 tooltip: {
-                    headerFormat: '<b>{series.name}</b><br>',
-                    pointFormat: '{point.x} mins, {point.y} mins'
+                    headerFormat: '',
+                    pointFormat: '<b>{point.name}</b><br>{point.x} active mins, {point.y} rest mins'
                 }
             }
         },
-        series: [{
-            name: "Dog Name (still working on displaying dog names)",
-            color: 'rgba(119, 152, 191, .5)',
+        series:[{
+            name: 'Dogs',
+            data: series_data
         }]
     };
-    // convert the data format
-    for (i = 0; i < filtered_dogs.length; i++) {
-        processed_json.push([filtered_dogs[i].awake, filtered_dogs[i].rest]);
-        processed_json_name.push([filtered_dogs[i].name]);
-        //console.log(data[i].awake);
-    }
     // draw the chart
-    options.series[0].data = processed_json;
     var chart = new Highcharts.Chart(options);
 };
 
 
-
-
-
 // chart 3 Awake Versus Rest of 123 Dogs by Name
-function create_chart_three() {
+function createChartThree() {
     var processed_json = new Array();
     var processed_json_name = new Array();
     // chart options
@@ -290,98 +299,14 @@ function create_chart_three() {
     options.series[0].data = processed_json;
     var chart = new Highcharts.Chart(options);
 };
-
-
-var searched = [];
-var lineChart;
-var mybarChart;
-var mybarChart2;
-
-function search(){
-    var name = document.getElementById("searchbar").value;
-    var e = document.getElementById("result1");
-    //console.log(string1);
-    string1.sort(function(a, b){
-            return b.name < a.name ?  1 // if b should come earlier, push a to end
-        : b.name > a.name ? -1 // if b should come later, push a to begin
-        : 0;
-    });
-    var string2 = string1;
-    //console.log(string1);
-    if(!searched.includes(name)){
-        var x1 = binarySearch(string2, name);
-        console.log(x1);
-        if(x1 != false){
-            var info = "name: " + x1.name + " , id: " + x1.id + " , minutes active: " + x1.active + " , minutes resting: " + x1.rest + " , minutes awake: " + x1.awake + " , tattoo number: " + x1.tattoo_number;
-            e.style.display ='block';
-            var mydiv = document.getElementById("displayString");
-            mydiv.appendChild(document.createTextNode(info));
-            mydiv.innerHTML+= '<br>';
-            searched.push(name);
-        }
-    }
-}
-
-function binarySearch(arr, i){
-    var len1 = arr.length;
-    for (var i1 = 0; i1 < len1; i1++) {
-
-        var name = arr[i1].name.toString();
-        console.log(name);
-        if (name.indexOf(i.toString()) >= 0){
-        return arr[i1];
-        } else {
-        console.log(name.indexOf(i.toString()));
-        }
-    };
-    return false;
-}
-
-function add(){
-    var name1 = document.getElementById("name").value;
-    var job = document.getElementById("job").value;
-    var region = document.getElementById("region").value;
-    var awake1 = Number(document.getElementById("awake").value);
-    var tattoo = Number(document.getElementById("tattoo").value);
-    var rest = Number(document.getElementById("rest").value);
-    var active1 = Number(document.getElementById("active").value);
-    var id1 = Number(document.getElementById("id").value);
-    var total = Number(document.getElementById("total").value);
-    console.log(name1);
-    if(name1 == '' || awake1 < 0 || tattoo < 0 || rest < 0 || active1 < 0 || id1 < 0|| total < 0){
-    alert("Please add at least a name for the dog. All other attributes default to 0 if empty.");
-    } else {
-    var dog = {
-        "active": active1,
-        "awake": awake1,
-        "id": id1,
-        "job": job,
-        "name": name1,
-        "region": region,
-        "rest": rest,
-        "tattoo_number": tattoo,
-        "total": total
-    };
-    string1.push(dog);
-    lineChart.destroy();
-    store(string1);
-    mybarChart.destroy();
-    store1(string1);
-    mybarChart2.destroy();
-    store2(string1);
-
-    }
-}
-
 //============= /javascript for dashboard graphs ===============================
-
 
 
 
 
 //============= javascript for cards at top of dashboard =======================
 
-function update_cards() {
+function updateCards() {
     document.getElementById("most_active_card").innerHTML = mostActiveDog(filtered_dogs);
     document.getElementById("most_active_card_title").innerHTML = "Most Active Dog";
 
@@ -413,16 +338,11 @@ function mostActiveDog(data) {
         return a.val - b.val;
     });
 
-    // console.log(hashMostActiveDog[data.length - 1]);
     highest = hashMostActiveDog[data.length - 1];
     highest_name = hashMostActiveDog[data.length - 1]["name"];
     highest_val = hashMostActiveDog[data.length - 1]["val"];
 
-    // console.log(highest_name);
-    // console.log(highest_val);
-
     return highest_name;
-
 }
 
 // least active dog card
@@ -442,13 +362,9 @@ function leastActiveDog(data) {
         return a.val - b.val;
     });
 
-    // console.log(hashLeastActiveDog[data.length - 1]);
     lowest = hashLeastActiveDog[0];
     lowest_name = hashLeastActiveDog[0]["name"];
     lowest_val = hashLeastActiveDog[0]["val"];
-
-    // console.log(highest_name);
-    // console.log(highest_val);
 
     return lowest_name;
 }
@@ -470,13 +386,9 @@ function mostRestDog(data) {
         return a.val - b.val;
     });
 
-    //console.log(hashMostRestDog[data.length - 1]);
     most_rest = hashMostRestDog[data.length - 1];
     most_rest_name = hashMostRestDog[data.length - 1]["name"];
     most_rest_val = hashMostRestDog[data.length - 1]["val"];
-
-    //console.log(most_rest_name);
-    //console.log(most_rest_val);
 
     return most_rest_name;
 }
@@ -498,13 +410,9 @@ function mostAwakeDog(data) {
         return a.val - b.val;
     });
 
-    //console.log(hashMostAwakeDog[data.length - 1]);
     most_awake = hashMostAwakeDog[data.length - 1];
     most_awake_name = hashMostAwakeDog[data.length - 1]["name"];
     most_awake_val = hashMostAwakeDog[data.length - 1]["val"];
-
-    //console.log(most_awake_name);
-    //console.log(most_awake_val);
 
     return most_awake_name;
 }
@@ -515,31 +423,22 @@ function mostAwakeDog(data) {
 
 
 
-
 //============= javascript for custom graphs ===================================
 // TODO: rename / remove these. EG: What is string{1,2,3} supposed to be?
 var string1 = '';
 var string2 = '';
 var string3 = '';
-var searched = [];
-var lineChart;
-var isValidBar = false;
-var mybarChart;
-var mybarChart2;
+var chartOptionsAreValid = false;
 var id;
 var barchoices3 = [];
 var barchoices1 = [{"value": "Raw Data", "text": "Raw Data"}, {"value": "Comparisons", "text": "Comparisons"}];
 var barchoices2 = [{"value": "Active", "text": "Active"}, {"value": "Awake", "text": "Awake"}, {"value": "Rest", "text": "Rest"}, {"value": "Total", "text": "Total"}];
 var barchoices4 = [{"value": "Raw Data", "text": "Raw Data"}];
 
-function fieldcheck(){
-    console.log("TEST");
-    console.log(filtered_blob.dogs[0].name);
-    console.log(barchoices3);
+function fieldcheck() {
     var temp = $("#mySelect option:selected").text();
-    isValidbar = false;
-    console.log(isValidBar);
-    if(temp != "Select One") {
+    chartOptionsAreValid = false;
+    if (temp != "Select One") {
         $('#mySelect2').show();
         if(temp == "Bar"){
             barOptions('#mySelect2', barchoices1);
@@ -556,25 +455,25 @@ function fieldcheck(){
             }
             barOptions('#mySelect2', barchoices3);
         }
-    }  else {
-        isValidBar = false;
+    } else {
+        chartOptionsAreValid = false;
         $('#mySelect2').hide();
         $('#mySelect3').hide();
         $('#mySelect4').hide();
     }
 }
 
-function fieldcheck2(){
+function fieldcheck2() {
     var temp = $("#mySelect2 option:selected").text();
     var temp2 = $("#mySelect option:selected").text();
-    if(temp != "Select One") {
+    if (temp != "Select One") {
         $('#mySelect3').show();
         if(temp == "Raw Data"){
             if (temp2 == "Bar") {
-                isValidBar = false;
+                chartOptionsAreValid = false;
                     barOptions('#mySelect3', barchoices2);
                     $('#mySelect4').hide();
-                    //isValidBar = true;
+                    //chartOptionsAreValid = true;
             } else if (temp2 == "Pie") {
                 var j = 0;
                 string1 = string3;
@@ -583,14 +482,14 @@ function fieldcheck2(){
                     barchoices3[j] = helper;
                     j++;
                 }
-                isValidBar = false;
+                chartOptionsAreValid = false;
                     barOptions('#mySelect3', barchoices3);
                     $('#mySelect4').hide();
             }
 
             } else if(temp == "Comparisons"){
                 if (temp2 == "Bar") {
-                    isValidBar = false;
+                    chartOptionsAreValid = false;
                     $('#mySelect4').show();
                     barOptions('#mySelect3', barchoices2);
                     barOptions('#mySelect4', barchoices2);
@@ -602,54 +501,53 @@ function fieldcheck2(){
                         barchoices3[j] = helper;
                         j++;
                     }
-                    isValidBar = false;
+                    chartOptionsAreValid = false;
                     $('#mySelect4').show();
                     barOptions('#mySelect3', barchoices3);
                     barOptions('#mySelect4', barchoices3);
                 }
-        } else if(temp2 == "Line") {
-                isValidBar = true;
-                    barOptions('#mySelect3', barchoices2);
-                    $('#mySelect4').hide();
-        }  else {
+        } else if (temp2 == "Line") {
+            chartOptionsAreValid = true;
+            barOptions('#mySelect3', barchoices2);
+            $('#mySelect4').hide();
+        } else {
             $('#mySelect3').hide();
             $('#mySelect4').hide();
-            isValidBar = false;
+            chartOptionsAreValid = false;
         }
     }
 }
 
-function fieldcheck3(){
+function fieldcheck3() {
     var select1 = $("#mySelect2 option:selected").text();
     var temp = $("#mySelect3 option:selected").text();
-    if(temp != "Select One") {
+    if (temp != "Select One") {
         if(select1 == "Raw Data"){
-            isValidBar = true;
+            chartOptionsAreValid = true;
         } else {
             idValiBar = false;
         }
     }  else {
-        isValidBar = false;
+        chartOptionsAreValid = false;
     }
 }
 
-function fieldcheck4(){
+function fieldcheck4() {
     var select1 = $("#mySelect2 option:selected").text();
     var temp = $("#mySelect4 option:selected").text();
     var temp1 = $("#mySelect3 option:selected").text();
-    if(temp != "Select One" && temp != temp1 && temp1 != "Select One") {
-        if(select1 == "Comparisons"){
-            isValidBar = true;
+    if (temp != "Select One" && temp != temp1 && temp1 != "Select One") {
+        if (select1 == "Comparisons") {
+            chartOptionsAreValid = true;
         } else {
             idValiBar = false;
         }
     }  else {
-        isValidBar = false;
+        chartOptionsAreValid = false;
     }
-
 }
 
-function barOptions(item, options){
+function barOptions(item, options) {
     $(item).empty();
     $(item).append($('<option>', {
             value: "Select" ,
@@ -663,15 +561,10 @@ function barOptions(item, options){
     }
 }
 
-function generateGraph(){
-    //mybarChart.destroy();
-    if (isValidBar) {
-            console.log("generate graph here");
+function generateGraph() {
+    if (chartOptionsAreValid) {
             name1 = $("#mySelect1 option:selected").text();
-            //alert("test");
             var temp1 = $("#mySelect option:selected").text();
-            console.log(temp1);
-        //alert("test");
         if (temp1 == "Bar") {
             var select1 = $("#mySelect2 option:selected").text();
             if (select1 == "Raw Data"){
@@ -700,24 +593,29 @@ function generateGraph(){
 }
 
 
-var custom_graph_id = 0;
-
 // this inserts a new row with a graph container and returns the element
 // custom graphs should be placed in these
+var custom_graph_id = 0;
 function insertNewGraphRow() {
     custom_graph_id += 1;
     var id = "custom-graph-"+custom_graph_id.toString();
     var graphs = document.getElementById("custom-graphs");
-    var newElement = '<div class="row"><button class="delete-button" onclick="delete_graph(this)" align="right">x</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto; padding: 1em;"></div></div>';
+    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">x</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto; padding: 1em;"></div></div>';
     graphs.insertAdjacentHTML('afterbegin', newElement);
     return id;
 }
 
-function delete_graph(e) {
+function renderNewCustomGraph(options) { 
+    var id = insertNewGraphRow();
+    options.chart.renderTo = id;
+    var chart = new Highcharts.Chart(options);
+}
+
+function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
 }
 
-function reset(){
+function reset() {
     //document.getElementById('popup1').style.display='none';
     //document.getElementById('graphButton').style.display='block';
     $('#mySelect2').hide();
@@ -731,14 +629,13 @@ function reset(){
     fieldcheck();
 }
 
-function makeBar(data,type){
+function makeBar(data, type) {
     var arr = new Array();
     var arr1 = new Array();
     string1 = data;
     var j = 0;
     for (var i =0; i < string1.length; i++) {
         arr[j] = string1[i].name;
-        console.log(string1[i].name);
         var ratio = getBarInfo(string1[i], type);
         arr1[j] = ratio;
         j++;
@@ -783,12 +680,10 @@ function makeBar(data,type){
 
         }]
     };
-    var id = insertNewGraphRow();
-    options.chart.renderTo = id;
-    var chart = new Highcharts.Chart(options);
+    renderNewCustomGraph(options);
 }
 
-function makeBar2(data,typeA, typeB){
+function makeBar2(data, typeA, typeB) {
     var arr = new Array();
     var arr1 = new Array();
     var arr2 = new Array();
@@ -796,7 +691,6 @@ function makeBar2(data,typeA, typeB){
     var j = 0;
     for (var i =0; i < string1.length; i++) {
         arr[j] = string1[i].name;
-        console.log(string1[i].name);
         var ratio = getBarInfo(string1[i], typeA);
         var ratio2 = getBarInfo(string1[i], typeB);
         arr1[j] = ratio;
@@ -840,27 +734,22 @@ function makeBar2(data,typeA, typeB){
             series: [{
             name: typeA,
             data: arr1
-
         }, {
             name: typeB,
             data: arr2
 
         }]
     };
-    var id = insertNewGraphRow();
-    options.chart.renderTo = id;
-    var chart = new Highcharts.Chart(options);
+    renderNewCustomGraph(options);
 }
 
-function makePie(data, dog){
+function makePie(data, dog) {
     var arr = new Array();
     var arr1 = new Array();
     string1 = data;
     var j = 0;
     for (var i =0; i < string1.length; i++) {
         if (string1[i].name == dog) {
-
-            console.log(string1[i].name);
             var data1 = getBarInfo(string1[i], "Rest");
             var data2 = getBarInfo(string1[i], "Active");
             var data3 = getBarInfo(string1[i], "Awake");
@@ -911,12 +800,10 @@ function makePie(data, dog){
             }]
         }]
     };
-    var id = insertNewGraphRow();
-    options.chart.renderTo = id;
-    var chart = new Highcharts.Chart(options);
+    renderNewCustomGraph(options);
 }
 
-function makeLine(data, dog, type){
+function makeLine(data, dog, type) {
     console.log(type);
     var arr = new Array();
     var arr1 = new Array();
@@ -925,10 +812,9 @@ function makeLine(data, dog, type){
     string1 = data;
     for (var k =0; k < Object.keys(string3.dogs).length; k++) {
         if (string3.dogs[k].name == dog) {
-        id = string3.dogs[k].id;
+            id = string3.dogs[k].id;
         }
     }
-
     var j = 0;
     for (var i =0; i < Object.keys(string3.days).length; i++) {
         var dateSplit = string3.days[i].date.split("-");
@@ -943,13 +829,11 @@ function makeLine(data, dog, type){
                     dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].active];
                 } else {
                     dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].awake];
-
                 }
                 j++;
             }
         }
     }
-
     var options = {
         chart: {
             zoomType: 'x'
@@ -998,16 +882,13 @@ function makeLine(data, dog, type){
                 threshold: null
             }
         },
-
         series: [{
             type: 'area',
             name: 'Minutes spent ' + type,
             data: dates
         }]
     };
-    var id = insertNewGraphRow();
-    options.chart.renderTo = id;
-    var chart = new Highcharts.Chart(options);
+    renderNewCustomGraph(options);
 }
 
 function makePie2(data, dog1, dog2){
@@ -1043,21 +924,18 @@ function makePie2(data, dog1, dog2){
             }]
         }
     };
-    var id = insertNewGraphRow();
-    options.chart.renderTo = id;
-    var chart = new Highcharts.Chart(options);
+    renderNewCustomGraph(options);
 }
 
-function getBarInfo(dog,type){
-    if(type == 'Rest'){
-    return dog.rest;
-    } else if(type == 'Active'){
-    return dog.active;
-    } else if(type == 'Awake'){
-    return dog.awake;
-    } else if(type == 'Total'){
-    return dog.total;
+function getBarInfo(dog, type){
+    if (type == 'Rest') {
+        return dog.rest;
+    } else if (type == 'Active') {
+        return dog.active;
+    } else if (type == 'Awake') {
+        return dog.awake;
+    } else if (type == 'Total') {
+        return dog.total;
     }
 }
-
 //============= /javascript for custom graphs ==================================
