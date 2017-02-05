@@ -5,6 +5,7 @@
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
   padding-top: 50px;
+  font-size: 18px;
 }
 
 
@@ -278,3 +279,7 @@ ul.nav > li > .selected {
 p.card-text {
   font-size: 24px;
 }
+
+p {
+}
+
