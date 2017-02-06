@@ -201,7 +201,7 @@ function createChartOne() {
             align: 'right',
             verticalAlign: 'top',
             x: -5,
-            y: 70,
+            y: 60,
             floating: true,
             backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
             borderWidth: 1
@@ -275,7 +275,7 @@ function createChartTwo() {
             align: 'right',
             verticalAlign: 'top',
             x: -5,
-            y: 70,
+            y: 60,
             floating: true,
             backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
             borderWidth: 1
@@ -351,7 +351,7 @@ function createChartThree() {
             align: 'right',
             verticalAlign: 'top',
             x: -5,
-            y: 70,
+            y: 60,
             floating: true,
             backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
             borderWidth: 1
@@ -425,7 +425,14 @@ function createChartFour() {
             }
         },
         legend: {
-            enabled: false
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 60,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
         },
         tooltip: {
             useHTML: true,
@@ -448,7 +455,7 @@ function createChartFour() {
         },
         series: [{
             type: 'scatter',
-            name: 'Activity Percentage',
+            name: 'Dog Active Percentage',
             data: series_data,
         }]
     };
@@ -492,7 +499,14 @@ function createChartFive() {
             }
         },
         legend: {
-            enabled: false
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 60,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
         },
         tooltip: {
             useHTML: true,
@@ -514,7 +528,7 @@ function createChartFive() {
         },
         series: [{
             type: 'scatter',
-            name: 'Awake Percentage',
+            name: 'Dog Awake Percentage',
             data: series_data,
         }]
     };
@@ -559,7 +573,14 @@ function createChartSix() {
             }
         },
         legend: {
-            enabled: false
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 60,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
         },
         tooltip: {
             useHTML: true,
@@ -581,7 +602,7 @@ function createChartSix() {
         },
         series: [{
             type: 'scatter',
-            name: 'Rest Percentage',
+            name: 'Dog Rest Percentage',
             data: series_data,
         }]
     };
@@ -639,6 +660,16 @@ function createChartSeven() {
                 pointPadding: 0.2,
                 borderWidth: 0
             }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 60,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
         },
         series: [{
             name: 'Rest',
