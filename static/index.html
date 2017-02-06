@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,7 +19,7 @@
   <link href="/static/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
   <!-- Custom styles for this template -->
-  <link href="/static/dashboard.css" rel="stylesheet">
+  <link href="/static/index.css" rel="stylesheet">
 
   <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
   <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -33,15 +32,11 @@
     <![endif]-->
 
   <!-- Highcharts -->
-  <!--<script src="https://code.highcharts.com/highcharts.js"></script>
-  <script src="https://code.highcharts.com/highcharts-more.js"></script>
-  <script src="https://code.highcharts.com/modules/exporting.js"></script>-->
   <script src="/static/highcharts/highcharts.js"></script>
   <script src="/static/highcharts/highcharts-more.js"></script>
   <script src="/static/highcharts/modules/exporting.js"></script>
-
-
 </head>
+
 
 <body>
 
@@ -55,47 +50,29 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-        <a class="navbar-brand" href="#">P.A.W.S.</a>
+        <p style="color: white; font-size: 24px; font-weight:bold; margin: 0px; margin-top:.6em; letter-spacing:.1em; padding:none; line-height: 24px;">P.A.W.S.</a>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="#">Dashboard</a></li>
-          <li><a href="customChart.html">Custom Graphs</a></li>
-          <li><a href="#">Profile</a></li>
-          <li><a href="#">Help</a></li>
+          <li><a id="dashboard-content-nav" class="selected" href="#" onclick="display('dashboard-content'); return false;">Dashboard</a></li>
+          <li><a id="custom-chart-content-nav" href="#" onclick="display('custom-chart-content'); return false;">Custom Graphs</a></li>
+          <li><a id="settings-content-nav" href="#" onclick="display('settings-content'); return false;">Settings</a></li>
+          <li><a id="help-content-nav" href="#" onclick="display('help-content'); return false;">Help</a></li>
         </ul>
-        <form class="navbar-form navbar-right">
+        <!--<form class="navbar-form navbar-right">
           <input type="text" class="form-control" id="searchbar" placeholder=" Search Dog Name">
           <button class="btn btn-round" type="button" onclick="search()">Search</button>
-        </form>
+        </form>-->
       </div>
     </div>
   </nav>
 
   <div class="container-fluid">
     <div class="row">
-      <!--<div class="col-sm-3 col-md-2 sidebar">
-        <ul class="nav nav-sidebar">
-          <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-          <li><a href="customChart.html">Custom Graphs</a></li>
-          <li><a href="#">Analytics</a></li>
-          <li><a href="#">Export</a></li>
-        </ul>
-        <ul class="nav nav-sidebar">
-          <li><a href="">Nav item</a></li>
-          <li><a href="">Nav item again</a></li>
-          <li><a href="">One more nav</a></li>
-          <li><a href="">Another nav item</a></li>
-          <li><a href="">More navigation</a></li>
-        </ul>
-        <ul class="nav nav-sidebar">
-          <li><a href="">Nav item again</a></li>
-          <li><a href="">One more nav</a></li>
-          <li><a href="">Another nav item</a></li>
-        </ul>
-      </div>-->
 
-      <div class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left: 20%;">
+
+      <!-- The actual dashboard content is in this div -->
+      <div id ="dashboard-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%;">
 
         <h1 class="page-header">Dashboard</h1>
 
@@ -103,8 +80,8 @@
           <div class="col-xs-6 col-sm-3">
             <div class="card">
               <div class="card-block">
-                <h3 class="card-title" id="most_active_card_title">Special title treatment</h3>
-                <p class="card-text" id="most_active_card">With supporting text below as a natural lead-in to additional content.</p>
+                <h3 class="card-title" id="most_active_card_title">Loading...</h3>
+                <p class="card-text" id="most_active_card">Loading...</p>
                 <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
               </div>
             </div>
@@ -112,8 +89,8 @@
           <div class="col-xs-6 col-sm-3">
             <div class="card">
               <div class="card-block">
-                <h3 class="card-title" id="least_active_card_title">Special title treatment</h3>
-                <p class="card-text" id="least_active_card">With supporting text below as a natural lead-in to additional content.</p>
+                <h3 class="card-title" id="least_active_card_title">Loading...</h3>
+                <p class="card-text" id="least_active_card">Loading...</p>
                 <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
               </div>
             </div>
@@ -121,8 +98,8 @@
           <div class="col-xs-6 col-sm-3">
             <div class="card">
               <div class="card-block">
-                <h3 class="card-title" id="most_rest_card_title">Special title treatment</h3>
-                <p class="card-text" id="most_rest_card">With supporting text below as a natural lead-in to additional content.</p>
+                <h3 class="card-title" id="most_rest_card_title">Loading...</h3>
+                <p class="card-text" id="most_rest_card">Loading...</p>
                 <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
               </div>
             </div>
@@ -130,33 +107,17 @@
           <div class="col-xs-6 col-sm-3">
             <div class="card">
               <div class="card-block">
-                <h3 class="card-title" id="most_awake_card_title">Special title treatment</h3>
-                <p class="card-text" id="most_awake_card">With supporting text below as a natural lead-in to additional content.</p>
+                <h3 class="card-title" id="most_awake_card_title">Loading...</h3>
+                <p class="card-text" id="most_awake_card">Loading...</p>
                 <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
               </div>
             </div>
           </div>
         </div>
 
-        ` <br><br>
+        <br><br>
 
         <h2 class="sub-header">Graphical Visualizations</h2>
-
-
-        <!--<div class="clearfix"></div>
-        <div class="row">
-          <div id="result1" style="display:none" class="col-sm-12">
-
-            <div class="x_title">
-              <h4>Results From Searchs <small>Lists of Recent Searches for Dogs in The Database</small></h4>
-              <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-              <p id="displayString"></p>
-            </div>
-
-          </div>
-        </div>-->
 
         <br><br>
 
@@ -165,7 +126,7 @@
         <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
-              <div id="chart1" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+              <div id="chart1" style="min-width: 310px; height: 40em; margin: 0 auto"></div>
             </div>
           </div>
         </div>
@@ -174,12 +135,8 @@
 
         <div class="row">
           <div class="container-fluid">
-            <div class="col-md-6 col-sm-6 col-xs-6">
-              <div id="chart2" style="min-width: 310px; height: 400px; max-width: 800px; margin: 0 auto"></div>
-            </div>
-
-            <div class="col-md-6 col-sm-6 col-xs-6">
-              <div id="chart5" style="min-width: 310px; height: 400px; max-width: 800px; margin: 0 auto"></div>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div id="chart2" style="min-width: 310px; height: 40em; margin: 0 auto"></div>
             </div>
           </div>
         </div>
@@ -188,18 +145,40 @@
 
         <div class="row">
           <div class="container-fluid">
-
-            <div class="col-md-6 col-sm-6 col-xs-6">
-              <div id="chart3" style="height: 400px; margin: auto; min-width: 310px; max-width: 600px"></div>
-              <p>This graph is not using CCI's dog data but is however using a tutorial example from HighCharts to show the
-                functionlity of boxplots and that we would have abililty to create them with the dog data.</p>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div id="chart3" style="min-width: 310px; height: 40em; margin: 0 auto"></div>
             </div>
+          </div>
+        </div>
 
-            <div class="col-md-6 col-sm-6 col-xs-6">
-              <div id="chart4" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-              <p>This graph is not using CCI's dog data but is however using a tutorial example from HighCharts to show the
-                functionlity of being able to have combination data graphs. Since we do not yet have time data we held off
-                on implementing this graph with CCI's data because for time efficieny purposes.</p>
+        <div class="row">
+          <div class="container-fluid">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div id="chart4" style="min-width: 310px; height: 40em; margin: 0 auto"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="container-fluid">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div id="chart5" style="min-width: 310px; height: 40em; margin: 0 auto"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="container-fluid">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div id="chart6" style="min-width: 310px; height: 40em; margin: 0 auto"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="container-fluid">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div id="chart7" style="min-width: 310px; height: 40em; margin: 0 auto"></div>
             </div>
           </div>
         </div>
@@ -207,63 +186,116 @@
 
         <!-- /Highcharts -->
 
-        <div class="row">
-          <!--row-->
-          <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="x_panel">
+      </div><!--/dashboard-content-->
 
-              <h4 align="center">Dog Activity Percentages</h4>
-              <div class="clearfix"></div>
 
-              <div class="x_content">
-                <canvas id="lineChart"></canvas>
-                <p>Currently using percentages to showcase which dogs have been the most active regardless of the total amount
-                  of time. Some dogs have much high total time being recorded and strictly using raw minutes active will
-                  not indicate which dogs have been active most because newer dogs will have lower time active because they
-                  haven't had a large amount of total time.</p>
+
+      <!-- the custom chart content is in this div -->
+        <div id="custom-chart-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%; display: none;">
+          <h1 class="page-header">Custom Graphs</h1>
+          <div class="row"></div>
+          <div id="popup1">
+            <div class="popup">
+              <h2>Select Graph Options:</h2>
+              <div class="content" style="font-size:1.5em">
+                <div>
+                  <select id="mySelect" onchange="fieldcheck()" style="">
+                              <option value = "Select" selected>Select One</option>
+                              <option value = "Bar">Bar</option>
+                              <option value = "Pie">Pie</option>
+                              <option value = "Line">Line</option>
+                          </select>
+
+                  <select id="mySelect2" onchange="fieldcheck2()" style="display:none">
+                              <option value = "Apple">Apple</option>
+                              <option value = " Orange">Orange</option>
+                              <option value = "Pineapple">Pineapple</option>
+                              <option value ="Banana">Banana</option>
+                          </select>
+
+                  <select id="mySelect3" onchange="fieldcheck3()" style="display:none">
+                              <option value = "Apple">Apple</option>
+                              <option value = " Orange">Orange</option>
+                              <option value = "Pineapple">Pineapple</option>
+                              <option value ="Banana">Banana</option>
+                          </select>
+
+                  <select id="mySelect4" onchange="fieldcheck4()" style="display:none">
+                              <option value = "Apple">Apple</option>
+                              <option value = " Orange">Orange</option>
+                              <option value = "Pineapple">Pineapple</option>
+                              <option value ="Banana">Banana</option>
+                          </select>
+
+
+                  <button onclick="generateGraph()" style="color:white;">Create</button>
+                </div>
               </div>
+            </div>
+          </div>
+          <div id="custom-graphs">
+          </div>
+          
+      </div><!--/custom-chart-content-->
+
+
+
+      <!-- The settings content is in this div -->
+      <div id ="settings-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%; display: none;">
+        <div class="row">
+          <div class="container-fluid">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <h2 style="text-align: center">Under Construction.</h2>
             </div>
           </div>
         </div>
-        <!--/row-->
+      </div> <!--/profile-content-->
 
-        <div class="clearfix"></div>
 
+
+      <!-- The help content is in this div -->
+      <div id ="help-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%; display: none;">
+        <h1 class="page-header">Help</h1>
         <div class="row">
-          <!--row-->
-          <div class="col-md-6 col-sm-6 col-xs-12">
-            <div class="x_panel">
-
-              <h4 align="center">Top 5 Resting Dogs</h4>
-              <div class="clearfix"></div>
-
-              <div class="x_content">
-                <canvas id="mybarChart"></canvas>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-sm-6 col-xs-12">
-            <div class="x_panel">
-
-              <h4 align="center">Rest VS Active</h4>
-              <div class="clearfix"></div>
-
-              <div class="x_content">
-                <canvas id="mybarChart1"></canvas>
-              </div>
+          <div class="container-fluid">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <h2>Saving and Printing Graphs</h2>
+              <p>To print or export a graph to an image click the chart menu button: <img src="/static/assets/chart_menu.png" height="25px" style="margin-top:-2px"></img>,&nbsp;&nbsp;which should be to the top-right of each chart.</p>
             </div>
           </div>
         </div>
-        <!--/row-->
+        <hr>
+        <div class="row">
+          <div class="container-fluid">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <h2>More Help</h2>
+              <p>More help content is coming soon!</p>
+            </div>
+          </div>
+        </div>
+      </div> <!--/help-content-->
 
-      </div>
-    </div>
+
+    </div><!--/row-->
   </div>
 
+  <!-- Small script to make the single-page-app links function correctly -->
+  <script>
+    var current_display = 'dashboard-content';
+    function display(id) {
+      var old_elem = document.getElementById(current_display);
+      var new_elem = document.getElementById(id);
+      var old_nav_elem = document.getElementById(current_display+'-nav');
+      var new_nav_elem = document.getElementById(id+'-nav');
+      current_display = id;
+      old_elem.style.display = 'none';
+      new_elem.style.display = 'initial';
+      old_nav_elem.className = '';
+      new_nav_elem.className = 'selected';
+    }
+  </script>
 
-  <!-- Bootstrap core JavaScript
-    ================================================== -->
+  <!-- Bootstrap core JavaScript -->
   <!-- Placed at the end of the document so the pages load faster -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="/static/assets/js/vendor/jquery.min.js"><\/script>')</script>
@@ -272,232 +304,9 @@
   <script src="/static/assets/js/vendor/holder.min.js"></script>
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
   <script src="/static/assets/js/ie10-viewport-bug-workaround.js"></script>
-  <script type="text/javascript" src="/static/dashboard.js"></script>
+  <script type="text/javascript" src="/static/index.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
-  <script src="/static/Chart.js"></script>
-
-  <!-- Chart.js graphs and search and add dog -->
-  <script>
-      
-      var searched = [];
-      var lineChart;
-      var mybarChart;
-      var mybarChart2;
-      $.ajax({
-                type: "GET",
-                url: "/api/cached/data/filtered/dogs",
-                async: true,
-                datatype: 'json',
-                success : function(data) {
-                    store(data);
-                    store1(data);
-                    store2(data);
-                    //console.log(string1);
-                }
-            });
-
-
-           function store(data){
-                var string1 = '';
-                var arr = new Array(); 
-                var arr1 = new Array(); 
-                string1 = data;
-                /*string1.sort = function(a, b) {
-                    return (a.active/a.total) - (b.active/b.total);
-                };*/
-
-                for (var i =0; i < string1.length; i++) {
-                   arr[i] = string1[i].name;
-                   var ratio = string1[i].active / string1[i].total ;
-                   arr1[i] = ratio * 100;
-               };
-
-                var ctx = document.getElementById("lineChart");
-                lineChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                      labels: arr,
-                      datasets: [{
-                        label: "Percent of Total Time Active",
-                        backgroundColor: "blue",
-                        borderColor: "yellow",
-                        pointBorderColor: "blue",
-                        pointBackgroundColor: "yellow",
-                        pointHoverBackgroundColor: "#fff",
-                        pointHoverBorderColor: "rgba(220,220,220,1)",
-                        pointBorderWidth: 1,
-                        data: arr1
-                      },]
-                    }
-                  });
-           }
-
-           function store1(data){
-                var string1 = '';
-                var arr = new Array(); 
-                var arr1 = new Array(); 
-                string1 = data;
-                /*string1.sort = function(a, b){
-                    return (a.rest/a.total) - (b.rest/b.total);
-                };*/
-                var j = 0;
-                for (var i =string1.length - 5; i < string1.length; i++) {
-                   arr[j] = string1[i].name;
-                   var ratio = string1[i].rest / string1[i].total ;
-                   arr1[j] = ratio * 100;
-                   j++;
-               };
-
-                var ctx = document.getElementById("mybarChart");
-                mybarChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                      labels: arr,
-                      datasets: [{
-                        label: 'Top Five Dogs With Highest % of Time Resting',
-                        backgroundColor: "blue",
-                        data: arr1
-                      }]
-                    },
-
-                    options: {
-                      scales: {
-                        yAxes: [{
-                          ticks: {
-                            beginAtZero: true
-                          }
-                        }]
-                      }
-                    }
-                });
-           }
-
-           function store2(data){
-                var string1 = '';
-                var arr = new Array(); 
-                var arr1 = new Array(); 
-                var arr2 = new Array();
-                string1 = data;
-                /*string1.sort = function(a, b){
-                    return (a.active/a.total) - (b.active/b.total);
-                };*/
-                var j = 0;
-                for (var i =string1.length - 10; i < string1.length; i++) {
-                   arr[j] = string1[i].name;
-                   var ratio = string1[i].active / string1[i].total ;
-                   var ratio1 = string1[i].rest / string1[i].total ;
-                   arr1[j] = ratio * 100;
-                   arr2[j] = ratio1 * 100
-                   j++;
-               };
-
-                var ctx = document.getElementById("mybarChart1");
-                mybarChart2 = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                      labels: arr,
-                      datasets: [{
-                        label: 'Active Percent',
-                        backgroundColor: "blue",
-                        data: arr1
-                      },{
-                        label:'Rest Percent',
-                        backgroundColor: "yellow",
-                        data:arr2
-                        }]
-                    },
-
-                    options: {
-                      scales: {
-                        yAxes: [{
-                          ticks: {
-                            beginAtZero: true
-                          }
-                        }]
-                      }
-                    }
-                });
-            }
-
-            function search(){
-              var name = document.getElementById("searchbar").value;
-              var e = document.getElementById("result1");
-              //console.log(string1);
-              string1.sort(function(a, b){
-                    return b.name < a.name ?  1 // if b should come earlier, push a to end
-                          : b.name > a.name ? -1 // if b should come later, push a to begin
-                          : 0;
-                });
-              var string2 = string1;
-              //console.log(string1);
-              if(!searched.includes(name)){
-                var x1 = binarySearch(string2, name);
-                console.log(x1);
-                if(x1 != false){
-                  var info = "name: " + x1.name + " , id: " + x1.id + " , minutes active: " + x1.active + " , minutes resting: " + x1.rest + " , minutes awake: " + x1.awake + " , tattoo number: " + x1.tattoo_number;
-                  e.style.display ='block';
-                  var mydiv = document.getElementById("displayString");
-                  mydiv.appendChild(document.createTextNode(info));
-                  mydiv.innerHTML+= '<br>';
-                  searched.push(name);
-                }
-              }
-              
-
-            }
-
-            function binarySearch(arr, i){
-              var len1 = arr.length;
-              for (var i1 = 0; i1 < len1; i1++) {
-                  
-                  var name = arr[i1].name.toString();
-                  console.log(name);
-                  if (name.indexOf(i.toString()) >= 0){
-                    return arr[i1];
-                  } else {
-                    console.log(name.indexOf(i.toString()));
-                  }
-              };
-              return false;
-            }
-
-            function add(){
-              var name1 = document.getElementById("name").value;
-              var job = document.getElementById("job").value;
-              var region = document.getElementById("region").value;
-              var awake1 = Number(document.getElementById("awake").value);
-              var tattoo = Number(document.getElementById("tattoo").value);
-              var rest = Number(document.getElementById("rest").value);
-              var active1 = Number(document.getElementById("active").value);
-              var id1 = Number(document.getElementById("id").value);
-              var total = Number(document.getElementById("total").value);
-              console.log(name1);
-              if(name1 == '' || awake1 < 0 || tattoo < 0 || rest < 0 || active1 < 0 || id1 < 0|| total < 0){
-                alert("Please add at least a name for the dog. All other attributes default to 0 if empty.");
-              } else {
-                var dog = {
-                  "active": active1,
-                  "awake": awake1,
-                  "id": id1,
-                  "job": job,
-                  "name": name1,
-                  "region": region,
-                  "rest": rest,
-                  "tattoo_number": tattoo,
-                  "total": total
-                };
-                string1.push(dog);
-                lineChart.destroy();
-                store(string1);
-                mybarChart.destroy();
-                store1(string1);
-                mybarChart2.destroy();
-                store2(string1);
-                
-              }
-            }      
-  </script>
 
 </body>
 
