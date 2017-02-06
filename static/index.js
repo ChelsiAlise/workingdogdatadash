@@ -216,7 +216,7 @@ function createChartOne() {
             headerFormat: '',
             pointFormat: dogPointFormat+
                 '{point.x:.3f} % Awake, {point.y:.3f} % Rest<br>'+
-                'Total Minutes: {point.total}',
+                'Total Minutes: {point.total:.0f}',
         },
         plotOptions: {
             scatter: {
@@ -290,7 +290,7 @@ function createChartTwo() {
             headerFormat: '',
             pointFormat: dogPointFormat+
                 '{point.x:.3f} % Rest, {point.y:.3f} % Active<br>'+
-                'Total Minutes: {point.total}', 
+                'Total Minutes: {point.total:.0f}', 
         },
         plotOptions: {
             scatter: {
@@ -366,7 +366,7 @@ function createChartThree() {
             headerFormat: '',
             pointFormat: dogPointFormat+
                 '{point.x:.3f} % Awake, {point.y:.3f} % Active<br>'+
-                'Total Minutes: {point.total}',
+                'Total Minutes: {point.total:.0f}',
         },
         plotOptions: {
             scatter: {
@@ -443,7 +443,7 @@ function createChartFour() {
             useHTML: true,
             headerFormat: '',
             pointFormat: dogPointFormat+
-            '{point.y:.3f} % Active<br>Total Minutes: {point.total}',
+            '{point.y:.3f} % Active<br>Total Minutes: {point.total:.0f}',
         },
         plotOptions: {
             scatter: {
@@ -516,7 +516,7 @@ function createChartFive() {
         tooltip: {
             useHTML: true,
             headerFormat: '',
-            pointFormat: dogPointFormat + '{point.y:.3f} % Awake<br>Total Minutes: {point.total}',
+            pointFormat: dogPointFormat + '{point.y:.3f} % Awake<br>Total Minutes: {point.total:.0f}',
         },
         plotOptions: {
             scatter: {
@@ -590,7 +590,7 @@ function createChartSix() {
         tooltip: {
             useHTML: true,
             headerFormat: '',
-            pointFormat: dogPointFormat + '{point.y:.3f} % Rest<br>Total Minutes: {point.total}',
+            pointFormat: dogPointFormat + '{point.y:.3f} % Rest<br>Total Minutes: {point.total:.0f}',
         },
         plotOptions: {
             scatter: {
@@ -655,7 +655,7 @@ function createChartSeven() {
         tooltip: {
             headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
             pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.1f} mins</b></td></tr>',
+            '<td style="padding:0"><b>{point.y:.0f} mins</b></td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
