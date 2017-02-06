@@ -5,6 +5,7 @@
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
   padding-top: 50px;
+  font-size: 18px;
 }
 
 
@@ -193,7 +194,8 @@ body {
 
 .row {
   margin-right: -10px;
-  margin-left: -10px; 
+  margin-left: -10px;
+  clear: both;
 }
 
 .clearfix:after, form:after {
@@ -215,8 +217,8 @@ body {
   padding: 20px;
   background: lightyellow;
   border-radius: 5px;
-  height: 400px;
-  width: 80%;
+  height: 200px;
+  width: 100%;
   position: relative;
   transition: all 5s ease-in-out;
 }
@@ -257,4 +259,23 @@ body {
 .overlay:target {
   visibility: visible;
   opacity: 1;
+}
+
+/* nav button hover */
+ul.nav > li > a:hover, .selected {
+    background-color: white !important;
+    color: #016197 !important;
+}
+
+ul.nav > li > .selected {
+    background-color: #014971 !important;
+    color: white !important;
+}
+
+.delete-button {
+  float:right;
+}
+
+p.card-text {
+  font-size: 24px;
 }
