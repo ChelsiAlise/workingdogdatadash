@@ -13,11 +13,31 @@ var filtered_blob;
 
 // page setup, and data loading
 $(document).ready(function () {
-    // animation interacts poorly with inserting graphs
+    // set default plot options
     Highcharts.setOptions({
         plotOptions: {
+             // animation interacts poorly with inserting graphs
             series: {
                 animation: false
+            },
+        },
+        title: {
+            style: {
+                fontSize: '18px',
+            }
+        },
+        xAxis: {
+            title: {
+                style: {
+                    fontSize: '16px',
+                }
+            }
+        },
+        yAxis: {
+            title: {
+                style: {
+                    fontSize: '16px',
+                }
             }
         }
     });
@@ -39,6 +59,8 @@ $(document).ready(function () {
             createChartThree();
             createChartFour();
             createChartFive();
+            createChartSix();
+            createChartSeven();
         }
     });
     // load the full data set next
@@ -55,79 +77,123 @@ $(document).ready(function () {
     });
 });
 
+// utility methods for interacting with the dog data
 
+// get max total minutes for scaling points
+function getMaxTotal(dogs) {
+    var max_total = 0;
+    for (i = 0; i < dogs.length; i++) {
+        var t = dogs[i].total;
+        if (t > max_total) {
+            max_total = t;
+        }
+    }
+    return max_total;
+}
 
 //============= javascript for dashboard graphs ================================
+var pointScalingPower = .2; // x^(1/5)
 
-// chart 1 - Rest, Active, and Awake Times for Each Dog
+// chart 1 - Rest Versus Active of All Dogs by Name
 function createChartOne() {
-    var processed_json_rest = new Array();
-    var processed_json_active = new Array();
-    var processed_json_awake = new Array();
+    var series_data = new Array();
+    // get max total minutes for scaling points
+    var max_total = 0;
+    for (i = 0; i < filtered_dogs.length; i++) {
+        var t = filtered_dogs[i].total;
+        if (t > max_total) {
+            max_total = t;
+        }
+    }
+    // convert the data to series points
+    for (i = 0; i < filtered_dogs.length; i++) {
+        // scale points non-linearly with total minutes
+        // (total/max_total)^.2 * 6 is a pretty good scale.
+        // this is sub-linear scaling to prevent points from being tiny,
+        // with 6 as the maximum size
+        var total = filtered_dogs[i].total;
+        var scale = Math.pow(total / max_total, .2) * 6;
+        series_data.push({
+            name: filtered_dogs[i].name,
+            x: filtered_dogs[i].rest / total * 100,
+            y: filtered_dogs[i].active / total * 100,
+            marker: {radius: scale},
+            total: total,
+        })
+    }
     // chart options
     var options = {
         chart: {
             renderTo: 'chart1',
-            type: 'column',
-            zoomType: 'x'
+            type: 'scatter',
+            zoomType: 'xy'
         },
         title: {
-            text: 'Rest, Active, and Awake Times for Each Dog'
+            text: 'Percentage of Time Resting Versus Percentage of Time Active, Scaled by Total Minutes'
         },
         subtitle: {
             text: document.ontouchstart === undefined ?
                 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
         },
         xAxis: {
-            type: 'category',
             title: {
-                text: "Dog Name"
+                enabled: true,
+                text: 'Rest Time / Total Time (per dog)'
             },
-            crosshair: true
+            startOnTick: true,
+            endOnTick: true,
+            showLastLabel: true,
         },
         yAxis: {
-            min: 0,
             title: {
-                text: 'Total Minutes'
+                text: 'Active Time / Total Time (per dog)'
             }
         },
-        tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.1f} mins</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 70,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
         },
         plotOptions: {
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0
+            scatter: {
+                marker: {
+                    radius: 5,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '',
+                    pointFormat: '<b>{point.name}</b> (Total Minutes: {point.total})<br>{point.x:.3f} % rest, {point.y:.3f} % active'
+                }
             }
         },
-        series: [{
-            name: 'Rest',
-        }, {
-            name: 'Active',
-        }, {
-            name: 'Awake',
+        series:[{
+            name: 'Dogs',
+            data: series_data
         }]
     };
-    // convert the filtered_data to the appropriate arrays
-    for (i = 0; i < filtered_dogs.length; i++) {
-        processed_json_rest.push([filtered_dogs[i].name, filtered_dogs[i].rest]);
-        processed_json_active.push([filtered_dogs[i].name, filtered_dogs[i].active]);
-        processed_json_awake.push([filtered_dogs[i].name, filtered_dogs[i].awake]);
-    }
-    // create the chart
-    options.series[0].data = processed_json_rest;
-    options.series[1].data = processed_json_active;
-    options.series[2].data = processed_json_awake;
+    // draw the chart
     var chart = new Highcharts.Chart(options);
 };
 
 
-// chart 2 - Awake Versus Rest of All Dogs by Name
+// chart 2 - Awake Versus Active of All Dogs by Name
 function createChartTwo() {
     var series_data = new Array();
     // get max total minutes for scaling points
@@ -148,8 +214,8 @@ function createChartTwo() {
         var scale = Math.pow(total / max_total, .2) * 6;
         series_data.push({
             name: filtered_dogs[i].name,
-            x: filtered_dogs[i].awake / total,
-            y: filtered_dogs[i].rest / total,
+            x: filtered_dogs[i].awake / total * 100,
+            y: filtered_dogs[i].active / total * 100,
             marker: {radius: scale},
             total: total,
         })
@@ -158,6 +224,99 @@ function createChartTwo() {
     var options = {
         chart: {
             renderTo: 'chart2',
+            type: 'scatter',
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'Percentage of Time Awake Versus Percentage of Time Active, Points Scaled by Total Minutes'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        xAxis: {
+            title: {
+                enabled: true,
+                text: 'Awake Time / Total Time (per dog)'
+            },
+            startOnTick: true,
+            endOnTick: true,
+            showLastLabel: true
+        },
+        yAxis: {
+            title: {
+                text: 'Active Time / Total Time (per dog)'
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 70,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
+        },
+        plotOptions: {
+            scatter: {
+                marker: {
+                    radius: 5,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '',
+                    pointFormat: '<b>{point.name}</b> (Total Minutes: {point.total})<br>{point.x:.3f} % awake, {point.y:.3f} % active'
+                }
+            }
+        },
+        series:[{
+            name: 'Dogs',
+            data: series_data
+        }]
+    };
+    // draw the chart
+    var chart = new Highcharts.Chart(options);
+};
+
+
+// chart 3 - Awake Versus Rest of All Dogs by Name
+function createChartThree() {
+    var series_data = new Array();
+    // get max total minutes for scaling points
+    var max_total = getMaxTotal(filtered_dogs);
+    // convert the data to series points
+    for (i = 0; i < filtered_dogs.length; i++) {
+        // scale points non-linearly with total minutes
+        // (total/max_total)^.2 * 6 is a pretty good scale.
+        // this is sub-linear scaling to prevent points from being tiny,
+        // with 6 as the maximum size
+        var total = filtered_dogs[i].total;
+        var scale = Math.pow(total / max_total, pointScalingPower) * 6;
+        series_data.push({
+            name: filtered_dogs[i].name,
+            x: filtered_dogs[i].awake / total * 100,
+            y: filtered_dogs[i].rest / total * 100,
+            marker: {radius: scale},
+            total: total,
+        })
+    }
+    // chart options
+    var options = {
+        chart: {
+            renderTo: 'chart3',
             type: 'scatter',
             zoomType: 'xy'
         },
@@ -212,7 +371,7 @@ function createChartTwo() {
                 },
                 tooltip: {
                     headerFormat: '',
-                    pointFormat: '<b>{point.name}</b> (Total Minutes: {point.total})<br>{point.x} % active, {point.y} % rest'
+                    pointFormat: '<b>{point.name}</b> (Total Minutes: {point.total})<br>{point.x:.3f} % active, {point.y:.3f} % rest'
                 }
             }
         },
@@ -226,217 +385,34 @@ function createChartTwo() {
 };
 
 
-// chart 3 - Rest Versus Active of All Dogs by Name
-function createChartThree() {
-    var series_data = new Array();
-    // get max total minutes for scaling points
-    var max_total = 0;
-    for (i = 0; i < filtered_dogs.length; i++) {
-        var t = filtered_dogs[i].total;
-        if (t > max_total) {
-            max_total = t;
-        }
-    }
-    // convert the data to series points
-    for (i = 0; i < filtered_dogs.length; i++) {
-        // scale points non-linearly with total minutes
-        // (total/max_total)^.2 * 6 is a pretty good scale.
-        // this is sub-linear scaling to prevent points from being tiny,
-        // with 6 as the maximum size
-        var total = filtered_dogs[i].total;
-        var scale = Math.pow(total / max_total, .2) * 6;
-        series_data.push({
-            name: filtered_dogs[i].name,
-            x: filtered_dogs[i].rest / total,
-            y: filtered_dogs[i].active / total,
-            marker: {radius: scale},
-            total: total,
-        })
-    }
-    // chart options
-    var options = {
-        chart: {
-            renderTo: 'chart3',
-            type: 'scatter',
-            zoomType: 'xy'
-        },
-        title: {
-            text: 'Percentage of Time Resting Versus Percentage of Time Active, Scaled by Total Minutes'
-        },
-        subtitle: {
-            text: document.ontouchstart === undefined ?
-                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
-        },
-        xAxis: {
-            title: {
-                enabled: true,
-                text: 'Rest Time / Total Time (per dog)'
-            },
-            startOnTick: true,
-            endOnTick: true,
-            showLastLabel: true
-        },
-        yAxis: {
-            title: {
-                text: 'Active Time / Total Time (per dog)'
-            }
-        },
-        legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'top',
-            x: -5,
-            y: 70,
-            floating: true,
-            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
-            borderWidth: 1
-        },
-        plotOptions: {
-            scatter: {
-                marker: {
-                    radius: 5,
-                    states: {
-                        hover: {
-                            enabled: true,
-                            lineColor: 'rgb(100,100,100)'
-                        }
-                    }
-                },
-                states: {
-                    hover: {
-                        marker: {
-                            enabled: false
-                        }
-                    }
-                },
-                tooltip: {
-                    headerFormat: '',
-                    pointFormat: '<b>{point.name}</b> (Total Minutes: {point.total})<br>{point.x} % rest, {point.y} % active'
-                }
-            }
-        },
-        series:[{
-            name: 'Dogs',
-            data: series_data
-        }]
-    };
-    // draw the chart
-    var chart = new Highcharts.Chart(options);
-};
-
-
-// chart 4 - Rest Versus Active of All Dogs by Name
+// chart 4 Activity Percentage of All Dogs
 function createChartFour() {
     var series_data = new Array();
+    // sort and convert data
+    filtered_dogs.sort(function (a, b) {
+        return (a.active / a.total) - (b.active / b.total);
+    });
     // get max total minutes for scaling points
-    var max_total = 0;
+    var max_total = getMaxTotal(filtered_dogs);
     for (i = 0; i < filtered_dogs.length; i++) {
-        var t = filtered_dogs[i].total;
-        if (t > max_total) {
-            max_total = t;
-        }
-    }
-    // convert the data to series points
-    for (i = 0; i < filtered_dogs.length; i++) {
-        // scale points non-linearly with total minutes
-        // (total/max_total)^.2 * 6 is a pretty good scale.
-        // this is sub-linear scaling to prevent points from being tiny,
-        // with 6 as the maximum size
+        var per = filtered_dogs[i].active / filtered_dogs[i].total * 100;
         var total = filtered_dogs[i].total;
-        var scale = Math.pow(total / max_total, .2) * 6;
+        var scale = Math.pow(total / max_total, pointScalingPower) * 4;
         series_data.push({
             name: filtered_dogs[i].name,
-            x: filtered_dogs[i].awake / total,
-            y: filtered_dogs[i].active / total,
-            marker: {radius: scale},
             total: total,
-        })
-    }
+            y: per,
+            marker: {radius: scale}
+        });
+    };
     // chart options
     var options = {
         chart: {
             renderTo: 'chart4',
-            type: 'scatter',
-            zoomType: 'xy'
-        },
-        title: {
-            text: 'Percentage of Time Awake Versus Percentage of Time Active, Scaled by Total Minutes'
-        },
-        subtitle: {
-            text: document.ontouchstart === undefined ?
-                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
-        },
-        xAxis: {
-            title: {
-                enabled: true,
-                text: 'Awake Time / Total Time (per dog)'
-            },
-            startOnTick: true,
-            endOnTick: true,
-            showLastLabel: true
-        },
-        yAxis: {
-            title: {
-                text: 'Active Time / Total Time (per dog)'
-            }
-        },
-        legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'top',
-            x: -5,
-            y: 70,
-            floating: true,
-            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
-            borderWidth: 1
-        },
-        plotOptions: {
-            scatter: {
-                marker: {
-                    radius: 5,
-                    states: {
-                        hover: {
-                            enabled: true,
-                            lineColor: 'rgb(100,100,100)'
-                        }
-                    }
-                },
-                states: {
-                    hover: {
-                        marker: {
-                            enabled: false
-                        }
-                    }
-                },
-                tooltip: {
-                    headerFormat: '',
-                    pointFormat: '<b>{point.name}</b> (Total Minutes: {point.total})<br>{point.x} % awake, {point.y} % active'
-                }
-            }
-        },
-        series:[{
-            name: 'Dogs',
-            data: series_data
-        }]
-    };
-    // draw the chart
-    var chart = new Highcharts.Chart(options);
-};
-
-
-
-// chart 5 Activity Percentage of All Dogs
-function createChartFive() {
-    var processed_json = new Array();
-    var processed_json_name = new Array();
-    // chart options
-    var options = {
-        chart: {
-            renderTo: 'chart5',
             zoomType: 'x'
         },
         title: {
-            text: 'Dogs By Activity As a Percentage of Total Time'
+            text: 'Dogs By Activity As a Percentage of Total Time, Points Scaled by Total Minutes'
         },
         subtitle: {
             text: document.ontouchstart === undefined ?
@@ -457,50 +433,275 @@ function createChartFive() {
             enabled: false
         },
         plotOptions: {
-            area: {
-                fillColor: {
-                    linearGradient: {
-                        x1: 0,
-                        y1: 0,
-                        x2: 0,
-                        y2: 1
-                    },
-                    stops: [
-                        [0, Highcharts.getOptions().colors[0]],
-                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                    ]
-                },
+            scatter: {
                 marker: {
-                    radius: 2
-                },
-                lineWidth: 1,
-                states: {
-                    hover: {
-                        lineWidth: 1
+                    radius: 3,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
                     }
                 },
-                threshold: null
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '',
+                    pointFormat: '<b>{point.name}</b> (Total Minutes: {point.total})<br>{point.y:.3f} % activity'
+                }
             }
         },
 
         series: [{
-            type: 'area',
+            type: 'scatter',
             name: 'Activity Percentage',
+            data: series_data,
         }]
     };
-    // sort and convert data
-    filtered_dogs.sort(function (a, b) {
-        return (a.active / a.total) - (b.active / b.total);
-    });
-    for (i = 0; i < filtered_dogs.length; i++) {
-        var ratio = filtered_dogs[i].active / filtered_dogs[i].total;
-        var per = ratio * 100;
-        processed_json.push([filtered_dogs[i].name, per]);
-    };
-    // create chart
-    options.series[0].data = processed_json;
     var chart = new Highcharts.Chart(options);
 };
+
+// chart 5 Awake Percentage of All Dogs
+function createChartFive() {
+    var series_data = new Array();
+    // sort and convert data
+    filtered_dogs.sort(function (a, b) {
+        return (a.awake / a.total) - (b.awake / b.total);
+    });
+    // get max total minutes for scaling points
+    var max_total = getMaxTotal(filtered_dogs);
+    for (i = 0; i < filtered_dogs.length; i++) {
+        var per = filtered_dogs[i].awake / filtered_dogs[i].total * 100;
+        var total = filtered_dogs[i].total;
+        var scale = Math.pow(total / max_total, pointScalingPower) * 4;
+        series_data.push({
+            name: filtered_dogs[i].name,
+            total: total,
+            y: per,
+            marker: {radius: scale}
+        });
+    };
+    // chart options
+    var options = {
+        chart: {
+            renderTo: 'chart5',
+            zoomType: 'x'
+        },
+        title: {
+            text: 'Dogs By Awake Time As a Percentage of Total Time, Points Scaled by Total Minutes'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        xAxis: {
+            type: 'Dog Name',
+            title: {
+                text: 'Dogs, Sorted From Least to Most Awake Time'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Awake Percentage of Total Time'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            scatter: {
+                marker: {
+                    radius: 3,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '',
+                    pointFormat: '<b>{point.name}</b> (Total Minutes: {point.total})<br>{point.y:.3f} % awake'
+                }
+            }
+        },
+        series: [{
+            type: 'scatter',
+            name: 'Awake Percentage',
+            data: series_data,
+        }]
+    };
+    var chart = new Highcharts.Chart(options);
+};
+
+
+// chart 6 Rest Percentage of All Dogs
+function createChartSix() {
+    var series_data = new Array();
+    // sort and convert data
+    filtered_dogs.sort(function (a, b) {
+        return (a.rest / a.total) - (b.rest / b.total);
+    });
+    // get max total minutes for scaling points
+    var max_total = getMaxTotal(filtered_dogs);
+    for (i = 0; i < filtered_dogs.length; i++) {
+        var per = filtered_dogs[i].rest / filtered_dogs[i].total * 100;
+        var total = filtered_dogs[i].total;
+        var scale = Math.pow(total / max_total, pointScalingPower) * 4;
+        series_data.push({
+            name: filtered_dogs[i].name,
+            total: total,
+            y: per,
+            marker: {radius: scale}
+        });
+    };
+    // chart options
+    var options = {
+        chart: {
+            renderTo: 'chart6',
+            zoomType: 'x'
+        },
+        title: {
+            text: 'Dogs By Rest Time As a Percentage of Total Time, Points Scaled by Total Minutes'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        xAxis: {
+            type: 'Dog Name',
+            title: {
+                text: 'Dogs, Sorted From Least to Most Rest Time'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Rest Percentage of Total Time'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            scatter: {
+                marker: {
+                    radius: 3,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '',
+                    pointFormat: '<b>{point.name}</b> (Total Minutes: {point.total})<br>{point.y:.3f} % rest'
+                }
+            }
+        },
+        series: [{
+            type: 'scatter',
+            name: 'Rest Percentage',
+            data: series_data,
+        }]
+    };
+    var chart = new Highcharts.Chart(options);
+};
+
+
+// chart 7 - Rest, Active, and Awake Times for Each Dog
+function createChartSeven() {
+    var processed_json_rest = new Array();
+    var processed_json_active = new Array();
+    var processed_json_awake = new Array();
+    // sort dogs by name
+    filtered_dogs.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+    });
+    // chart options
+    var options = {
+        chart: {
+            renderTo: 'chart7',
+            type: 'column',
+            zoomType: 'x'
+        },
+        title: {
+            text: 'Rest, Active, and Awake Times for Each Dog'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        xAxis: {
+            type: 'category',
+            title: {
+                text: "Dogs by Name (Alphabetized)"
+            },
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Total Minutes'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.1f} mins</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Rest',
+        }, {
+            name: 'Active',
+        }, {
+            name: 'Awake',
+        }]
+    };
+    // convert the filtered_data to the appropriate arrays
+    for (i = 0; i < filtered_dogs.length; i++) {
+        processed_json_rest.push([filtered_dogs[i].name, filtered_dogs[i].rest]);
+        processed_json_active.push([filtered_dogs[i].name, filtered_dogs[i].active]);
+        processed_json_awake.push([filtered_dogs[i].name, filtered_dogs[i].awake]);
+    }
+    // create the chart
+    options.series[0].data = processed_json_rest;
+    options.series[1].data = processed_json_active;
+    options.series[2].data = processed_json_awake;
+    var chart = new Highcharts.Chart(options);
+};
+
+
+
+
 //============= /javascript for dashboard graphs ===============================
 
 
@@ -525,97 +726,68 @@ function updateCards() {
 // most active dog card
 // TODO: this does not handle duplicate values
 function mostActiveDog(data) {
-
-    var highest = new Array();
-    var highest_name = new Array();
-    var highest_val = new Array();
-
     var hashMostActiveDog = new Array();
     for (i = 0; i < data.length; i++) {
         hashMostActiveDog.push({ name: data[i].name, val: data[i].active });
     }
-
     //sort from lowest to highest
     hashMostActiveDog.sort(function (a, b) {
         return a.val - b.val;
     });
-
-    highest = hashMostActiveDog[data.length - 1];
-    highest_name = hashMostActiveDog[data.length - 1]["name"];
-    highest_val = hashMostActiveDog[data.length - 1]["val"];
-
+    var highest = hashMostActiveDog[data.length - 1];
+    var highest_name = hashMostActiveDog[data.length - 1]["name"];
+    var highest_val = hashMostActiveDog[data.length - 1]["val"];
     return highest_name;
 }
 
 // least active dog card
 // TODO: this does not handle duplicate values
 function leastActiveDog(data) {
-    var lowest = new Array();
-    var lowest_name = new Array();
-    var lowest_val = new Array();
-
     var hashLeastActiveDog = new Array();
     for (i = 0; i < data.length; i++) {
         hashLeastActiveDog.push({ name: data[i].name, val: data[i].active });
     }
-
     // sort from lowest to highest
     hashLeastActiveDog.sort(function (a, b) {
         return a.val - b.val;
     });
-
-    lowest = hashLeastActiveDog[0];
-    lowest_name = hashLeastActiveDog[0]["name"];
-    lowest_val = hashLeastActiveDog[0]["val"];
-
+    var lowest = hashLeastActiveDog[0];
+    var lowest_name = hashLeastActiveDog[0]["name"];
+    var lowest_val = hashLeastActiveDog[0]["val"];
     return lowest_name;
 }
 
 // dog with the most rest time card
 // TODO: this does not handle duplicate values
 function mostRestDog(data) {
-    var most_rest = new Array();
-    var most_rest_name = new Array();
-    var most_rest_val = new Array();
-
     var hashMostRestDog = new Array();
     for (i = 0; i < data.length; i++) {
         hashMostRestDog.push({ name: data[i].name, val: data[i].rest });
     }
-
     //sort from lowest to highest
     hashMostRestDog.sort(function (a, b) {
         return a.val - b.val;
     });
-
-    most_rest = hashMostRestDog[data.length - 1];
-    most_rest_name = hashMostRestDog[data.length - 1]["name"];
-    most_rest_val = hashMostRestDog[data.length - 1]["val"];
-
+    var most_rest = hashMostRestDog[data.length - 1];
+    var most_rest_name = hashMostRestDog[data.length - 1]["name"];
+    var most_rest_val = hashMostRestDog[data.length - 1]["val"];
     return most_rest_name;
 }
 
 // dog with most awake time card
 // TODO: this does not handle duplicate values
 function mostAwakeDog(data) {
-    var most_awake = new Array();
-    var most_awake_name = new Array();
-    var most_awake_val = new Array();
-
     var hashMostAwakeDog = new Array();
     for (i = 0; i < data.length; i++) {
         hashMostAwakeDog.push({ name: data[i].name, val: data[i].awake });
     }
-
     // sort from lowest to highest
     hashMostAwakeDog.sort(function (a, b) {
         return a.val - b.val;
     });
-
-    most_awake = hashMostAwakeDog[data.length - 1];
-    most_awake_name = hashMostAwakeDog[data.length - 1]["name"];
-    most_awake_val = hashMostAwakeDog[data.length - 1]["val"];
-
+    var most_awake = hashMostAwakeDog[data.length - 1];
+    var most_awake_name = hashMostAwakeDog[data.length - 1]["name"];
+    var most_awake_val = hashMostAwakeDog[data.length - 1]["val"];
     return most_awake_name;
 }
 
@@ -1061,12 +1233,7 @@ function makeLine(data, dog, type) {
         plotOptions: {
             area: {
                 fillColor: {
-                    linearGradient: {
-                        x1: 0,
-                        y1: 0,
-                        x2: 0,
-                        y2: 1
-                    },
+                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
                     stops: [
                         [0, Highcharts.getOptions().colors[0]],
                         [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
