@@ -82,6 +82,8 @@ function loadDataAndInitialize() {
             // store the data
             filtered_blob = data;
             string3 = data; // TOOD: remove this
+            // normalize data
+            normalizeDogData(filtered_blob.dogs);
         }
     });
 }
@@ -152,6 +154,9 @@ function makeDogPoints(dogs, setPointKeysFunc) {
 }
 
 //============= javascript for dashboard graphs ================================
+
+// shared format for the beginning of formatting points with the dog's name
+// and outcome data.
 var dogPointFormat = '<b>{point.name}</b><br><br>'+
     '<table><tr><td>Status:&nbsp;&nbsp;</td><td>{point.dog_status}</td></tr>'+
     '<tr><td>Center:&nbsp;&nbsp;</td><td>{point.regional_center}</td></tr>'+
@@ -785,7 +790,6 @@ function mostAwakeDog(data) {
 
 
 
-
 //============= javascript for custom graphs ===================================
 // TODO: rewrite custom graphs entirely:
 //    Users should be able to select multiple data ranges and then create
@@ -971,28 +975,16 @@ function insertNewGraphRow() {
     return id;
 }
 
+// inserts a new custom graph dom object and renders the Highcharts options to it
 function renderNewCustomGraph(options) { 
     var id = insertNewGraphRow();
     options.chart.renderTo = id;
     var chart = new Highcharts.Chart(options);
 }
 
+// deletes e's parent from its parent
 function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
-}
-
-function reset() {
-    //document.getElementById('popup1').style.display='none';
-    //document.getElementById('graphButton').style.display='block';
-    $('#mySelect2').hide();
-    $('#mySelect').val('Select');
-    $('#mySelect2').val('Select');
-    $('#mySelect3').val('Select');
-    $('#mySelect4').val('Select');
-    $('#mySelect3').hide();
-    $('#mySelect4').hide();
-    isValdBar = false;
-    fieldcheck();
 }
 
 function makeBar(data, type) {
