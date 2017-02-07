@@ -364,38 +364,15 @@ def parse_dog_data(data_dir=None, use_individual=True,
     return data
 
 def main():
-    """example script, loads the dog data, computes some stats and prints them
+    """example script, loads the dog data, checks for outcomes
     """
-    # data print utility
-    def _iterate_and_print(iterable, tabs=0):
-        if tabs:
-            tabs_str = "".join(['\t']*tabs)
-            for val in iterable:
-                print(tabs_str.join(str(valval) for valval in val))
-        else:
-            for val in iterable:
-                print(val)
-    # print utility, prints an 80 character long equals-sign bar
-    def _print_bar():
-        print("".join(['=']*80))
-    # default to /this/script/dir/../../CCI Puppy Data/Dailies/
-    self_path = path.dirname(path.realpath(__file__))
-    data_dir = path.join(self_path, "..", "..", "CCI Puppy Data", "Dailies")
-    # otherwise the last argument should be the data dir
-    if len(sys.argv) > 1:
-        data_dir = sys.argv[-1]
-    # load the data from the files
-    dog_data = parse_dog_data(data_dir)
-    # sort dogs by activity percentage
-    by_activity = sorted(
-        (float(v.active_total)/v.total, float(v.awake_total)/v.total,
-         v.total, v.name, v.dog_id)
-        for v in dog_data.values()
-    )
-    # print sorted by activity, most first
-    print("active%\tawake%\ttotal\tname\tdog_id")
-    _print_bar()
-    _iterate_and_print(by_activity[::-1], 1)
+    data = parse_dog_data()
+    print("These dogs have no outcome data:\n")
+    for dog in data:
+        dog_data = data[dog]
+        if dog_data.dog_status == "":
+            print(dog_data.name)
+
 
 if __name__ == "__main__":
     main()
