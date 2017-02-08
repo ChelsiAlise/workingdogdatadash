@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -45,12 +46,12 @@
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
           aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
           </button>
-        <p style="color: white; font-size: 24px; font-weight:bold; margin: 0px; margin-top:.6em; letter-spacing:.1em; padding:none; line-height: 24px;">P.A.W.S.</a>
+          <p style="color: white; font-size: 24px; font-weight:bold; margin: .6em 0 0 .5em;  letter-spacing: .1em; padding:none; line-height: 1em;">P.A.W.S.</a>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
@@ -67,12 +68,12 @@
     </div>
   </nav>
 
-  <div class="container-fluid">
+  <div class="container-fluid page-content">
     <div class="row">
 
 
       <!-- The actual dashboard content is in this div -->
-      <div id ="dashboard-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%;">
+      <div id="dashboard-content" class="page-content col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main">
 
         <h1 class="page-header">Dashboard</h1>
 
@@ -115,7 +116,7 @@
           </div>
         </div>
 
-        <br><br>
+        <br>
 
         <h2 class="sub-header">Graphical Visualizations</h2>
 
@@ -151,6 +152,8 @@
           </div>
         </div>
 
+        <br><br>
+
         <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -158,6 +161,8 @@
             </div>
           </div>
         </div>
+
+        <br><br>
 
         <div class="row">
           <div class="container-fluid">
@@ -167,6 +172,8 @@
           </div>
         </div>
 
+        <br><br>
+
         <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -174,6 +181,8 @@
             </div>
           </div>
         </div>
+
+        <br><br>
 
         <div class="row">
           <div class="container-fluid">
@@ -186,18 +195,19 @@
 
         <!-- /Highcharts -->
 
-      </div><!--/dashboard-content-->
+      </div>
+      <!--/dashboard-content-->
 
 
 
       <!-- the custom chart content is in this div -->
-        <div id="custom-chart-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:10%; padding-right:10%; width: 100%; display: none;">
-          <h1 class="page-header">Custom Graphs</h1>
-          <div class="row"></div>
+      <div id="custom-chart-content" class="page-content col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style="display: none;">
+        <h1 class="page-header">Custom Graphs</h1>
+          <div class="row">
           <div id="popup1">
             <div class="popup">
               <h2>Select Graph Options:</h2>
-              <div class="content" style="font-size:1.5em">
+              <div class="content custom-graph-form" style="font-size:1.5em">
                 <div>
                   <select id="mySelect" onchange="fieldcheck()" style="">
                               <option value = "Select" selected>Select One</option>
@@ -233,15 +243,15 @@
               </div>
             </div>
           </div>
-          <div id="custom-graphs">
+          <div id="custom-graphs"></div>
           </div>
-          
-      </div><!--/custom-chart-content-->
+      </div>
+      <!--/custom-chart-content-->
 
 
 
       <!-- The settings content is in this div -->
-      <div id ="settings-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%; display: none;">
+      <div id="settings-content" class="page-content col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style="display: none">
         <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -249,18 +259,21 @@
             </div>
           </div>
         </div>
-      </div> <!--/profile-content-->
+      </div>
+      <!--/profile-content-->
 
 
 
       <!-- The help content is in this div -->
-      <div id ="help-content" class="col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style ="padding-left:5%; width:95%; display: none;">
+      <div id="help-content" class="page-content col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style="display: none;">
         <h1 class="page-header">Help</h1>
         <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
-              <h2>Saving and Printing Graphs</h2>
-              <p>To print or export a graph to an image click the chart menu button: <img src="/static/assets/chart_menu.png" height="25px" style="margin-top:-2px"></img>,&nbsp;&nbsp;which should be to the top-right of each chart.</p>
+              <h2>Saving or Printing Graphs And Charts</h2>
+              <p>To export a graph or a chart, click the chart menu button:
+                <img src="/static/assets/chart_menu.png"
+                  height="25px" style="margin-top:-2px"></img>,&nbsp;&nbsp;which should be to the top-right of each graph and chart.</p>
             </div>
           </div>
         </div>
@@ -273,10 +286,12 @@
             </div>
           </div>
         </div>
-      </div> <!--/help-content-->
+      </div>
+      <!--/help-content-->
 
 
-    </div><!--/row-->
+    </div>
+    <!--/row-->
   </div>
 
   <!-- Small script to make the single-page-app links function correctly -->
@@ -289,16 +304,23 @@
       var new_nav_elem = document.getElementById(id+'-nav');
       current_display = id;
       old_elem.style.display = 'none';
-      new_elem.style.display = 'initial';
+      new_elem.style.display = 'inline';
       old_nav_elem.className = '';
       new_nav_elem.className = 'selected';
+      // trigger resize event to cause charts to adjust
+      var event = document.createEvent("HTMLEvents");
+      event.initEvent("resize", false, true);
+      window.dispatchEvent(event);
     }
   </script>
 
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script>
+    window.jQuery || document.write('<script src="/static/assets/js/vendor/jquery.min.js"><\/script>')
+  </script>
   <!-- Bootstrap core JavaScript -->
   <!-- Placed at the end of the document so the pages load faster -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="/static/assets/js/vendor/jquery.min.js"><\/script>')</script>
   <script src="/static/dist/js/bootstrap.min.js"></script>
   <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
   <script src="/static/assets/js/vendor/holder.min.js"></script>
