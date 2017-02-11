@@ -178,7 +178,16 @@ function createChartOne() {
         chart: {
             renderTo: 'chart1',
             type: 'scatter',
-            zoomType: 'xy'
+            zoomType: 'xy',
+            resetZoomButton: {
+                position: {
+                    align: 'right', // by default
+                    verticalAlign: 'top', // by default
+                    x: -18,
+                    y: 35
+                },
+                relativeTo: 'chart'
+            }
         },
         title: {
             text: 'Percentage of Time Awake Versus Percentage of Time Resting, Scaled by Total Minutes'
@@ -252,7 +261,16 @@ function createChartTwo() {
         chart: {
             renderTo: 'chart2',
             type: 'scatter',
-            zoomType: 'xy'
+            zoomType: 'xy',
+            resetZoomButton: {
+                position: {
+                    align: 'right', // by default
+                    verticalAlign: 'top', // by default
+                    x: -18,
+                    y: 35
+                },
+                relativeTo: 'chart'
+            }
         },
         title: {
             text: 'Percentage of Time Resting Versus Percentage of Time Active, Scaled by Total Minutes'
@@ -328,7 +346,16 @@ function createChartThree() {
         chart: {
             renderTo: 'chart3',
             type: 'scatter',
-            zoomType: 'xy'
+            zoomType: 'xy',
+            resetZoomButton: {
+                position: {
+                    align: 'right', // by default
+                    verticalAlign: 'top', // by default
+                    x: -18,
+                    y: 35
+                },
+                relativeTo: 'chart'
+            }
         },
         title: {
             text: 'Percentage of Time Awake Versus Percentage of Time Active, Points Scaled by Total Minutes'
@@ -409,7 +436,16 @@ function createChartFour() {
     var options = {
         chart: {
             renderTo: 'chart4',
-            zoomType: 'x'
+            zoomType: 'x',
+            resetZoomButton: {
+                position: {
+                    align: 'right', // by default
+                    verticalAlign: 'top', // by default
+                    x: -18,
+                    y: 35
+                },
+                relativeTo: 'chart'
+            }
         },
         title: {
             text: 'Dogs By Active Time As a Percentage of Total Time, Points Scaled by Total Minutes'
@@ -483,7 +519,16 @@ function createChartFive() {
     var options = {
         chart: {
             renderTo: 'chart5',
-            zoomType: 'x'
+            zoomType: 'x',
+            resetZoomButton: {
+                position: {
+                    align: 'right', // by default
+                    verticalAlign: 'top', // by default
+                    x: -18,
+                    y: 35
+                },
+                relativeTo: 'chart'
+            }
         },
         title: {
             text: 'Dogs By Awake Time As a Percentage of Total Time, Points Scaled by Total Minutes'
@@ -557,7 +602,16 @@ function createChartSix() {
     var options = {
         chart: {
             renderTo: 'chart6',
-            zoomType: 'x'
+            zoomType: 'x',
+            resetZoomButton: {
+                position: {
+                    align: 'right', // by default
+                    verticalAlign: 'top', // by default
+                    x: -18,
+                    y: 35
+                },
+                relativeTo: 'chart'
+            }
         },
         title: {
             text: 'Dogs By Rest Time As a Percentage of Total Time, Points Scaled by Total Minutes'
@@ -630,7 +684,16 @@ function createChartSeven() {
         chart: {
             renderTo: 'chart7',
             type: 'column',
-            zoomType: 'x'
+            zoomType: 'x',
+            resetZoomButton: {
+                position: {
+                    align: 'right', // by default
+                    verticalAlign: 'top', // by default
+                    x: -18,
+                    y: 35
+                },
+                relativeTo: 'chart'
+            }
         },
         title: {
             text: 'Rest, Active, and Awake Times for Each Dog'
