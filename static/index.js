@@ -26,6 +26,17 @@ function loadDataAndInitialize() {
                 animation: false
             },
         },
+        chart:{
+            resetZoomButton: {
+                position: {
+                    align: 'right', // by default
+                    verticalAlign: 'top', // by default
+                    x: -18,
+                    y: 35
+                },
+                relativeTo: 'chart'
+            }
+        },
         title: {
             style: {
                 fontSize: '18px',
@@ -179,6 +190,7 @@ function createChartOne() {
             renderTo: 'chart1',
             type: 'scatter',
             zoomType: 'xy'
+            
         },
         title: {
             text: 'Percentage of Time Awake Versus Percentage of Time Resting, Scaled by Total Minutes'
