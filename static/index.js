@@ -7,6 +7,7 @@ This script is our application, the organization is as follows:
 - And finally the code for the custom graphs
 */
 
+
 // we will store the data pulled from the server in these
 var filtered_dogs;
 var filtered_dogs_max_total;
@@ -16,6 +17,8 @@ var filtered_blob;
 $(document).ready(function () {
     loadDataAndInitialize();
 });
+
+$.getScript("/static/dist/js/jstat.min.js");
 
 function loadDataAndInitialize() {
     // set default plot options
@@ -190,7 +193,7 @@ function createChartOne() {
             renderTo: 'chart1',
             type: 'scatter',
             zoomType: 'xy'
-            
+
         },
         title: {
             text: 'Percentage of Time Awake Versus Percentage of Time Resting, Scaled by Total Minutes'
@@ -302,7 +305,7 @@ function createChartTwo() {
             headerFormat: '',
             pointFormat: dogPointFormat+
                 '{point.x:.3f} % Rest, {point.y:.3f} % Active<br>'+
-                'Total Minutes: {point.total:.0f}', 
+                'Total Minutes: {point.total:.0f}',
         },
         plotOptions: {
             scatter: {
@@ -487,7 +490,7 @@ function createChartFive() {
         point.y = point.awake / point.total * 100,
         point.marker = {radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 4};
     });
-    // sort 
+    // sort
     series_data.sort(function (a, b) {
         return (a.awake / a.total) - (b.awake / b.total);
     });
@@ -944,6 +947,8 @@ function barOptions(item, options) {
 }
 
 function generateGraph() {
+    document.getElementById("stats").style.display = "none"; //hide previous table
+    $("#stats tbody tr").remove(); //clear stats table
     if (chartOptionsAreValid) {
             name1 = $("#mySelect1 option:selected").text();
             var temp1 = $("#mySelect option:selected").text();
@@ -988,7 +993,7 @@ function insertNewGraphRow() {
 }
 
 // inserts a new custom graph dom object and renders the Highcharts options to it
-function renderNewCustomGraph(options) { 
+function renderNewCustomGraph(options) {
     var id = insertNewGraphRow();
     options.chart.renderTo = id;
     var chart = new Highcharts.Chart(options);
@@ -997,6 +1002,97 @@ function renderNewCustomGraph(options) {
 // deletes e's parent from its parent
 function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
+    $("#stats tbody tr").remove(); //clear stats table
+    document.getElementById("stats").style.display = "none"; //hide it
+}
+
+function statsData(data, type, data2) {
+    if(type == "compare") {
+        var table = document.getElementById("statsComp");
+        table.style.display = "block";
+        //mean
+        var tData = jStat.mean(data);
+        var tData2 = jStat.mean(data2);
+        editStatsTable2(1, "Mean", round(tData,2), round(tData2,2));
+        //min and max
+        tData = jStat.min(data);
+        var tDataM = jStat.max(data);
+        tData2 = jStat.min(data2);
+        var tData2M = jStat.max(data2);
+        editStatsTable2(2, "Min, Max", tData + ", " + tDataM, tData2 + ", " + tData2M);
+        //variance
+        tData = jStat.variance(data);
+        tData1 = jStat.variance(data2);
+        editStatsTable2(3, "Variance", round(tData,2), round(tData2,2));
+        //standard deviation
+        tData = jStat.stdev(data);
+        tData2 = jStat.stdev(data2);
+        editStatsTable2(4, "Standard Deviation", round(tData,2), round(tData2,2));
+        //Quartiles
+        tData = jStat.quartiles(data);
+        tData2 = jStat.quartiles(data2);
+        //tValue = tData[0] + ", " + tData[1] + ", " + tData[2];
+        editStatsTable2(5, "Quartiles", tData[0] + ", " + tData[1] + ", " + tData[2], tData2[0] + ", " + tData2[1] + ", " + tData2[2]);
+        //skewness
+        tData = jStat.skewness(data);
+        tData2 = jStat.skewness(data2);
+        editStatsTable2(6, "Skewness", round(tData, 8), round(tData2, 8));
+        //covariance
+        tData = jStat.covariance(data, data2);
+        editStatsTable2(7, "Covariance", round(tData, 2), "comp");
+        //rho correlation
+        tData = jStat.corrcoeff(data, data2);
+        editStatsTable2(8, "Correlation Coefficient", round(tData, 4), "comp");
+    } else {
+        var table = document.getElementById("stats");
+        table.style.display = "block";
+
+        var tData = jStat.mean(data);
+        editStatsTable(1, "Mean", round(tData,2));
+        //min and max
+        tData = jStat.min(data);
+        var tData2 = jStat.max(data);
+        editStatsTable(2, "Min, Max", tData + ", " + tData2);
+        //variance
+        tData = jStat.variance(data);
+        editStatsTable(3, "Variance", round(tData,2));
+        //standard deviation
+        tData = jStat.stdev(data);
+        editStatsTable(4, "Standard Deviation", round(tData,2));
+        //Quartiles
+        tData = jStat.quartiles(data);
+        //tValue = tData[0] + ", " + tData[1] + ", " + tData[2];
+        editStatsTable(5, "Quartiles", tData[0] + ", " + tData[1] + ", " + tData[2]);
+        //skewness
+        tData = jStat.skewness(data);
+        editStatsTable(6, "Skewness", round(tData, 8));
+    }
+}
+
+function editStatsTable(rowNum, label, value) {
+    var table = document.getElementById("stats");
+    var tRow = table.insertRow(rowNum);
+    var tLabel = tRow.insertCell(0);
+    var tValue = tRow.insertCell(1);
+    tLabel.innerHTML = label;
+    tValue.innerHTML = value;
+}
+function editStatsTable2(rowNum, label, value1, value2) {
+    var table = document.getElementById("statsComp");
+    var tRow = table.insertRow(rowNum);
+    var tLabel = tRow.insertCell(0);
+    tLabel.innerHTML = label;
+    if(value2 == "comp") {
+        var tValue = tRow.insertCell(1);
+        tValue.innerHTML = value1;
+        tValue.colspan = 2;
+        tValue.style.align = "center";
+    } else {
+        var tValue = tRow.insertCell(1);
+        var tValue2 = tRow.insertCell(2);
+        tValue.innerHTML = value1;
+        tValue2.innerHTML = value2;
+    }
 }
 
 function makeBar(data, type) {
@@ -1051,6 +1147,7 @@ function makeBar(data, type) {
         }]
     };
     renderNewCustomGraph(options);
+    statsData(arr1, "bar");
 }
 
 function makeBar2(data, typeA, typeB) {
@@ -1111,6 +1208,7 @@ function makeBar2(data, typeA, typeB) {
         }]
     };
     renderNewCustomGraph(options);
+    statsData(arr1, "compare", arr2);
 }
 
 function makePie(data, dog) {
@@ -1193,12 +1291,16 @@ function makeLine(data, dog, type) {
                 console.log(string3.days[i].date);
                 if (type == "Total") {
                     dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].total];
+                    arr1[j] = string3.days[i].dogs[m].total;
                 } else if (type == "Rest") {
                     dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].rest];
+                    arr1[j] = string3.days[i].dogs[m].rest;
                 } else if (type == "Active") {
                     dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].active];
+                    arr1[j] = string3.days[i].dogs[m].active;
                 } else {
                     dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].awake];
+                    arr1[j] = string3.days[i].dogs[m].awake;
                 }
                 j++;
             }
@@ -1254,6 +1356,7 @@ function makeLine(data, dog, type) {
         }]
     };
     renderNewCustomGraph(options);
+    statsData(arr1, "line");
 }
 
 function makePie2(data, dog1, dog2){
@@ -1302,5 +1405,9 @@ function getBarInfo(dog, type){
     } else if (type == 'Total') {
         return dog.total;
     }
+}
+
+function round(value, decimals) {
+  return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
 //============= /javascript for custom graphs ==================================
