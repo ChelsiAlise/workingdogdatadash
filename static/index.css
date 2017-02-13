@@ -195,7 +195,10 @@ body {
 .row {
   margin-right: -10px;
   margin-left: -10px;
+<<<<<<< HEAD:static/index.css
   clear: both;
+=======
+>>>>>>> 7f3f2c54b922b33818dd66e9cd8d6a7433ab6543:static/dashboard.css
 }
 
 .clearfix:after, form:after {
@@ -261,6 +264,7 @@ body {
   opacity: 1;
 }
 
+<<<<<<< HEAD:static/index.css
 /* nav button hover */
 ul.nav > li > a:hover, .selected {
     background-color: white !important;
@@ -278,4 +282,15 @@ ul.nav > li > .selected {
 
 p.card-text {
   font-size: 24px;
+=======
+.stats {
+  margin: 10px auto;
+  float: left;
+  padding: 20px;
+  border-radius: 5px;
+  height: 200px;
+  width: 80%;
+  position: relative;
+  transition: all 5s ease-in-out;
+>>>>>>> 7f3f2c54b922b33818dd66e9cd8d6a7433ab6543:static/dashboard.css
 }
