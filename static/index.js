@@ -947,8 +947,6 @@ function barOptions(item, options) {
 }
 
 function generateGraph() {
-    document.getElementById("stats").style.display = "none"; //hide previous table
-    $("#stats tbody tr").remove(); //clear stats table
     if (chartOptionsAreValid) {
             name1 = $("#mySelect1 option:selected").text();
             var temp1 = $("#mySelect option:selected").text();
@@ -993,23 +991,62 @@ function insertNewGraphRow() {
 }
 
 // inserts a new custom graph dom object and renders the Highcharts options to it
-function renderNewCustomGraph(options) {
+function renderNewCustomGraph(options, compare) {
     var id = insertNewGraphRow();
     options.chart.renderTo = id;
     var chart = new Highcharts.Chart(options);
+
+    if(compare == "compare") {
+        insertNewStatsTable2();
+    } else {
+        insertNewStatsTable();
+    }
 }
 
 // deletes e's parent from its parent
 function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
-    $("#stats tbody tr").remove(); //clear stats table
-    document.getElementById("stats").style.display = "none"; //hide it
 }
 
+//inserts a new stats table alongside the new custom graph row
+var stats_table_id = 0;
+function insertNewStatsTable() {
+    stats_table_id += 1;
+    var id = "stats"+stats_table_id.toString();
+    var graph = document.getElementById("custom-graph-"+custom_graph_id.toString());
+    var newTable =
+    '<table class="table table-hover" id="'+id+'" style="width:60%;">'
+        +'<thead>'
+            +'<tr style="background-color: #016197; color: white;">'
+                +'<th>Statistic</th>'
+                +'<th>Value</th>'
+            +'</tr>'
+        +'</thead>'
+    +'</table>';
+    graph.insertAdjacentHTML('afterend', newTable);
+}
+function insertNewStatsTable2() {
+    stats_table_id += 1;
+    var id = "stats"+stats_table_id.toString()+"Comp";
+    var graph = document.getElementById("custom-graph-"+custom_graph_id.toString());
+    var newTable =
+    '<table class="table table-hover" id="'+id+'" style="width:60%;">'
+        +'<thead>'
+            +'<tr style="background-color: #016197; color: white;">'
+                +'<th>Statistic</th>'
+                +'<th>Value</th>'
+                +'<th>Value2</th>'
+            +'</tr>'
+        +'</thead>'
+    +'</table>';
+    graph.insertAdjacentHTML('afterend', newTable);
+}
+
+//handles stats calculations and tests
 function statsData(data, type, data2) {
     if(type == "compare") {
-        var table = document.getElementById("statsComp");
-        table.style.display = "block";
+        var table = document.getElementById("stats"+stats_table_id.toString()+"Comp");
+
         //mean
         var tData = jStat.mean(data);
         var tData2 = jStat.mean(data2);
@@ -1044,8 +1081,7 @@ function statsData(data, type, data2) {
         tData = jStat.corrcoeff(data, data2);
         editStatsTable2(8, "Correlation Coefficient", round(tData, 4), "comp");
     } else {
-        var table = document.getElementById("stats");
-        table.style.display = "block";
+        var table = document.getElementById("stats"+stats_table_id.toString());
 
         var tData = jStat.mean(data);
         editStatsTable(1, "Mean", round(tData,2));
@@ -1069,16 +1105,18 @@ function statsData(data, type, data2) {
     }
 }
 
+//handles inserting data into the stats table
 function editStatsTable(rowNum, label, value) {
-    var table = document.getElementById("stats");
+    var table = document.getElementById("stats"+stats_table_id.toString());
     var tRow = table.insertRow(rowNum);
     var tLabel = tRow.insertCell(0);
     var tValue = tRow.insertCell(1);
     tLabel.innerHTML = label;
     tValue.innerHTML = value;
 }
+//handles inserting data into comparison stats table
 function editStatsTable2(rowNum, label, value1, value2) {
-    var table = document.getElementById("statsComp");
+    var table = document.getElementById("stats"+stats_table_id.toString()+"Comp");
     var tRow = table.insertRow(rowNum);
     var tLabel = tRow.insertCell(0);
     tLabel.innerHTML = label;
@@ -1207,7 +1245,7 @@ function makeBar2(data, typeA, typeB) {
 
         }]
     };
-    renderNewCustomGraph(options);
+    renderNewCustomGraph(options, "compare");
     statsData(arr1, "compare", arr2);
 }
 
