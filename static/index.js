@@ -1191,6 +1191,7 @@ function makeBar(data, type) {
         }]
     };
     renderNewCustomGraph(options, "normal");
+    statsData(arr1)
 }
 
 function makeBar2(data, typeA, typeB) {
@@ -1251,6 +1252,7 @@ function makeBar2(data, typeA, typeB) {
         }]
     };
     renderNewCustomGraph(options, "compare");
+    statsData(arr1, "compare", arr2);
 }
 
 function makePie(data, dog) {
@@ -1311,6 +1313,7 @@ function makePie(data, dog) {
         }]
     };
     renderNewCustomGraph(options);
+
 }
 
 function makeLine(data, dog, type) {
@@ -1394,6 +1397,7 @@ function makeLine(data, dog, type) {
         }]
     };
     renderNewCustomGraph(options, "normal");
+    statsData(arr1)
 }
 
 function makePie2(data, dog1, dog2){
