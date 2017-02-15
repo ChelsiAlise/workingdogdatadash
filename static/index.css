@@ -261,7 +261,6 @@ body {
   opacity: 1;
 }
 
-<<<<<<< cf7e93013aed326cd2e162b2dff9504e98207dc1:static/index.css
 /* nav button hover */
 ul.nav > li > a:hover, .selected {
     background-color: white !important;
@@ -289,5 +288,4 @@ p.card-text {
   width: 80%;
   position: relative;
   transition: all 5s ease-in-out;
->>>>>>> initial jstat functionality:static/dashboard.css
 }

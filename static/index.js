@@ -947,6 +947,8 @@ function barOptions(item, options) {
 }
 
 function generateGraph() {
+    document.getElementById("stats").style.display = "none"; //hide previous table
+    $("#stats tbody tr").remove(); //clear stats table
     if (chartOptionsAreValid) {
             name1 = $("#mySelect1 option:selected").text();
             var temp1 = $("#mySelect option:selected").text();
@@ -1006,6 +1008,97 @@ function renderNewCustomGraph(options, compare) {
 // deletes e's parent from its parent
 function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
+    $("#stats tbody tr").remove(); //clear stats table
+    document.getElementById("stats").style.display = "none"; //hide it
+}
+
+function statsData(data, type, data2) {
+    if(type == "compare") {
+        var table = document.getElementById("statsComp");
+        table.style.display = "block";
+        //mean
+        var tData = jStat.mean(data);
+        var tData2 = jStat.mean(data2);
+        editStatsTable2(1, "Mean", round(tData,2), round(tData2,2));
+        //min and max
+        tData = jStat.min(data);
+        var tDataM = jStat.max(data);
+        tData2 = jStat.min(data2);
+        var tData2M = jStat.max(data2);
+        editStatsTable2(2, "Min, Max", tData + ", " + tDataM, tData2 + ", " + tData2M);
+        //variance
+        tData = jStat.variance(data);
+        tData1 = jStat.variance(data2);
+        editStatsTable2(3, "Variance", round(tData,2), round(tData2,2));
+        //standard deviation
+        tData = jStat.stdev(data);
+        tData2 = jStat.stdev(data2);
+        editStatsTable2(4, "Standard Deviation", round(tData,2), round(tData2,2));
+        //Quartiles
+        tData = jStat.quartiles(data);
+        tData2 = jStat.quartiles(data2);
+        //tValue = tData[0] + ", " + tData[1] + ", " + tData[2];
+        editStatsTable2(5, "Quartiles", tData[0] + ", " + tData[1] + ", " + tData[2], tData2[0] + ", " + tData2[1] + ", " + tData2[2]);
+        //skewness
+        tData = jStat.skewness(data);
+        tData2 = jStat.skewness(data2);
+        editStatsTable2(6, "Skewness", round(tData, 8), round(tData2, 8));
+        //covariance
+        tData = jStat.covariance(data, data2);
+        editStatsTable2(7, "Covariance", round(tData, 2), "comp");
+        //rho correlation
+        tData = jStat.corrcoeff(data, data2);
+        editStatsTable2(8, "Correlation Coefficient", round(tData, 4), "comp");
+    } else {
+        var table = document.getElementById("stats");
+        table.style.display = "block";
+
+        var tData = jStat.mean(data);
+        editStatsTable(1, "Mean", round(tData,2));
+        //min and max
+        tData = jStat.min(data);
+        var tData2 = jStat.max(data);
+        editStatsTable(2, "Min, Max", tData + ", " + tData2);
+        //variance
+        tData = jStat.variance(data);
+        editStatsTable(3, "Variance", round(tData,2));
+        //standard deviation
+        tData = jStat.stdev(data);
+        editStatsTable(4, "Standard Deviation", round(tData,2));
+        //Quartiles
+        tData = jStat.quartiles(data);
+        //tValue = tData[0] + ", " + tData[1] + ", " + tData[2];
+        editStatsTable(5, "Quartiles", tData[0] + ", " + tData[1] + ", " + tData[2]);
+        //skewness
+        tData = jStat.skewness(data);
+        editStatsTable(6, "Skewness", round(tData, 8));
+    }
+}
+
+function editStatsTable(rowNum, label, value) {
+    var table = document.getElementById("stats");
+    var tRow = table.insertRow(rowNum);
+    var tLabel = tRow.insertCell(0);
+    var tValue = tRow.insertCell(1);
+    tLabel.innerHTML = label;
+    tValue.innerHTML = value;
+}
+function editStatsTable2(rowNum, label, value1, value2) {
+    var table = document.getElementById("statsComp");
+    var tRow = table.insertRow(rowNum);
+    var tLabel = tRow.insertCell(0);
+    tLabel.innerHTML = label;
+    if(value2 == "comp") {
+        var tValue = tRow.insertCell(1);
+        tValue.innerHTML = value1;
+        tValue.colspan = 2;
+        tValue.style.align = "center";
+    } else {
+        var tValue = tRow.insertCell(1);
+        var tValue2 = tRow.insertCell(2);
+        tValue.innerHTML = value1;
+        tValue2.innerHTML = value2;
+    }
 }
 
 //inserts a new stats table alongside the new custom graph row
