@@ -1396,8 +1396,7 @@ function makeLine(data, dog, type) {
             data: dates
         }]
     };
-    renderNewCustomGraph(options, "normal");
-    statsData(arr1)
+    renderNewCustomGraph(options);
 }
 
 function makePie2(data, dog1, dog2){
