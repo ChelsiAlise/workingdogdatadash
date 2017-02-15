@@ -17,6 +17,8 @@ $(document).ready(function () {
     loadDataAndInitialize();
 });
 
+$.getScript("/static/dist/js/jstat.min.js");
+
 function loadDataAndInitialize() {
     // set default plot options
     Highcharts.setOptions({
@@ -988,10 +990,16 @@ function insertNewGraphRow() {
 }
 
 // inserts a new custom graph dom object and renders the Highcharts options to it
-function renderNewCustomGraph(options) {
+function renderNewCustomGraph(options, compare) {
     var id = insertNewGraphRow();
     options.chart.renderTo = id;
     var chart = new Highcharts.Chart(options);
+
+    if(compare == "compare") {
+        insertNewStatsTable2();
+    } else if(compare == "normal"){
+        insertNewStatsTable();
+    }
 }
 
 // deletes e's parent from its parent
@@ -1182,7 +1190,7 @@ function makeBar(data, type) {
 
         }]
     };
-    renderNewCustomGraph(options);
+    renderNewCustomGraph(options, "normal");
 }
 
 function makeBar2(data, typeA, typeB) {
@@ -1242,7 +1250,7 @@ function makeBar2(data, typeA, typeB) {
 
         }]
     };
-    renderNewCustomGraph(options);
+    renderNewCustomGraph(options, "compare");
 }
 
 function makePie(data, dog) {
@@ -1385,7 +1393,7 @@ function makeLine(data, dog, type) {
             data: dates
         }]
     };
-    renderNewCustomGraph(options);
+    renderNewCustomGraph(options, "normal");
 }
 
 function makePie2(data, dog1, dog2){
