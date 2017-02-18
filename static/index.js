@@ -168,39 +168,6 @@ function makeDogPoints(dogs, setPointKeysFunc) {
     return series;
 }
 
-// //convert dates recieved from filtered_blobs json into correct Date.UPC format to be graphed
-// //Date.UTC(year, month[, day[, hour[, minute[, second[, millisecond]]]]])
-// //Date.UTC(year, month, day)
-// //Note that in JavaScript, months start at 0 for January, 1 for February etc.
-// //string input example : 2014-10-13 yyyy-mm-dd
-// function convertDate(string_input) {
-//     var year = '';
-//     var month = '';
-//     var day = '';
-//     var counter = 0;
-
-//     for (i = 0; i < string_input.length; i++) {
-//         //if it is the year
-//         if (i < 4) {
-//             year += string_input[i];
-//             counter++;
-//             console.log(year);
-//         } //if it is the month
-//         else if (i > 4 && i < 7) {
-//             month += string_input[i];
-//             counter++;
-//             console.log(month);
-//         } //if it is the day
-//         else if (i > 7) {
-//             day += string_input[i];
-//             console.log(day);
-//         }
-//     }
-
-//     var date = Date.UTC(year, month - 1, day);
-
-//     return date;
-// }
 //============= javascript for dashboard graphs ================================
 
 // shared format for the beginning of formatting points with the dog's name
@@ -212,7 +179,7 @@ var dogPointFormat = '<b>{point.name}</b><br><br>' +
     '<tr><td>Birth Date:&nbsp;&nbsp;</td><td>{point.birth_date}</td></tr>' +
     '<tr><td>Breed:&nbsp;&nbsp;</td><td>{point.breed}</td></tr></table><br>';
 
-//****************************************NEW SNOW PLOTS ON DOGS 
+//******************** NEW COMPARISON MULTI LINE GRAPH FOR DASHBOARD ******************** 
 function example1() {
 
     var dates_rest = [];
@@ -305,7 +272,7 @@ function example1() {
 
     var chart = new Highcharts.Chart(options);
 };
-//************************************************************ */
+//************************ NEW COMPARISON MULTI LINE GRAPH FOR DASHBOARD ************************ */
 
 // chart 1 - Awake Versus Rest of All Dogs by Name
 function createChartOne() {
@@ -431,15 +398,15 @@ function createChartTwo() {
         tooltip: {
             useHTML: true,
             headerFormat: '',
-<<<<<<< HEAD
+
             pointFormat: dogPointFormat +
             '{point.x:.3f} % Rest, {point.y:.3f} % Active<br>' +
             'Total Minutes: {point.total:.0f}',
-=======
+
             pointFormat: dogPointFormat+
                 '{point.x:.3f} % Rest, {point.y:.3f} % Active<br>'+
                 'Total Minutes: {point.total:.0f}',
->>>>>>> master
+
         },
         plotOptions: {
             scatter: {
@@ -1125,11 +1092,9 @@ function insertNewGraphRow() {
 }
 
 // inserts a new custom graph dom object and renders the Highcharts options to it
-<<<<<<< HEAD
-function renderNewCustomGraph(options) {
-=======
+
 function renderNewCustomGraph(options, compare) {
->>>>>>> master
+
     var id = insertNewGraphRow();
     options.chart.renderTo = id;
     var chart = new Highcharts.Chart(options);
