@@ -815,13 +815,110 @@ var string3 = '';
 var chartOptionsAreValid = false;
 var id;
 var barchoices3 = [];
+var barchoices5 = [];
+var barchoicesRegion = [];
+var barchoicesSex = [];
+var barchoicesStatus = [];
+var barchoicesRegion2 = [];
+var barchoicesSex2 = [];
+var barchoicesStatus2 = [];
+var alldogs = [];
 var barchoices1 = [{"value": "Raw Data", "text": "Raw Data"}, {"value": "Comparisons", "text": "Comparisons"}];
 var barchoices2 = [{"value": "Active", "text": "Active"}, {"value": "Awake", "text": "Awake"}, {"value": "Rest", "text": "Rest"}, {"value": "Total", "text": "Total"}];
 var barchoices4 = [{"value": "Raw Data", "text": "Raw Data"}];
 
 function fieldcheck() {
     var temp = $("#mySelect option:selected").text();
+    var filterValue = $("#myFilter option:selected").text();
     chartOptionsAreValid = false;
+    var status = false;
+    var region = false;
+    var sex = false;
+    if (filterValue != "All Dogs") {
+        $('#myFilter2').show();
+        // var j = 0;
+        // string1 = string3;
+        // for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
+        //     helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+        //     alldogs[j] = helper;
+        //     j++;
+        // }
+        // barOptions('#myFilter2', alldogs);
+
+        if(filterValue == "Region"){
+            region = true;
+            var j = 0;
+            //console.log(string3);
+            string1 = string3;
+            var uniques = [];
+            barchoicesRegion = [];
+            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
+                if (uniques.indexOf(string1.dogs[i].regional_center) > -1) {
+                    //console.log(string1.dogs[i].regional_center);
+                    //test;
+                    continue;
+                }
+                helper = {"value": string1.dogs[i].regional_center, "text": string1.dogs[i].regional_center}
+                uniques.push(string1.dogs[i].regional_center);
+                //console.log(uniques);
+
+                barchoicesRegion[j] = helper;
+                j++;
+            }
+            barOptions('#myFilter2', barchoicesRegion);
+
+        } else if(filterValue == "Dog Status"){
+            status = true;
+            var j = 0;
+            //console.log(string3);
+            string1 = string3;
+            var uniques = [];
+            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
+                if (uniques.indexOf(string1.dogs[i].dog_status) > -1) {
+                    //console.log(string1.dogs[i].regional_center);
+                    //test;
+                    continue;
+                }
+                helper = {"value": string1.dogs[i].dog_status, "text": string1.dogs[i].dog_status}
+                uniques.push(string1.dogs[i].dog_status);
+                //console.log(uniques);
+
+                barchoicesStatus[j] = helper;
+                j++;
+            }
+            barOptions('#myFilter2', barchoicesStatus);
+
+        } else if(filterValue == "Sex"){
+            status = true;
+            var j = 0;
+            //console.log(string3);
+            string1 = string3;
+            var uniques = [];
+            barchoicesSex = [];
+
+            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
+                if (uniques.indexOf(string1.dogs[i].sex) > -1) {
+                    //console.log(string1.dogs[i].regional_center);
+                    //test;
+                    continue;
+                }
+                helper = {"value": string1.dogs[i].sex, "text": string1.dogs[i].sex}
+                uniques.push(string1.dogs[i].sex);
+                //console.log(uniques);
+
+                barchoicesSex[j] = helper;
+                j++;
+            }
+            barOptions('#myFilter2', barchoicesSex);
+
+        }
+
+    } else {
+        chartOptionsAreValid = false;
+        $('#myFilter2').hide();
+        $('#myFilter3').hide();
+        $('#myFilter4').hide();
+    }
     if (temp != "Select One") {
         $('#mySelect2').show();
         if(temp == "Bar"){
@@ -845,11 +942,78 @@ function fieldcheck() {
         $('#mySelect3').hide();
         $('#mySelect4').hide();
     }
+
+
 }
 
 function fieldcheck2() {
     var temp = $("#mySelect2 option:selected").text();
     var temp2 = $("#mySelect option:selected").text();
+    //var tempfilter = $("#myFilter2 option:selected").text();
+    console.log("hello");
+    var tempfilter2 = $("#myFilter option:selected").text();
+    //console.log(tempfilter2);
+    if (tempfilter != "Select One") {
+        $('#myFilter3').show();
+        if(tempfilter2 == "Region") {
+            var j = 0;
+            string1 = string3;
+            barchoicesRegion2 = [];
+
+            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
+                console.log(string1.dogs[i].region);
+                console.log(tempfilter);
+                console.log("-------");
+                if (tempfilter == string1.dogs[i].regional_center) {
+                    helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+                    barchoicesRegion2[j] = helper;
+                    j++;
+
+                }
+            }
+            barOptions('#myFilter3', barchoicesRegion2);
+            $('#myFilter4').hide();
+        } else if(tempfilter2 == "Dog Status") {
+            var j = 0;
+            string1 = string3;
+            barchoicesStatus2 = [];
+
+            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
+                // console.log(string1.dogs[i].region);
+                // console.log(tempfilter);
+                // console.log("-------");
+                if (tempfilter == string1.dogs[i].dog_status) {
+                    helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+                    barchoicesStatus2[j] = helper;
+                    j++;
+
+                }
+            }
+            barOptions('#myFilter3', barchoicesStatus2);
+            $('#myFilter4').hide();
+        } else if(tempfilter2 == "Sex") {
+            var j = 0;
+            string1 = string3;
+            barchoicesSex2 = [];
+            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
+                console.log(string1.dogs[i].sex);
+                console.log(tempfilter);
+                console.log("-------");
+                if (tempfilter == string1.dogs[i].sex) {
+                    helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+                    barchoicesSex2[j] = helper;
+                    j++;
+
+                }
+            }
+            barOptions('#myFilter3', barchoicesSex2);
+            $('#myFilter4').hide();
+        } else {
+            $('#myFilter3').hide();
+            $('#myFilter4').hide();
+            chartOptionsAreValid = false;
+        }
+    }
     if (temp != "Select One") {
         $('#mySelect3').show();
         if(temp == "Raw Data"){
@@ -1317,7 +1481,7 @@ function makePie(data, dog) {
 }
 
 function makeLine(data, dog, type) {
-    console.log(type);
+    //console.log(type);
     var arr = new Array();
     var arr1 = new Array();
     var dates = [];
@@ -1333,7 +1497,7 @@ function makeLine(data, dog, type) {
         var dateSplit = string3.days[i].date.split("-");
         for (var m =0; m < Object.keys(string3.days[i].dogs).length; m++) {
             if (string3.days[i].dogs[m].id == id) {
-                console.log(string3.days[i].date);
+                //console.log(string3.days[i].date);
                 if (type == "Total") {
                     dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].total];
                 } else if (type == "Rest") {
@@ -1406,13 +1570,13 @@ function makePie2(data, dog1, dog2){
     var j = 0;
     for (var i =0; i < string1.length; i++) {
         if (string1[i].name == dog1) {
-            console.log(string1[i].name);
+            //console.log(string1[i].name);
             var data1 = getBarInfo(string1[i], "Rest");
             var data2 = getBarInfo(string1[i], "Active");
             var data3 = getBarInfo(string1[i], "Awake");
         }
         if (string1[i].name == dog2) {
-            console.log(string1[i].name);
+            //console.log(string1[i].name);
             var data4 = getBarInfo(string1[i], "Rest");
             var data5 = getBarInfo(string1[i], "Active");
             var data6 = getBarInfo(string1[i], "Awake");
@@ -1446,6 +1610,7 @@ function getBarInfo(dog, type){
         return dog.total;
     }
 }
+
 
 
 function round(value, decimals) {
