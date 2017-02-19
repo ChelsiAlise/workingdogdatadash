@@ -245,9 +245,25 @@ function example1() {
             },
             min: 0
         },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 60,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
+        },
         tooltip: {
-            headerFormat: '<b>{series.name}</b><br>',
-            pointFormat: '{point.x:%e. %b}: {point.y:.2f} m'
+            // headerFormat: '<b>{series.name}</b><br>',
+            // pointFormat: '{point.x:%e. %b}: {point.y:.2f} m'
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.1f} mins</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
         },
 
         plotOptions: {
