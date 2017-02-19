@@ -816,9 +816,9 @@ var chartOptionsAreValid = false;
 var id;
 var barchoices3 = [];
 var barchoices5 = [];
-var barchoicesRegion = [];
-var barchoicesSex = [];
-var barchoicesStatus = [];
+barchoicesRegion = [];
+barchoicesSex = [];
+barchoicesStatus = [];
 var barchoicesRegion2 = [];
 var barchoicesSex2 = [];
 var barchoicesStatus2 = [];
@@ -870,7 +870,7 @@ function fieldcheck() {
         } else if(filterValue == "Dog Status"){
             status = true;
             var j = 0;
-            //console.log(string3);
+            console.log(string3);
             string1 = string3;
             var uniques = [];
             for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
@@ -925,6 +925,8 @@ function fieldcheck() {
             barOptions('#mySelect2', barchoices1);
         } else if (temp == "Pie"){
             barOptions('#mySelect2', barchoices4);
+        } else if (temp == "Box"){
+            barOptions('#mySelect2', barchoices4);
         }
         else if (temp == "Line"){
             var j = 0;
@@ -949,8 +951,8 @@ function fieldcheck() {
 function fieldcheck2() {
     var temp = $("#mySelect2 option:selected").text();
     var temp2 = $("#mySelect option:selected").text();
-    //var tempfilter = $("#myFilter2 option:selected").text();
-    console.log("hello");
+    var tempfilter = $("#myFilter2 option:selected").text();
+    //console.log("hello");
     var tempfilter2 = $("#myFilter option:selected").text();
     //console.log(tempfilter2);
     if (tempfilter != "Select One") {
@@ -1022,15 +1024,25 @@ function fieldcheck2() {
                     barOptions('#mySelect3', barchoices2);
                     $('#mySelect4').hide();
                     //chartOptionsAreValid = true;
+            } else if (temp2 == "Box") {
+                chartOptionsAreValid = false;
+                    barOptions('#mySelect3', barchoices2);
+                    $('#mySelect4').hide();
+                    //chartOptionsAreValid = true;
             } else if (temp2 == "Pie") {
                 var j = 0;
                 string1 = string3;
+                // console.log("hi");
+                //
+                // console.log($("#myFilter").selected);
+                // console.log("ho");
                 for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
                     helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
                     barchoices3[j] = helper;
                     j++;
                 }
                 chartOptionsAreValid = false;
+                    //if ($("#myFilter2 option:selected").text();)
                     barOptions('#mySelect3', barchoices3);
                     $('#mySelect4').hide();
             }
@@ -1044,6 +1056,8 @@ function fieldcheck2() {
                 } else if (temp2 == "Pie") {
                     var j = 0;
                     string1 = string2;
+
+
                     for (var i = 0; i < string2.length; i++) {
                         helper = {"value": string1[i].name, "text": string1[i].name}
                         barchoices3[j] = helper;
@@ -1134,6 +1148,12 @@ function generateGraph() {
             var select1 = $("#mySelect2 option:selected").text();
             var type = $("#mySelect3 option:selected").text();
             makeLine(string3, select1, type);
+        } else if (temp1 == "Box") {
+            var select1 = $("#mySelect2 option:selected").text();
+            if (select1 == "Raw Data"){
+                var type = $("#mySelect3 option:selected").text();
+                makeBox(string2, type);
+            }
         }
     } else {
         alert("You must make a selection for each option first.");
@@ -1170,6 +1190,42 @@ function renderNewCustomGraph(options, compare) {
 function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
 }
+
+function filterCheck() {
+    var filterTxt = $("#myFilter option:selected").text();
+    var filterTxt2 = $("#myFilter2 option:selected").text();
+    var filterTxt3 = $("#myFilter3 option:selected").text();
+    if (filterTxt == 'All Dogs') {
+        return null;
+    } else if (filterTxt == 'Region') {
+        return barchoicesRegion2;
+    } else if (filterTxt == 'Sex') {
+        return barchoicesSex2;
+    } else if (filterTxt == 'Dog Status') {
+        // console.log("zzz");
+        // console.log(barchoicesStatus2);
+        return barchoicesStatus2;
+    }
+}
+
+function filterCheck2() {
+    var filterTxt = $("#myFilter option:selected").text();
+    var filterTxt2 = $("#myFilter2 option:selected").text();
+    var filterTxt3 = $("#myFilter3 option:selected").text();
+    if (filterTxt == 'All Dogs') {
+        return null;
+    } else if (filterTxt == 'Region') {
+        return barchoicesRegion;
+    } else if (filterTxt == 'Sex') {
+        return barchoicesSex;
+    } else if (filterTxt == 'Dog Status') {
+        // console.log("zzz");
+        // console.log(barchoicesStatus2);
+        return barchoicesStatus;
+    }
+}
+
+
 
 //inserts a new stats table alongside the new custom graph row
 var stats_table_id = 0;
@@ -1308,11 +1364,31 @@ function makeBar(data, type) {
     var arr1 = new Array();
     string1 = data;
     var j = 0;
+    var tempArr = filterCheck();
+    var arr2 = [];
+    if (tempArr != null) {
+        arr2 = tempArr.map(function(item) {
+            return item['text'];
+        });
+    }
+    // console.log("test");
+    // console.log(arr2);
     for (var i =0; i < string1.length; i++) {
-        arr[j] = string1[i].name;
-        var ratio = getBarInfo(string1[i], type);
-        arr1[j] = ratio;
-        j++;
+        if (tempArr == null) {
+            arr[j] = string1[i].name;
+            var ratio = getBarInfo(string1[i], type);
+            arr1[j] = ratio;
+            j++;
+        } else {
+            //console.log(string1[i].name);
+            if(arr2.includes(string1[i].name)) {
+                arr[j] = string1[i].name;
+                var ratio = getBarInfo(string1[i], type);
+                arr1[j] = ratio;
+                j++;
+            }
+        }
+
     };
     var options = {
         chart: {
@@ -1364,14 +1440,36 @@ function makeBar2(data, typeA, typeB) {
     var arr2 = new Array();
     string1 = data;
     var j = 0;
-    for (var i =0; i < string1.length; i++) {
-        arr[j] = string1[i].name;
-        var ratio = getBarInfo(string1[i], typeA);
-        var ratio2 = getBarInfo(string1[i], typeB);
-        arr1[j] = ratio;
-        arr2[j] = ratio2;
-        j++;
+    var tempArr = filterCheck();
+    var arr2 = [];
+    if (tempArr != null) {
+        arr2 = tempArr.map(function(item) {
+            return item['text'];
+        });
     }
+    for (var i =0; i < string1.length; i++) {
+        if (tempArr == null) {
+
+            arr[j] = string1[i].name;
+            var ratio = getBarInfo(string1[i], typeA);
+            var ratio2 = getBarInfo(string1[i], typeB);
+            arr1[j] = ratio;
+            arr2[j] = ratio2;
+            j++;
+        } else {
+            if(arr2.includes(string1[i].name)) {
+                arr[j] = string1[i].name;
+                var ratio = getBarInfo(string1[i], typeA);
+                var ratio2 = getBarInfo(string1[i], typeB);
+                arr1[j] = ratio;
+                arr2[j] = ratio2;
+                j++;
+            }
+
+        }
+    }
+    console.log("aa");
+    console.log(arr);
     var options = {
             chart: {
                 type: 'column'
@@ -1383,6 +1481,8 @@ function makeBar2(data, typeA, typeB) {
                 text: 'Dog activity tracked in minutes'
             },
             xAxis: {
+                endOnTick: true,
+                max: arr.length-1,
                 categories: arr,
                 crosshair: true
             },
@@ -1419,11 +1519,142 @@ function makeBar2(data, typeA, typeB) {
     statsData(arr1, "compare", arr2);
 }
 
+function makeBox(data, type) {
+    // var arr = new Array();
+    var arr1 = new Array();
+    string1 = data;
+    var arr = filterCheck2();
+    var arr2 = ['All Dogs'];
+    // var tempArr = filterCheck();
+    // var arr2 = [];
+    if (arr != null) {
+        arr2 = arr.map(function(item) {
+            return item['text'];
+        });
+    }
+    // console.log("test");
+    // console.log(arr2);
+    var arrData = [];
+    var filterSelected = $("#myFilter option:selected").text();
+    for (var m=0; m < arr2.length; m++) {
+        var arrTemp = [];
+        var j = 0;
+        for (var i =0; i < string1.length; i++) {
+                if(filterSelected == "Region" && string1[i].regional_center == arr2[m]) {
+                    var ratio = getBarInfo(string1[i], type);
+                    arrTemp[j] = ratio;
+                    j++;
+                } else if(filterSelected == "Dog Status" && string1[i].dog_status == arr2[m]) {
+                    var ratio = getBarInfo(string1[i], type);
+                    arrTemp[j] = ratio;
+                    j++;
+                } else if(filterSelected == "Sex" && string1[i].sex == arr2[m]) {
+                    var ratio = getBarInfo(string1[i], type);
+                    arrTemp[j] = ratio;
+                    j++;
+                } else if(filterSelected == "All Dogs") {
+                    var ratio = getBarInfo(string1[i], type);
+                    arrTemp[j] = ratio;
+                    j++;
+                }
+                // } else {
+                //     var ratio = getBarInfo(string1[i], type);
+                //     arr1[j] = ratio;
+                //     j++;
+                // }
+
+        };
+        arrData[m] = arrTemp;
+    }
+    console.log(arrData);
+    console.log(arr1);
+    //arrNum = arr1;
+    function sortNumber(a,b) {
+        return a - b;
+    }
+    var finalData = [];
+    for (var k=0; k < arrData.length; k++) {
+        var boxData = [];
+        arrData[k] = arrData[k].sort(sortNumber);
+        var arrNum = [];
+        arrNum = arrData[k];
+        boxData[0] = arrNum[0];
+        console.log("testing");
+        //console.log(arrNum[Math.floor(arrNum.length/2)]);
+        boxData[1] = arrNum[Math.floor(arrNum.length/4)];
+        boxData[2] = arrNum[Math.floor(arrNum.length/2)];
+        boxData[3] = arrNum[Math.floor(arrNum.length - arrNum.length/4)];
+        boxData[4] = arrNum[Math.floor(arrNum.length -1)];
+        finalData[k] = boxData;
+    }
+    console.log(finalData);
+
+
+
+    console.log(arr1);
+    var options = {
+
+    chart: {
+        type: 'boxplot'
+    },
+
+    title: {
+        text: 'Box plot series for ' + filterSelected
+    },
+
+    legend: {
+        enabled: false
+    },
+
+    xAxis: {
+        endOnTick: true,
+        max: arr2.length-1,
+        categories: arr2,
+        title: {
+            text: filterSelected
+        }
+    },
+
+    yAxis: {
+        title: {
+            text: 'Minutes ' + type
+        },
+        // plotLines: [{
+        //     value: 932,
+        //     color: 'red',
+        //     width: 1,
+        //     label: {
+        //         text: 'Theoretical mean: 932',
+        //         align: 'center',
+        //         style: {
+        //             color: 'gray'
+        //         }
+        //     }
+        // }]
+    },
+
+    series: [{
+        name: 'Observations',
+        data: finalData,
+        tooltip: {
+            headerFormat: '<em>Experiment No {point.key}</em><br/>'
+        }
+    }]
+
+};
+    renderNewCustomGraph(options);
+    //statsData(arr1)
+}
+
 function makePie(data, dog) {
     var arr = new Array();
     var arr1 = new Array();
     string1 = data;
     var j = 0;
+    // console.log("----");
+    // console.log($("#myFilter3 option:selected").text());
+    // console.log("----");
+
     for (var i =0; i < string1.length; i++) {
         if (string1[i].name == dog) {
             var data1 = getBarInfo(string1[i], "Rest");
