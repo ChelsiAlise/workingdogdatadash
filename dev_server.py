@@ -117,7 +117,7 @@ def login(opener):
 
 def main():
     """main runs login, and then starts the local server"""
-    port = 8080
+    port = 8090
     handler = DevHTTPRequestHandler
     httpd = SocketServer.TCPServer(("", port), handler)
     login(DevHTTPRequestHandler.opener)
@@ -129,4 +129,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
