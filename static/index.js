@@ -23,12 +23,12 @@ function loadDataAndInitialize() {
     // set default plot options
     Highcharts.setOptions({
         plotOptions: {
-             // animation interacts poorly with inserting graphs
+            // animation interacts poorly with inserting graphs
             series: {
                 animation: false
             },
         },
-        chart:{
+        chart: {
             resetZoomButton: {
                 position: {
                     align: 'right', // by default
@@ -65,7 +65,7 @@ function loadDataAndInitialize() {
         url: "/api/cached/data/filtered/dogs",
         async: true,
         datatype: 'json',
-        success: function(data) {
+        success: function (data) {
             // store the data
             filtered_dogs = data;
             // precompute maximum total for scaling
@@ -83,6 +83,7 @@ function loadDataAndInitialize() {
             createChartFive();
             createChartSix();
             createChartSeven();
+            example2();
         }
     });
     // load the full data set next
@@ -91,7 +92,7 @@ function loadDataAndInitialize() {
         url: "/api/cached/data/filtered/blob",
         async: true,
         datatype: 'json',
-        success: function(data) {
+        success: function (data) {
             // store the data
             filtered_blob = data;
             string3 = data; // TOOD: remove this
@@ -170,21 +171,149 @@ function makeDogPoints(dogs, setPointKeysFunc) {
 
 // shared format for the beginning of formatting points with the dog's name
 // and outcome data.
-var dogPointFormat = '<b>{point.name}</b><br><br>'+
-    '<table><tr><td>Status:&nbsp;&nbsp;</td><td>{point.dog_status}</td></tr>'+
-    '<tr><td>Center:&nbsp;&nbsp;</td><td>{point.regional_center}</td></tr>'+
-    '<tr><td>Sex:&nbsp;&nbsp;</td><td>{point.sex}</td></tr>'+
-    '<tr><td>Birth Date:&nbsp;&nbsp;</td><td>{point.birth_date}</td></tr>'+
+var dogPointFormat = '<b>{point.name}</b><br><br>' +
+    '<table><tr><td>Status:&nbsp;&nbsp;</td><td>{point.dog_status}</td></tr>' +
+    '<tr><td>Center:&nbsp;&nbsp;</td><td>{point.regional_center}</td></tr>' +
+    '<tr><td>Sex:&nbsp;&nbsp;</td><td>{point.sex}</td></tr>' +
+    '<tr><td>Birth Date:&nbsp;&nbsp;</td><td>{point.birth_date}</td></tr>' +
     '<tr><td>Breed:&nbsp;&nbsp;</td><td>{point.breed}</td></tr></table><br>';
 
+//***************************************************************************** */
 
+// example 2 - High Activty Dogs vs. Low Activity Dogs
+function example2() {
+    var low_activity_val = new Array();
+    var high_activity_val = new Array();
+    var low_activity_name = new Array();
+    var high_activity_name = new Array();
+    var activity = new Array();
+    //names for categories on x-axis. sorted from high activity to low activity
+    var names = new Array();
+
+    // push filtered_data name and activity key value pair to the activity array 
+    for (i = 0; i < filtered_dogs.length; i++) {
+        activity.push({ name: filtered_dogs[i].name, val: filtered_dogs[i].active });
+    }
+    // sort activity data from lowest to highest
+    activity.sort(function (a, b) {
+        return a.val - b.val;
+    });
+
+    //calculate top and lowest 10% number range 
+    var ten_percent = Math.round(activity.length * 0.10);
+    console.log(ten_percent);
+
+    //highest values
+    var high_counter = 1;
+    for (i = 0; i < ten_percent; i++) {
+        //var highest = activity[filtered_dogs.length - high_counter];
+        high_activity_name.push(activity[filtered_dogs.length - high_counter]["name"]);
+        high_activity_val.push(activity[filtered_dogs.length - high_counter]["val"]);
+        high_counter++;
+    }
+
+    //lowest values
+    var low_counter = 0;
+    for (i = 0; i < ten_percent; i++) {
+        //var lowest = activity[low_counter];
+        low_activity_name.push(activity[low_counter]["name"]);
+        low_activity_val.push(activity[low_counter]["val"]);
+        low_counter++;
+    }
+
+    //create names array for "categories" on x-axis
+    //high_activity_name + low_activity_name
+    names = high_activity_name.concat(low_activity_name);
+    console.log(names);
+
+    length
+    //add padding of 0's for where high activity vs. low activity data should be displayed
+    //var data_high_activity = new Array();
+    for (i = 0; i < ten_percent; i++) {
+        high_activity_val.push(0);
+    }
+    console.log(high_activity_val);
+
+    //add padding of 0's for where high activity vs. low activity data should be displayed
+    //var data_low_activity = new Array();
+    for (i = 0; i < ten_percent; i++) {
+        low_activity_val.unshift(0);
+    }
+    console.log(low_activity_val);
+
+    // chart options
+    var options = {
+        chart: {
+            renderTo: 'example2',
+            type: 'column',
+            zoomType: 'x'
+        },
+        title: {
+            text: 'Top 10% High Activity Dogs vs. Top 10% Low Activity Dogs'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        xAxis: {
+            title: {
+                text: "Dog's Names"
+            },
+            categories: names,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Total Minutes'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: dogPointFormat + '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.1f} mins</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 60,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
+        },
+        series: [{
+            name: 'High Activity',
+            data: high_activity_val,
+        }, {
+            name: 'Low Activity',
+            data: low_activity_val,
+        }]
+    };
+
+    // create the chart
+    var chart = new Highcharts.Chart(options);
+
+};
+
+//***************************************************************************** */
 // chart 1 - Awake Versus Rest of All Dogs by Name
 function createChartOne() {
     // create series
-    var series_data = makeDogPoints(filtered_dogs, function(point) {
+    var series_data = makeDogPoints(filtered_dogs, function (point) {
         point.x = point.awake / point.total * 100,
-        point.y = point.rest / point.total * 100,
-        point.marker = {radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 6};
+            point.y = point.rest / point.total * 100,
+            point.marker = { radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 6 };
     });
     // chart options
     var options = {
@@ -228,9 +357,9 @@ function createChartOne() {
         tooltip: {
             useHTML: true,
             headerFormat: '',
-            pointFormat: dogPointFormat+
-                '{point.x:.3f} % Awake, {point.y:.3f} % Rest<br>'+
-                'Total Minutes: {point.total:.0f}',
+            pointFormat: dogPointFormat +
+            '{point.x:.3f} % Awake, {point.y:.3f} % Rest<br>' +
+            'Total Minutes: {point.total:.0f}',
         },
         plotOptions: {
             scatter: {
@@ -244,7 +373,7 @@ function createChartOne() {
                 },
             }
         },
-        series:[{
+        series: [{
             name: 'Dogs',
             data: series_data
         }]
@@ -256,10 +385,10 @@ function createChartOne() {
 // chart 2 - Rest Versus Active of All Dogs by Name
 function createChartTwo() {
     // create series
-    var series_data = makeDogPoints(filtered_dogs, function(point) {
+    var series_data = makeDogPoints(filtered_dogs, function (point) {
         point.x = point.rest / point.total * 100,
-        point.y = point.active / point.total * 100,
-        point.marker = {radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 6};
+            point.y = point.active / point.total * 100,
+            point.marker = { radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 6 };
     });
     // chart options
     var options = {
@@ -302,9 +431,9 @@ function createChartTwo() {
         tooltip: {
             useHTML: true,
             headerFormat: '',
-            pointFormat: dogPointFormat+
-                '{point.x:.3f} % Rest, {point.y:.3f} % Active<br>'+
-                'Total Minutes: {point.total:.0f}',
+            pointFormat: dogPointFormat +
+            '{point.x:.3f} % Rest, {point.y:.3f} % Active<br>' +
+            'Total Minutes: {point.total:.0f}',
         },
         plotOptions: {
             scatter: {
@@ -319,7 +448,7 @@ function createChartTwo() {
                 }
             }
         },
-        series:[{
+        series: [{
             name: 'Dogs',
             data: series_data
         }]
@@ -332,10 +461,10 @@ function createChartTwo() {
 // chart 3 - Awake Versus Active of All Dogs by Name
 function createChartThree() {
     // create series
-    var series_data = makeDogPoints(filtered_dogs, function(point) {
+    var series_data = makeDogPoints(filtered_dogs, function (point) {
         point.x = point.awake / point.total * 100,
-        point.y = point.active / point.total * 100,
-        point.marker = {radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 6};
+            point.y = point.active / point.total * 100,
+            point.marker = { radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 6 };
     });
     // chart options
     var options = {
@@ -378,9 +507,9 @@ function createChartThree() {
         tooltip: {
             useHTML: true,
             headerFormat: '',
-            pointFormat: dogPointFormat+
-                '{point.x:.3f} % Awake, {point.y:.3f} % Active<br>'+
-                'Total Minutes: {point.total:.0f}',
+            pointFormat: dogPointFormat +
+            '{point.x:.3f} % Awake, {point.y:.3f} % Active<br>' +
+            'Total Minutes: {point.total:.0f}',
         },
         plotOptions: {
             scatter: {
@@ -395,7 +524,7 @@ function createChartThree() {
                 }
             }
         },
-        series:[{
+        series: [{
             name: 'Dogs',
             data: series_data
         }]
@@ -411,11 +540,11 @@ function createChartThree() {
 // chart 4 Activity Percentage of All Dogs
 function createChartFour() {
     // create the series
-    var series_data = makeDogPoints(filtered_dogs, function(point) {
+    var series_data = makeDogPoints(filtered_dogs, function (point) {
         point.y = point.active / point.total * 100,
-        point.marker = {radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 4};
+            point.marker = { radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 4 };
     });
-     // sort
+    // sort
     series_data.sort(function (a, b) {
         return (a.active / a.total) - (b.active / b.total);
     });
@@ -456,7 +585,7 @@ function createChartFour() {
         tooltip: {
             useHTML: true,
             headerFormat: '',
-            pointFormat: dogPointFormat+
+            pointFormat: dogPointFormat +
             '{point.y:.3f} % Active<br>Total Minutes: {point.total:.0f}',
         },
         plotOptions: {
@@ -485,9 +614,9 @@ function createChartFour() {
 // chart 5 Awake Percentage of All Dogs
 function createChartFive() {
     // create the series
-    var series_data = makeDogPoints(filtered_dogs, function(point) {
+    var series_data = makeDogPoints(filtered_dogs, function (point) {
         point.y = point.awake / point.total * 100,
-        point.marker = {radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 4};
+            point.marker = { radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 4 };
     });
     // sort
     series_data.sort(function (a, b) {
@@ -559,11 +688,11 @@ function createChartFive() {
 // chart 6 Rest Percentage of All Dogs
 function createChartSix() {
     // create the series
-    var series_data = makeDogPoints(filtered_dogs, function(point) {
+    var series_data = makeDogPoints(filtered_dogs, function (point) {
         point.y = point.rest / point.total * 100,
-        point.marker = {radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 4};
+            point.marker = { radius: Math.pow(point.total / filtered_dogs_max_total, .2) * 4 };
     });
-     // sort
+    // sort
     series_data.sort(function (a, b) {
         return (a.rest / a.total) - (b.rest / b.total);
     });
@@ -815,25 +944,25 @@ var string3 = '';
 var chartOptionsAreValid = false;
 var id;
 var barchoices3 = [];
-var barchoices1 = [{"value": "Raw Data", "text": "Raw Data"}, {"value": "Comparisons", "text": "Comparisons"}];
-var barchoices2 = [{"value": "Active", "text": "Active"}, {"value": "Awake", "text": "Awake"}, {"value": "Rest", "text": "Rest"}, {"value": "Total", "text": "Total"}];
-var barchoices4 = [{"value": "Raw Data", "text": "Raw Data"}];
+var barchoices1 = [{ "value": "Raw Data", "text": "Raw Data" }, { "value": "Comparisons", "text": "Comparisons" }];
+var barchoices2 = [{ "value": "Active", "text": "Active" }, { "value": "Awake", "text": "Awake" }, { "value": "Rest", "text": "Rest" }, { "value": "Total", "text": "Total" }];
+var barchoices4 = [{ "value": "Raw Data", "text": "Raw Data" }];
 
 function fieldcheck() {
     var temp = $("#mySelect option:selected").text();
     chartOptionsAreValid = false;
     if (temp != "Select One") {
         $('#mySelect2').show();
-        if(temp == "Bar"){
+        if (temp == "Bar") {
             barOptions('#mySelect2', barchoices1);
-        } else if (temp == "Pie"){
+        } else if (temp == "Pie") {
             barOptions('#mySelect2', barchoices4);
         }
-        else if (temp == "Line"){
+        else if (temp == "Line") {
             var j = 0;
             string1 = string3;
             for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+                helper = { "value": string1.dogs[i].name, "text": string1.dogs[i].name }
                 barchoices3[j] = helper;
                 j++;
             }
@@ -852,44 +981,44 @@ function fieldcheck2() {
     var temp2 = $("#mySelect option:selected").text();
     if (temp != "Select One") {
         $('#mySelect3').show();
-        if(temp == "Raw Data"){
+        if (temp == "Raw Data") {
             if (temp2 == "Bar") {
                 chartOptionsAreValid = false;
-                    barOptions('#mySelect3', barchoices2);
-                    $('#mySelect4').hide();
-                    //chartOptionsAreValid = true;
+                barOptions('#mySelect3', barchoices2);
+                $('#mySelect4').hide();
+                //chartOptionsAreValid = true;
             } else if (temp2 == "Pie") {
                 var j = 0;
                 string1 = string3;
                 for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                    helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+                    helper = { "value": string1.dogs[i].name, "text": string1.dogs[i].name }
                     barchoices3[j] = helper;
                     j++;
                 }
                 chartOptionsAreValid = false;
-                    barOptions('#mySelect3', barchoices3);
-                    $('#mySelect4').hide();
+                barOptions('#mySelect3', barchoices3);
+                $('#mySelect4').hide();
             }
 
-            } else if(temp == "Comparisons"){
-                if (temp2 == "Bar") {
-                    chartOptionsAreValid = false;
-                    $('#mySelect4').show();
-                    barOptions('#mySelect3', barchoices2);
-                    barOptions('#mySelect4', barchoices2);
-                } else if (temp2 == "Pie") {
-                    var j = 0;
-                    string1 = string2;
-                    for (var i = 0; i < string2.length; i++) {
-                        helper = {"value": string1[i].name, "text": string1[i].name}
-                        barchoices3[j] = helper;
-                        j++;
-                    }
-                    chartOptionsAreValid = false;
-                    $('#mySelect4').show();
-                    barOptions('#mySelect3', barchoices3);
-                    barOptions('#mySelect4', barchoices3);
+        } else if (temp == "Comparisons") {
+            if (temp2 == "Bar") {
+                chartOptionsAreValid = false;
+                $('#mySelect4').show();
+                barOptions('#mySelect3', barchoices2);
+                barOptions('#mySelect4', barchoices2);
+            } else if (temp2 == "Pie") {
+                var j = 0;
+                string1 = string2;
+                for (var i = 0; i < string2.length; i++) {
+                    helper = { "value": string1[i].name, "text": string1[i].name }
+                    barchoices3[j] = helper;
+                    j++;
                 }
+                chartOptionsAreValid = false;
+                $('#mySelect4').show();
+                barOptions('#mySelect3', barchoices3);
+                barOptions('#mySelect4', barchoices3);
+            }
         } else if (temp2 == "Line") {
             chartOptionsAreValid = true;
             barOptions('#mySelect3', barchoices2);
@@ -906,12 +1035,12 @@ function fieldcheck3() {
     var select1 = $("#mySelect2 option:selected").text();
     var temp = $("#mySelect3 option:selected").text();
     if (temp != "Select One") {
-        if(select1 == "Raw Data"){
+        if (select1 == "Raw Data") {
             chartOptionsAreValid = true;
         } else {
             idValiBar = false;
         }
-    }  else {
+    } else {
         chartOptionsAreValid = false;
     }
 }
@@ -926,7 +1055,7 @@ function fieldcheck4() {
         } else {
             idValiBar = false;
         }
-    }  else {
+    } else {
         chartOptionsAreValid = false;
     }
 }
@@ -934,35 +1063,35 @@ function fieldcheck4() {
 function barOptions(item, options) {
     $(item).empty();
     $(item).append($('<option>', {
-            value: "Select" ,
-            text: "Select One"
-            }));
-    for(var i = 0; i < options.length ; i ++){
+        value: "Select",
+        text: "Select One"
+    }));
+    for (var i = 0; i < options.length; i++) {
         $(item).append($('<option>', {
-            value: options[i].value ,
+            value: options[i].value,
             text: options[i].text
-            }));
+        }));
     }
 }
 
 function generateGraph() {
     if (chartOptionsAreValid) {
-            name1 = $("#mySelect1 option:selected").text();
-            var temp1 = $("#mySelect option:selected").text();
+        name1 = $("#mySelect1 option:selected").text();
+        var temp1 = $("#mySelect option:selected").text();
         if (temp1 == "Bar") {
             var select1 = $("#mySelect2 option:selected").text();
-            if (select1 == "Raw Data"){
+            if (select1 == "Raw Data") {
                 var type = $("#mySelect3 option:selected").text();
                 makeBar(string2, type);
             }
-            if (select1 == "Comparisons"){
+            if (select1 == "Comparisons") {
                 var typeA = $("#mySelect3 option:selected").text();
                 var typeB = $("#mySelect4 option:selected").text();
                 makeBar2(string2, typeA, typeB);
             }
         } else if (temp1 == "Pie") {
             var select1 = $("#mySelect2 option:selected").text();
-            if (select1 == "Raw Data"){
+            if (select1 == "Raw Data") {
                 var type = $("#mySelect3 option:selected").text();
                 makePie(string2, type);
             }
@@ -982,9 +1111,9 @@ function generateGraph() {
 var custom_graph_id = 0;
 function insertNewGraphRow() {
     custom_graph_id += 1;
-    var id = "custom-graph-"+custom_graph_id.toString();
+    var id = "custom-graph-" + custom_graph_id.toString();
     var graphs = document.getElementById("custom-graphs");
-    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">x</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto; padding: 1em;"></div></div>';
+    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">x</button><div id="' + id + '" style="width: 100%; height: 40em; margin: 0 auto; padding: 1em;"></div></div>';
     graphs.insertAdjacentHTML('afterbegin', newElement);
     return id;
 }
@@ -995,9 +1124,9 @@ function renderNewCustomGraph(options, compare) {
     options.chart.renderTo = id;
     var chart = new Highcharts.Chart(options);
 
-    if(compare == "compare") {
+    if (compare == "compare") {
         insertNewStatsTable2();
-    } else if(compare == "normal"){
+    } else if (compare == "normal") {
         insertNewStatsTable();
     }
 }
@@ -1011,33 +1140,33 @@ function deleteGraph(e) {
 var stats_table_id = 0;
 function insertNewStatsTable() {
     stats_table_id += 1;
-    var id = "stats"+stats_table_id.toString();
-    var graph = document.getElementById("custom-graph-"+custom_graph_id.toString());
+    var id = "stats" + stats_table_id.toString();
+    var graph = document.getElementById("custom-graph-" + custom_graph_id.toString());
     var newTable =
-    '<table class="table table-hover" id="'+id+'" style="width:60%;">'
-        +'<thead>'
-            +'<tr style="background-color: #016197; color: white;">'
-                +'<th>Statistic</th>'
-                +'<th>Value</th>'
-            +'</tr>'
-        +'</thead>'
-    +'</table>';
+        '<table class="table table-hover" id="' + id + '" style="width:60%;">'
+        + '<thead>'
+        + '<tr style="background-color: #016197; color: white;">'
+        + '<th>Statistic</th>'
+        + '<th>Value</th>'
+        + '</tr>'
+        + '</thead>'
+        + '</table>';
     graph.insertAdjacentHTML('afterend', newTable);
 }
 function insertNewStatsTable2() {
     stats_table_id += 1;
-    var id = "stats"+stats_table_id.toString()+"Comp";
-    var graph = document.getElementById("custom-graph-"+custom_graph_id.toString());
+    var id = "stats" + stats_table_id.toString() + "Comp";
+    var graph = document.getElementById("custom-graph-" + custom_graph_id.toString());
     var newTable =
-    '<table class="table table-hover" id="'+id+'" style="width:60%;">'
-        +'<thead>'
-            +'<tr style="background-color: #016197; color: white;">'
-                +'<th>Statistic</th>'
-                +'<th>Value</th>'
-                +'<th>Value2</th>'
-            +'</tr>'
-        +'</thead>'
-    +'</table>';
+        '<table class="table table-hover" id="' + id + '" style="width:60%;">'
+        + '<thead>'
+        + '<tr style="background-color: #016197; color: white;">'
+        + '<th>Statistic</th>'
+        + '<th>Value</th>'
+        + '<th>Value2</th>'
+        + '</tr>'
+        + '</thead>'
+        + '</table>';
     graph.insertAdjacentHTML('afterend', newTable);
 }
 
@@ -1046,13 +1175,13 @@ function insertNewStatsTable2() {
 //type specifies if it's a comparison bar chart
 //data2 is from the second dog (if a comparison)
 function statsData(data, type, data2) {
-    if(type == "compare") {
-        var table = document.getElementById("stats"+stats_table_id.toString()+"Comp");
+    if (type == "compare") {
+        var table = document.getElementById("stats" + stats_table_id.toString() + "Comp");
 
         //mean
         var tData = jStat.mean(data);
         var tData2 = jStat.mean(data2);
-        editStatsTable2(1, "Mean", round(tData,2), round(tData2,2));
+        editStatsTable2(1, "Mean", round(tData, 2), round(tData2, 2));
         //min and max
         tData = jStat.min(data);
         var tDataM = jStat.max(data);
@@ -1062,11 +1191,11 @@ function statsData(data, type, data2) {
         //variance
         tData = jStat.variance(data);
         tData1 = jStat.variance(data2);
-        editStatsTable2(3, "Variance", round(tData,2), round(tData2,2));
+        editStatsTable2(3, "Variance", round(tData, 2), round(tData2, 2));
         //standard deviation
         tData = jStat.stdev(data);
         tData2 = jStat.stdev(data2);
-        editStatsTable2(4, "Standard Deviation", round(tData,2), round(tData2,2));
+        editStatsTable2(4, "Standard Deviation", round(tData, 2), round(tData2, 2));
         //Quartiles
         tData = jStat.quartiles(data);
         tData2 = jStat.quartiles(data2);
@@ -1083,20 +1212,20 @@ function statsData(data, type, data2) {
         tData = jStat.corrcoeff(data, data2);
         editStatsTable2(8, "Correlation Coefficient", round(tData, 4), "comp");
     } else {
-        var table = document.getElementById("stats"+stats_table_id.toString());
+        var table = document.getElementById("stats" + stats_table_id.toString());
 
         var tData = jStat.mean(data);
-        editStatsTable(1, "Mean", round(tData,2));
+        editStatsTable(1, "Mean", round(tData, 2));
         //min and max
         tData = jStat.min(data);
         var tData2 = jStat.max(data);
         editStatsTable(2, "Min, Max", tData + ", " + tData2);
         //variance
         tData = jStat.variance(data);
-        editStatsTable(3, "Variance", round(tData,2));
+        editStatsTable(3, "Variance", round(tData, 2));
         //standard deviation
         tData = jStat.stdev(data);
-        editStatsTable(4, "Standard Deviation", round(tData,2));
+        editStatsTable(4, "Standard Deviation", round(tData, 2));
         //Quartiles
         tData = jStat.quartiles(data);
         //tValue = tData[0] + ", " + tData[1] + ", " + tData[2];
@@ -1111,7 +1240,7 @@ function statsData(data, type, data2) {
 //label is the name/type of statistic
 //value is the calculated value of the statistic
 function editStatsTable(rowNum, label, value) {
-    var table = document.getElementById("stats"+stats_table_id.toString());
+    var table = document.getElementById("stats" + stats_table_id.toString());
     var tRow = table.insertRow(rowNum);
     var tLabel = tRow.insertCell(0);
     var tValue = tRow.insertCell(1);
@@ -1123,11 +1252,11 @@ function editStatsTable(rowNum, label, value) {
 //value is the calculated value of the statistic
 //value2 is for the second dog
 function editStatsTable2(rowNum, label, value1, value2) {
-    var table = document.getElementById("stats"+stats_table_id.toString()+"Comp");
+    var table = document.getElementById("stats" + stats_table_id.toString() + "Comp");
     var tRow = table.insertRow(rowNum);
     var tLabel = tRow.insertCell(0);
     tLabel.innerHTML = label;
-    if(value2 == "comp") {
+    if (value2 == "comp") {
         var tValue = tRow.insertCell(1);
         tValue.innerHTML = value1;
         tValue.colspan = 2;
@@ -1144,7 +1273,7 @@ function makeBar(data, type) {
     var arr1 = new Array();
     string1 = data;
     var j = 0;
-    for (var i =0; i < string1.length; i++) {
+    for (var i = 0; i < string1.length; i++) {
         arr[j] = string1[i].name;
         var ratio = getBarInfo(string1[i], type);
         arr1[j] = ratio;
@@ -1173,7 +1302,7 @@ function makeBar(data, type) {
         tooltip: {
             headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
             pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.1f} minutes</b></td></tr>',
+            '<td style="padding:0"><b>{point.y:.1f} minutes</b></td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
@@ -1200,7 +1329,7 @@ function makeBar2(data, typeA, typeB) {
     var arr2 = new Array();
     string1 = data;
     var j = 0;
-    for (var i =0; i < string1.length; i++) {
+    for (var i = 0; i < string1.length; i++) {
         arr[j] = string1[i].name;
         var ratio = getBarInfo(string1[i], typeA);
         var ratio2 = getBarInfo(string1[i], typeB);
@@ -1209,40 +1338,40 @@ function makeBar2(data, typeA, typeB) {
         j++;
     }
     var options = {
-            chart: {
-                type: 'column'
-            },
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Distribution of minutes spent ' + typeA + " and " + typeB
+        },
+        subtitle: {
+            text: 'Dog activity tracked in minutes'
+        },
+        xAxis: {
+            categories: arr,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
             title: {
-                text: 'Distribution of minutes spent ' + typeA + " and " + typeB
-            },
-            subtitle: {
-                text: 'Dog activity tracked in minutes'
-            },
-            xAxis: {
-                categories: arr,
-                crosshair: true
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Minutes'
-                }
-            },
-            tooltip: {
-                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b>{point.y:.1f} minutes</b></td></tr>',
-                footerFormat: '</table>',
-                shared: true,
-                useHTML: true
-            },
-            plotOptions: {
-                column: {
-                    pointPadding: 0.2,
-                    borderWidth: 0
-                }
-            },
-            series: [{
+                text: 'Minutes'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.1f} minutes</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
             name: typeA,
             data: arr1
         }, {
@@ -1260,15 +1389,15 @@ function makePie(data, dog) {
     var arr1 = new Array();
     string1 = data;
     var j = 0;
-    for (var i =0; i < string1.length; i++) {
+    for (var i = 0; i < string1.length; i++) {
         if (string1[i].name == dog) {
             var data1 = getBarInfo(string1[i], "Rest");
             var data2 = getBarInfo(string1[i], "Active");
             var data3 = getBarInfo(string1[i], "Awake");
             var dataT = data1 + data2 + data3;
-            var ratioA = data1/dataT;
-            var ratioB = data2/dataT;
-            var ratioC = data3/dataT;
+            var ratioA = data1 / dataT;
+            var ratioB = data2 / dataT;
+            var ratioC = data3 / dataT;
         }
     };
     var options = {
@@ -1323,15 +1452,15 @@ function makeLine(data, dog, type) {
     var dates = [];
     var index;
     string1 = data;
-    for (var k =0; k < Object.keys(string3.dogs).length; k++) {
+    for (var k = 0; k < Object.keys(string3.dogs).length; k++) {
         if (string3.dogs[k].name == dog) {
             id = string3.dogs[k].id;
         }
     }
     var j = 0;
-    for (var i =0; i < Object.keys(string3.days).length; i++) {
+    for (var i = 0; i < Object.keys(string3.days).length; i++) {
         var dateSplit = string3.days[i].date.split("-");
-        for (var m =0; m < Object.keys(string3.days[i].dogs).length; m++) {
+        for (var m = 0; m < Object.keys(string3.days[i].dogs).length; m++) {
             if (string3.days[i].dogs[m].id == id) {
                 console.log(string3.days[i].date);
                 if (type == "Total") {
@@ -1352,11 +1481,11 @@ function makeLine(data, dog, type) {
             zoomType: 'x'
         },
         title: {
-            text: dog+' '+type+' Minutes Over Time'
+            text: dog + ' ' + type + ' Minutes Over Time'
         },
         subtitle: {
             text: document.ontouchstart === undefined ?
-                    'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
         },
         xAxis: {
             type: 'datetime'
@@ -1372,7 +1501,7 @@ function makeLine(data, dog, type) {
         plotOptions: {
             area: {
                 fillColor: {
-                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
                     stops: [
                         [0, Highcharts.getOptions().colors[0]],
                         [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
@@ -1399,12 +1528,12 @@ function makeLine(data, dog, type) {
     renderNewCustomGraph(options);
 }
 
-function makePie2(data, dog1, dog2){
+function makePie2(data, dog1, dog2) {
     var arr = new Array();
     var arr1 = new Array();
     string1 = data;
     var j = 0;
-    for (var i =0; i < string1.length; i++) {
+    for (var i = 0; i < string1.length; i++) {
         if (string1[i].name == dog1) {
             console.log(string1[i].name);
             var data1 = getBarInfo(string1[i], "Rest");
@@ -1423,19 +1552,19 @@ function makePie2(data, dog1, dog2){
         data: {
             labels: ["Rest", "Active", "Awake"],
             datasets: [{
-            backgroundColor: [
-                "#2ecc71",
-                "#3498db",
-                "#95a5a6"
-            ],
-            data: [data4, data5, data6]
+                backgroundColor: [
+                    "#2ecc71",
+                    "#3498db",
+                    "#95a5a6"
+                ],
+                data: [data4, data5, data6]
             }]
         }
     };
     renderNewCustomGraph(options);
 }
 
-function getBarInfo(dog, type){
+function getBarInfo(dog, type) {
     if (type == 'Rest') {
         return dog.rest;
     } else if (type == 'Active') {
@@ -1449,6 +1578,6 @@ function getBarInfo(dog, type){
 
 
 function round(value, decimals) {
-  return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 }
 //============= /javascript for custom graphs ==================================
