@@ -36,10 +36,12 @@ def main():
     all_active_p = []
     all_awake_p = []
     all_rest_p = []
+    print "="*80
+    print "averages and outcomes by outcome:"
     # look at dogs by their outcome and compute statistics.
     for outcome, dogs in by_outcome.iteritems():
-        print "="*80
-        print "outcome = "+outcome
+        print "-"*80
+        print "outcome = '"+outcome+"'"
         awake_avg = rest_avg = active_avg = 0
         # these are like all_active_p but just within the outcome
         active_p = []
@@ -60,46 +62,44 @@ def main():
         active_avg = average(awake_p)
         # store and print the results formatted nicely
         values = {
-            "awake": "%.5f"%(awake_avg),
-            "rest": "%.5f"%(rest_avg),
-            "active": "%.5f"%(active_avg),
-            "awake s^2": "%.5f"%(variance(awake_p)),
-            "rest s^2": "%.5f"%(variance(rest_p)),
-            "active s^2": "%.5f"%(variance(active_p)),
+            "awake": awake_avg,
+            "rest": rest_avg,
+            "active": active_avg,
+            "awake s^2": variance(awake_p),
+            "rest s^2": variance(rest_p),
+            "active s^2": variance(active_p),
         }
-        print values
+        for k,v in sorted(values.iteritems()):
+            print "%12s %.5f" % (k+":",v)
         outcome_results[outcome] = values
         # store the percentages of all dogs together for later use
         all_active_p.extend(active_p)
         all_rest_p.extend(rest_p)
         all_awake_p.extend(awake_p)
-        print "="*80
     print "="*80
     # print the variances across the outcome types
     print "Outcome variances:"
-    active_var = variance([float(v["active"]) for v in outcome_results.itervalues()])
-    awake_var = variance([float(v["awake"]) for v in outcome_results.itervalues()])
-    rest_var = variance([float(v["awake"]) for v in outcome_results.itervalues()])
+    active_var = variance([v["active"] for v in outcome_results.itervalues()])
+    awake_var = variance([v["awake"] for v in outcome_results.itervalues()])
+    rest_var = variance([v["awake"] for v in outcome_results.itervalues()])
     print "active s^2: %f, s: %f"%(active_var, math.sqrt(active_var))
-    print "awake s^2: %f, s: %f"%(awake_var, math.sqrt(awake_var))
-    print "rest s^2: %f, s: %f"%(rest_var, math.sqrt(rest_var))
-    print "="*80
+    print " awake s^2: %f, s: %f"%(awake_var, math.sqrt(awake_var))
+    print "  rest s^2: %f, s: %f"%(rest_var, math.sqrt(rest_var))
     print "="*80
     # print the averages across all dogs
-    print "all dogs averages"
-    print "active %.5f"%(average(all_active_p))
-    print "rest %.5f"%(average(all_rest_p))
-    print "awake %.5f"%(average(all_awake_p))
-    print "="*80
+    print "all dogs averages:"
+    print "active: %.5f"%(average(all_active_p))
+    print "  rest: %.5f"%(average(all_rest_p))
+    print " awake: %.5f"%(average(all_awake_p))
     print "="*80
     # print the variances across all dogs
-    print "all dogs variances"
+    print "all dogs variances:"
     all_active_var = variance(all_active_p)
     all_rest_var = variance(all_rest_p)
     all_awake_var = variance(all_awake_p)
-    print "active s^2: %f, s: %f"%(all_active_var, math.sqrt(all_active_var))
-    print "awake s^2: %f, s: %f"%(all_awake_var, math.sqrt(all_awake_var))
-    print "rest s^2: %f, s: %f"%(all_rest_var, math.sqrt(all_rest_var))
+    print "active s^2: %8.5f, s: %.5f"%(all_active_var, math.sqrt(all_active_var))
+    print " awake s^2: %8.5f, s: %.5f"%(all_awake_var, math.sqrt(all_awake_var))
+    print "  rest s^2: %8.5f, s: %.5f"%(all_rest_var, math.sqrt(all_rest_var))
 
 if __name__ == "__main__":
     main()
