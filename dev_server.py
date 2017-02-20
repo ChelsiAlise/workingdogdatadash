@@ -2,11 +2,9 @@
 
 """
 local development server for working dog data dash
-
 This implements a python 2.7 script with no dependencies
 that forwards api requests to the real server and serves static content
 from the local working directory.
-
 run like `./dev_server.py` from the project root.
 then provide login credentials for the P.A.W.S. service
 """
@@ -34,14 +32,11 @@ class DevHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
     def send_head(self):
         """Common code for GET and HEAD commands.
-
         This sends the response code and MIME headers.
-
         Return value is either a file object (which has to be copied
         to the outputfile by the caller unless the command was HEAD,
         and must be closed by the caller under all circumstances), or
         None, in which case the caller has nothing further to do.
-
         NOTE:
              This method is based on: https://gist.github.com/enjalot/2904124
         """
@@ -100,7 +95,6 @@ class DevHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 def login(opener):
     """prompts the cli user for login credentials to P.A.W.S.
      then sends a login request to the real server using opener.
-
     Arguments:
         opener - a urllib2.OpenerDirector, this should have a cookier jar.
     """
@@ -117,7 +111,7 @@ def login(opener):
 
 def main():
     """main runs login, and then starts the local server"""
-    port = 8090
+    port = 8080
     handler = DevHTTPRequestHandler
     httpd = SocketServer.TCPServer(("", port), handler)
     login(DevHTTPRequestHandler.opener)

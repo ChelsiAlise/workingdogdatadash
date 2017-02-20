@@ -72,7 +72,7 @@ function loadDataAndInitialize() {
             filtered_dogs_max_total = getMaxTotal(filtered_dogs);
             // normalize data
             normalizeDogData(filtered_dogs);
-            string2 = data; // TODO: remove this
+            JSONstring2 = data; // TODO: remove this
             // update the cards
             updateCards();
             // create all graphs that use this data.
@@ -94,7 +94,7 @@ function loadDataAndInitialize() {
         success: function(data) {
             // store the data
             filtered_blob = data;
-            string3 = data; // TOOD: remove this
+            JSONstring3 = data; // TOOD: remove this
             // normalize data
             normalizeDogData(filtered_blob.dogs);
         }
@@ -809,9 +809,9 @@ function mostAwakeDog(data) {
 //    Users should be able to select multiple data ranges and then create
 //    graphs that use these ranges.
 // TODO: rename / remove these. EG: What is string{1,2,3} supposed to be?
-var string1 = '';
-var string2 = '';
-var string3 = '';
+var JSONstring1 = '';
+var JSONstring2 = '';
+var JSONstring3 = '';
 var chartOptionsAreValid = false;
 var id;
 var barchoices3 = [];
@@ -827,6 +827,7 @@ var barchoices1 = [{"value": "Raw Data", "text": "Raw Data"}, {"value": "Compari
 var barchoices2 = [{"value": "Active", "text": "Active"}, {"value": "Awake", "text": "Awake"}, {"value": "Rest", "text": "Rest"}, {"value": "Total", "text": "Total"}];
 var barchoices4 = [{"value": "Raw Data", "text": "Raw Data"}];
 
+// Checks the logic behind first field for generate graph. If sucessful goes to fieldcheck2.
 function fieldcheck() {
     var temp = $("#mySelect option:selected").text();
     var filterValue = $("#myFilter option:selected").text();
@@ -837,9 +838,9 @@ function fieldcheck() {
     if (filterValue != "All Dogs") {
         $('#myFilter2').show();
         // var j = 0;
-        // string1 = string3;
-        // for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-        //     helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+        // JSONstring1 = JSONstring3;
+        // for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+        //     helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
         //     alldogs[j] = helper;
         //     j++;
         // }
@@ -848,18 +849,18 @@ function fieldcheck() {
         if(filterValue == "Region"){
             region = true;
             var j = 0;
-            //console.log(string3);
-            string1 = string3;
+            //console.log(JSONstring3);
+            JSONstring1 = JSONstring3;
             var uniques = [];
             barchoicesRegion = [];
-            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                if (uniques.indexOf(string1.dogs[i].regional_center) > -1) {
-                    //console.log(string1.dogs[i].regional_center);
+            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+                if (uniques.indexOf(JSONstring1.dogs[i].regional_center) > -1) {
+                    //console.log(JSONstring1.dogs[i].regional_center);
                     //test;
                     continue;
                 }
-                helper = {"value": string1.dogs[i].regional_center, "text": string1.dogs[i].regional_center}
-                uniques.push(string1.dogs[i].regional_center);
+                helper = {"value": JSONstring1.dogs[i].regional_center, "text": JSONstring1.dogs[i].regional_center}
+                uniques.push(JSONstring1.dogs[i].regional_center);
                 //console.log(uniques);
 
                 barchoicesRegion[j] = helper;
@@ -870,17 +871,17 @@ function fieldcheck() {
         } else if(filterValue == "Dog Status"){
             status = true;
             var j = 0;
-            console.log(string3);
-            string1 = string3;
+            console.log(JSONstring3);
+            JSONstring1 = JSONstring3;
             var uniques = [];
-            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                if (uniques.indexOf(string1.dogs[i].dog_status) > -1) {
-                    //console.log(string1.dogs[i].regional_center);
+            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+                if (uniques.indexOf(JSONstring1.dogs[i].dog_status) > -1) {
+                    //console.log(JSONstring1.dogs[i].regional_center);
                     //test;
                     continue;
                 }
-                helper = {"value": string1.dogs[i].dog_status, "text": string1.dogs[i].dog_status}
-                uniques.push(string1.dogs[i].dog_status);
+                helper = {"value": JSONstring1.dogs[i].dog_status, "text": JSONstring1.dogs[i].dog_status}
+                uniques.push(JSONstring1.dogs[i].dog_status);
                 //console.log(uniques);
 
                 barchoicesStatus[j] = helper;
@@ -891,19 +892,19 @@ function fieldcheck() {
         } else if(filterValue == "Sex"){
             status = true;
             var j = 0;
-            //console.log(string3);
-            string1 = string3;
+            //console.log(JSONstring3);
+            JSONstring1 = JSONstring3;
             var uniques = [];
             barchoicesSex = [];
 
-            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                if (uniques.indexOf(string1.dogs[i].sex) > -1) {
-                    //console.log(string1.dogs[i].regional_center);
+            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+                if (uniques.indexOf(JSONstring1.dogs[i].sex) > -1) {
+                    //console.log(JSONstring1.dogs[i].regional_center);
                     //test;
                     continue;
                 }
-                helper = {"value": string1.dogs[i].sex, "text": string1.dogs[i].sex}
-                uniques.push(string1.dogs[i].sex);
+                helper = {"value": JSONstring1.dogs[i].sex, "text": JSONstring1.dogs[i].sex}
+                uniques.push(JSONstring1.dogs[i].sex);
                 //console.log(uniques);
 
                 barchoicesSex[j] = helper;
@@ -930,9 +931,9 @@ function fieldcheck() {
         }
         else if (temp == "Line"){
             var j = 0;
-            string1 = string3;
-            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+            JSONstring1 = JSONstring3;
+            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+                helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                 barchoices3[j] = helper;
                 j++;
             }
@@ -948,6 +949,7 @@ function fieldcheck() {
 
 ***REMOVED***
 
+// Check the second fieldcheck field, different options cause i different filters/inputs
 function fieldcheck2() {
     var temp = $("#mySelect2 option:selected").text();
     var temp2 = $("#mySelect option:selected").text();
@@ -959,15 +961,15 @@ function fieldcheck2() {
         $('#myFilter3').show();
         if(tempfilter2 == "Region") {
             var j = 0;
-            string1 = string3;
+            JSONstring1 = JSONstring3;
             barchoicesRegion2 = [];
 
-            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                console.log(string1.dogs[i].region);
+            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+                console.log(JSONstring1.dogs[i].region);
                 console.log(tempfilter);
                 console.log("-------");
-                if (tempfilter == string1.dogs[i].regional_center) {
-                    helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+                if (tempfilter == JSONstring1.dogs[i].regional_center) {
+                    helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                     barchoicesRegion2[j] = helper;
                     j++;
 
@@ -977,15 +979,15 @@ function fieldcheck2() {
             $('#myFilter4').hide();
         } else if(tempfilter2 == "Dog Status") {
             var j = 0;
-            string1 = string3;
+            JSONstring1 = JSONstring3;
             barchoicesStatus2 = [];
 
-            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                // console.log(string1.dogs[i].region);
+            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+                // console.log(JSONstring1.dogs[i].region);
                 // console.log(tempfilter);
                 // console.log("-------");
-                if (tempfilter == string1.dogs[i].dog_status) {
-                    helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+                if (tempfilter == JSONstring1.dogs[i].dog_status) {
+                    helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                     barchoicesStatus2[j] = helper;
                     j++;
 
@@ -995,14 +997,14 @@ function fieldcheck2() {
             $('#myFilter4').hide();
         } else if(tempfilter2 == "Sex") {
             var j = 0;
-            string1 = string3;
+            JSONstring1 = JSONstring3;
             barchoicesSex2 = [];
-            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                console.log(string1.dogs[i].sex);
+            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+                console.log(JSONstring1.dogs[i].sex);
                 console.log(tempfilter);
                 console.log("-------");
-                if (tempfilter == string1.dogs[i].sex) {
-                    helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+                if (tempfilter == JSONstring1.dogs[i].sex) {
+                    helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                     barchoicesSex2[j] = helper;
                     j++;
 
@@ -1031,13 +1033,13 @@ function fieldcheck2() {
                     //chartOptionsAreValid = true;
             } else if (temp2 == "Pie") {
                 var j = 0;
-                string1 = string3;
+                JSONstring1 = JSONstring3;
                 // console.log("hi");
                 //
                 // console.log($("#myFilter").selected);
                 // console.log("ho");
-                for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                    helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+                for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+                    helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                     barchoices3[j] = helper;
                     j++;
                 }
@@ -1055,11 +1057,11 @@ function fieldcheck2() {
                     barOptions('#mySelect4', barchoices2);
                 } else if (temp2 == "Pie") {
                     var j = 0;
-                    string1 = string2;
+                    JSONstring1 = JSONstring2;
 
 
-                    for (var i = 0; i < string2.length; i++) {
-                        helper = {"value": string1[i].name, "text": string1[i].name}
+                    for (var i = 0; i < JSONstring2.length; i++) {
+                        helper = {"value": JSONstring1[i].name, "text": JSONstring1[i].name}
                         barchoices3[j] = helper;
                         j++;
                     }
@@ -1080,6 +1082,7 @@ function fieldcheck2() {
     }
 ***REMOVED***
 
+//Checks the logic for the 3rd field
 function fieldcheck3() {
     var select1 = $("#mySelect2 option:selected").text();
     var temp = $("#mySelect3 option:selected").text();
@@ -1094,6 +1097,7 @@ function fieldcheck3() {
     }
 ***REMOVED***
 
+//chckes the logic for last field, should only be used in comparisons
 function fieldcheck4() {
     var select1 = $("#mySelect2 option:selected").text();
     var temp = $("#mySelect4 option:selected").text();
@@ -1123,6 +1127,7 @@ function barOptions(item, options) {
     }
 ***REMOVED***
 
+//Generates the graph after clicking the button
 function generateGraph() {
     if (chartOptionsAreValid) {
             name1 = $("#mySelect1 option:selected").text();
@@ -1131,28 +1136,28 @@ function generateGraph() {
             var select1 = $("#mySelect2 option:selected").text();
             if (select1 == "Raw Data"){
                 var type = $("#mySelect3 option:selected").text();
-                makeBar(string2, type);
+                makeBar(JSONstring2, type);
             }
             if (select1 == "Comparisons"){
                 var typeA = $("#mySelect3 option:selected").text();
                 var typeB = $("#mySelect4 option:selected").text();
-                makeBar2(string2, typeA, typeB);
+                makeBar2(JSONstring2, typeA, typeB);
             }
         } else if (temp1 == "Pie") {
             var select1 = $("#mySelect2 option:selected").text();
             if (select1 == "Raw Data"){
                 var type = $("#mySelect3 option:selected").text();
-                makePie(string2, type);
+                makePie(JSONstring2, type);
             }
         } else if (temp1 == "Line") {
             var select1 = $("#mySelect2 option:selected").text();
             var type = $("#mySelect3 option:selected").text();
-            makeLine(string3, select1, type);
+            makeLine(JSONstring3, select1, type);
         } else if (temp1 == "Box") {
             var select1 = $("#mySelect2 option:selected").text();
             if (select1 == "Raw Data"){
                 var type = $("#mySelect3 option:selected").text();
-                makeBox(string2, type);
+                makeBox(JSONstring2, type);
             }
         }
     } else {
@@ -1191,6 +1196,7 @@ function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
 ***REMOVED***
 
+// Used to check filter conditions of generate graph. Uses first filter input to generalize the next ones.
 function filterCheck() {
     var filterTxt = $("#myFilter option:selected").text();
     var filterTxt2 = $("#myFilter2 option:selected").text();
@@ -1208,6 +1214,7 @@ function filterCheck() {
     }
 ***REMOVED***
 
+//Filtercheck2 returns the initial types for the filter rather then specific dogs
 function filterCheck2() {
     var filterTxt = $("#myFilter option:selected").text();
     var filterTxt2 = $("#myFilter2 option:selected").text();
@@ -1362,7 +1369,7 @@ function editStatsTable2(rowNum, label, value1, value2) {
 function makeBar(data, type) {
     var arr = new Array();
     var arr1 = new Array();
-    string1 = data;
+    JSONstring1 = data;
     var j = 0;
     var tempArr = filterCheck();
     var arr2 = [];
@@ -1373,17 +1380,17 @@ function makeBar(data, type) {
     }
     // console.log("test");
     // console.log(arr2);
-    for (var i =0; i < string1.length; i++) {
+    for (var i =0; i < JSONstring1.length; i++) {
         if (tempArr == null) {
-            arr[j] = string1[i].name;
-            var ratio = getBarInfo(string1[i], type);
+            arr[j] = JSONstring1[i].name;
+            var ratio = getBarInfo(JSONstring1[i], type);
             arr1[j] = ratio;
             j++;
         } else {
-            //console.log(string1[i].name);
-            if(arr2.includes(string1[i].name)) {
-                arr[j] = string1[i].name;
-                var ratio = getBarInfo(string1[i], type);
+            //console.log(JSONstring1[i].name);
+            if(arr2.includes(JSONstring1[i].name)) {
+                arr[j] = JSONstring1[i].name;
+                var ratio = getBarInfo(JSONstring1[i], type);
                 arr1[j] = ratio;
                 j++;
             }
@@ -1434,11 +1441,12 @@ function makeBar(data, type) {
     statsData(arr1)
 ***REMOVED***
 
+//Used to generate the comparison bar graph
 function makeBar2(data, typeA, typeB) {
     var arr = new Array();
     var arr1 = new Array();
     var arr2 = new Array();
-    string1 = data;
+    JSONstring1 = data;
     var j = 0;
     var tempArr = filterCheck();
     var arr2 = [];
@@ -1447,20 +1455,20 @@ function makeBar2(data, typeA, typeB) {
             return item['text'];
         });
     }
-    for (var i =0; i < string1.length; i++) {
+    for (var i =0; i < JSONstring1.length; i++) {
         if (tempArr == null) {
 
-            arr[j] = string1[i].name;
-            var ratio = getBarInfo(string1[i], typeA);
-            var ratio2 = getBarInfo(string1[i], typeB);
+            arr[j] = JSONstring1[i].name;
+            var ratio = getBarInfo(JSONstring1[i], typeA);
+            var ratio2 = getBarInfo(JSONstring1[i], typeB);
             arr1[j] = ratio;
             arr2[j] = ratio2;
             j++;
         } else {
-            if(arr2.includes(string1[i].name)) {
-                arr[j] = string1[i].name;
-                var ratio = getBarInfo(string1[i], typeA);
-                var ratio2 = getBarInfo(string1[i], typeB);
+            if(arr2.includes(JSONstring1[i].name)) {
+                arr[j] = JSONstring1[i].name;
+                var ratio = getBarInfo(JSONstring1[i], typeA);
+                var ratio2 = getBarInfo(JSONstring1[i], typeB);
                 arr1[j] = ratio;
                 arr2[j] = ratio2;
                 j++;
@@ -1519,10 +1527,11 @@ function makeBar2(data, typeA, typeB) {
     statsData(arr1, "compare", arr2);
 ***REMOVED***
 
+//Creates the box graph, can use filters to change aspects of the box
 function makeBox(data, type) {
     // var arr = new Array();
     var arr1 = new Array();
-    string1 = data;
+    JSONstring1 = data;
     var arr = filterCheck2();
     var arr2 = ['All Dogs'];
     // var tempArr = filterCheck();
@@ -1539,26 +1548,26 @@ function makeBox(data, type) {
     for (var m=0; m < arr2.length; m++) {
         var arrTemp = [];
         var j = 0;
-        for (var i =0; i < string1.length; i++) {
-                if(filterSelected == "Region" && string1[i].regional_center == arr2[m]) {
-                    var ratio = getBarInfo(string1[i], type);
+        for (var i =0; i < JSONstring1.length; i++) {
+                if(filterSelected == "Region" && JSONstring1[i].regional_center == arr2[m]) {
+                    var ratio = getBarInfo(JSONstring1[i], type);
                     arrTemp[j] = ratio;
                     j++;
-                } else if(filterSelected == "Dog Status" && string1[i].dog_status == arr2[m]) {
-                    var ratio = getBarInfo(string1[i], type);
+                } else if(filterSelected == "Dog Status" && JSONstring1[i].dog_status == arr2[m]) {
+                    var ratio = getBarInfo(JSONstring1[i], type);
                     arrTemp[j] = ratio;
                     j++;
-                } else if(filterSelected == "Sex" && string1[i].sex == arr2[m]) {
-                    var ratio = getBarInfo(string1[i], type);
+                } else if(filterSelected == "Sex" && JSONstring1[i].sex == arr2[m]) {
+                    var ratio = getBarInfo(JSONstring1[i], type);
                     arrTemp[j] = ratio;
                     j++;
                 } else if(filterSelected == "All Dogs") {
-                    var ratio = getBarInfo(string1[i], type);
+                    var ratio = getBarInfo(JSONstring1[i], type);
                     arrTemp[j] = ratio;
                     j++;
                 }
                 // } else {
-                //     var ratio = getBarInfo(string1[i], type);
+                //     var ratio = getBarInfo(JSONstring1[i], type);
                 //     arr1[j] = ratio;
                 //     j++;
                 // }
@@ -1646,20 +1655,21 @@ function makeBox(data, type) {
     //statsData(arr1)
 ***REMOVED***
 
+//Makes a pie chart using options selected in the generate graph attributes
 function makePie(data, dog) {
     var arr = new Array();
     var arr1 = new Array();
-    string1 = data;
+    JSONstring1 = data;
     var j = 0;
     // console.log("----");
     // console.log($("#myFilter3 option:selected").text());
     // console.log("----");
 
-    for (var i =0; i < string1.length; i++) {
-        if (string1[i].name == dog) {
-            var data1 = getBarInfo(string1[i], "Rest");
-            var data2 = getBarInfo(string1[i], "Active");
-            var data3 = getBarInfo(string1[i], "Awake");
+    for (var i =0; i < JSONstring1.length; i++) {
+        if (JSONstring1[i].name == dog) {
+            var data1 = getBarInfo(JSONstring1[i], "Rest");
+            var data2 = getBarInfo(JSONstring1[i], "Active");
+            var data3 = getBarInfo(JSONstring1[i], "Awake");
             var dataT = data1 + data2 + data3;
             var ratioA = data1/dataT;
             var ratioB = data2/dataT;
@@ -1711,32 +1721,33 @@ function makePie(data, dog) {
 
 ***REMOVED***
 
+//Makes line graph that are created for specific dogs
 function makeLine(data, dog, type) {
     //console.log(type);
     var arr = new Array();
     var arr1 = new Array();
     var dates = [];
     var index;
-    string1 = data;
-    for (var k =0; k < Object.keys(string3.dogs).length; k++) {
-        if (string3.dogs[k].name == dog) {
-            id = string3.dogs[k].id;
+    JSONstring1 = data;
+    for (var k =0; k < Object.keys(JSONstring3.dogs).length; k++) {
+        if (JSONstring3.dogs[k].name == dog) {
+            id = JSONstring3.dogs[k].id;
         }
     }
     var j = 0;
-    for (var i =0; i < Object.keys(string3.days).length; i++) {
-        var dateSplit = string3.days[i].date.split("-");
-        for (var m =0; m < Object.keys(string3.days[i].dogs).length; m++) {
-            if (string3.days[i].dogs[m].id == id) {
-                //console.log(string3.days[i].date);
+    for (var i =0; i < Object.keys(JSONstring3.days).length; i++) {
+        var dateSplit = JSONstring3.days[i].date.split("-");
+        for (var m =0; m < Object.keys(JSONstring3.days[i].dogs).length; m++) {
+            if (JSONstring3.days[i].dogs[m].id == id) {
+                //console.log(JSONstring3.days[i].date);
                 if (type == "Total") {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].total];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), JSONstring3.days[i].dogs[m].total];
                 } else if (type == "Rest") {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].rest];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), JSONstring3.days[i].dogs[m].rest];
                 } else if (type == "Active") {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].active];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), JSONstring3.days[i].dogs[m].active];
                 } else {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].awake];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), JSONstring3.days[i].dogs[m].awake];
                 }
                 j++;
             }
@@ -1797,20 +1808,20 @@ function makeLine(data, dog, type) {
 function makePie2(data, dog1, dog2){
     var arr = new Array();
     var arr1 = new Array();
-    string1 = data;
+    JSONstring1 = data;
     var j = 0;
-    for (var i =0; i < string1.length; i++) {
-        if (string1[i].name == dog1) {
-            //console.log(string1[i].name);
-            var data1 = getBarInfo(string1[i], "Rest");
-            var data2 = getBarInfo(string1[i], "Active");
-            var data3 = getBarInfo(string1[i], "Awake");
+    for (var i =0; i < JSONstring1.length; i++) {
+        if (JSONstring1[i].name == dog1) {
+            //console.log(JSONstring1[i].name);
+            var data1 = getBarInfo(JSONstring1[i], "Rest");
+            var data2 = getBarInfo(JSONstring1[i], "Active");
+            var data3 = getBarInfo(JSONstring1[i], "Awake");
         }
-        if (string1[i].name == dog2) {
-            //console.log(string1[i].name);
-            var data4 = getBarInfo(string1[i], "Rest");
-            var data5 = getBarInfo(string1[i], "Active");
-            var data6 = getBarInfo(string1[i], "Awake");
+        if (JSONstring1[i].name == dog2) {
+            //console.log(JSONstring1[i].name);
+            var data4 = getBarInfo(JSONstring1[i], "Rest");
+            var data5 = getBarInfo(JSONstring1[i], "Active");
+            var data6 = getBarInfo(JSONstring1[i], "Awake");
         }
     }
     var options = {
