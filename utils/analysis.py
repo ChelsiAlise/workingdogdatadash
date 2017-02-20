@@ -37,7 +37,7 @@ def main():
     all_awake_p = []
     all_rest_p = []
     print "="*80
-    print "averages and outcomes by outcome:"
+    print "Averages & Outcomes By Outcome:"
     # look at dogs by their outcome and compute statistics.
     for outcome, dogs in by_outcome.iteritems():
         print "-"*80
@@ -78,7 +78,7 @@ def main():
         all_awake_p.extend(awake_p)
     print "="*80
     # print the variances across the outcome types
-    print "Outcome variances:"
+    print "Outcome Variances:"
     print "-"*80
     active_var = variance([v["active"] for v in outcome_results.itervalues()])
     awake_var = variance([v["awake"] for v in outcome_results.itervalues()])
@@ -87,22 +87,17 @@ def main():
     print " awake s^2: %f, s: %f"%(awake_var, math.sqrt(awake_var))
     print "  rest s^2: %f, s: %f"%(rest_var, math.sqrt(rest_var))
     print "="*80
-    # print the averages across all dogs
-    print "all dogs averages:"
+    # print the averages and variances across all dogs
+    print "All Dog Averages & Variances:"
     print "-"*80
-    print "active: %.5f"%(average(all_active_p))
-    print "  rest: %.5f"%(average(all_rest_p))
-    print " awake: %.5f"%(average(all_awake_p))
+    print "    active: %.5f" % (average(all_active_p))
+    print "active s^2: %.5f" % (variance(all_active_p))
+    print "     awake: %.5f" % (average(all_awake_p))
+    print " awake s^2: %.5f" % (variance(all_awake_p))
+    print "      rest: %.5f" % (average(all_rest_p))
+    print "  rest s^2: %.5f" % (variance(all_rest_p))
     print "="*80
-    # print the variances across all dogs
-    print "all dogs variances:"
-    print "-"*80
-    all_active_var = variance(all_active_p)
-    all_rest_var = variance(all_rest_p)
-    all_awake_var = variance(all_awake_p)
-    print "active s^2: %8.5f, s: %.5f"%(all_active_var, math.sqrt(all_active_var))
-    print " awake s^2: %8.5f, s: %.5f"%(all_awake_var, math.sqrt(all_awake_var))
-    print "  rest s^2: %8.5f, s: %.5f"%(all_rest_var, math.sqrt(all_rest_var))
+
 
 if __name__ == "__main__":
     main()
