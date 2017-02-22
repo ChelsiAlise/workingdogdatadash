@@ -37,7 +37,9 @@ function loadDataAndInitialize() {
                     y: 35
                 },
                 relativeTo: 'chart'
-            }
+            },
+            spacingLeft: 0,
+            spacingRight: 0
         },
         title: {
             style: {
@@ -100,6 +102,8 @@ function loadDataAndInitialize() {
         }
     });
 }
+
+// general javascript utilities
 
 // utility methods for interacting with the dog data
 
@@ -170,12 +174,12 @@ function makeDogPoints(dogs, setPointKeysFunc) {
 
 // shared format for the beginning of formatting points with the dog's name
 // and outcome data.
-var dogPointFormat = '<b>{point.name}</b><br><br>'+
+var dogPointFormat = '<b>{point.name}</b><hr style="margin-top: .5em">'+
     '<table><tr><td>Status:&nbsp;&nbsp;</td><td>{point.dog_status}</td></tr>'+
     '<tr><td>Center:&nbsp;&nbsp;</td><td>{point.regional_center}</td></tr>'+
     '<tr><td>Sex:&nbsp;&nbsp;</td><td>{point.sex}</td></tr>'+
     '<tr><td>Birth Date:&nbsp;&nbsp;</td><td>{point.birth_date}</td></tr>'+
-    '<tr><td>Breed:&nbsp;&nbsp;</td><td>{point.breed}</td></tr></table><br>';
+    '<tr><td>Breed:&nbsp;&nbsp;</td><td>{point.breed}</td></tr></table><hr>';
 
 
 // chart 1 - Awake Versus Rest of All Dogs by Name
@@ -667,9 +671,9 @@ function createChartSeven() {
             }
         },
         tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.0f} mins</b></td></tr>',
+            headerFormat: '<span style="font-weight:bold;">{point.key}</span><hr style="margin-top:.5em;"><table>',
+            pointFormat: '<tr><td style="padding:0">{series.name}:&nbsp;</td>' +
+            '<td style="padding:0">{point.y:.0f} mins</td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
@@ -800,8 +804,6 @@ function mostAwakeDog(data) {
 }
 
 //============= /javascript for cards at top of dashboard ======================
-
-
 
 
 //============= javascript for custom graphs ===================================
@@ -984,7 +986,7 @@ function insertNewGraphRow() {
     custom_graph_id += 1;
     var id = "custom-graph-"+custom_graph_id.toString();
     var graphs = document.getElementById("custom-graphs");
-    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">x</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto; padding: 1em;"></div></div>';
+    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">x</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto;"></div></div>';
     graphs.insertAdjacentHTML('afterbegin', newElement);
     return id;
 }
@@ -1014,13 +1016,13 @@ function insertNewStatsTable() {
     var id = "stats"+stats_table_id.toString();
     var graph = document.getElementById("custom-graph-"+custom_graph_id.toString());
     var newTable =
-    '<table class="table table-hover" id="'+id+'" style="width:60%;">'
+    '<table class="table table-hover stats" id="'+id+'">'
         +'<thead>'
             +'<tr style="background-color: #016197; color: white;">'
                 +'<th>Statistic</th>'
-                +'<th>Value</th>'
+                +'<th>Series One Value</th>'
             +'</tr>'
-        +'</thead>'
+        +'</thead><tbody></tbody>'
     +'</table>';
     graph.insertAdjacentHTML('afterend', newTable);
 }
@@ -1029,14 +1031,14 @@ function insertNewStatsTable2() {
     var id = "stats"+stats_table_id.toString()+"Comp";
     var graph = document.getElementById("custom-graph-"+custom_graph_id.toString());
     var newTable =
-    '<table class="table table-hover" id="'+id+'" style="width:60%;">'
+    '<table class="table table-hover stats" id="'+id+'">'
         +'<thead>'
             +'<tr style="background-color: #016197; color: white;">'
                 +'<th>Statistic</th>'
-                +'<th>Value</th>'
-                +'<th>Value2</th>'
+                +'<th>Series One Value</th>'
+                +'<th>Series Two Value</th>'
             +'</tr>'
-        +'</thead>'
+        +'</thead><tbody></tbody>'
     +'</table>';
     graph.insertAdjacentHTML('afterend', newTable);
 }
@@ -1052,58 +1054,58 @@ function statsData(data, type, data2) {
         //mean
         var tData = jStat.mean(data);
         var tData2 = jStat.mean(data2);
-        editStatsTable2(1, "Mean", round(tData,2), round(tData2,2));
+        editStatsTable2(0, "Mean", round(tData,2), round(tData2,2));
         //min and max
         tData = jStat.min(data);
         var tDataM = jStat.max(data);
         tData2 = jStat.min(data2);
         var tData2M = jStat.max(data2);
-        editStatsTable2(2, "Min, Max", tData + ", " + tDataM, tData2 + ", " + tData2M);
+        editStatsTable2(1, "Min, Max", tData + ", " + tDataM, tData2 + ", " + tData2M);
         //variance
         tData = jStat.variance(data);
         tData1 = jStat.variance(data2);
-        editStatsTable2(3, "Variance", round(tData,2), round(tData2,2));
+        editStatsTable2(2, "Variance", round(tData,2), round(tData2,2));
         //standard deviation
         tData = jStat.stdev(data);
         tData2 = jStat.stdev(data2);
-        editStatsTable2(4, "Standard Deviation", round(tData,2), round(tData2,2));
+        editStatsTable2(3, "Standard Deviation", round(tData,2), round(tData2,2));
         //Quartiles
         tData = jStat.quartiles(data);
         tData2 = jStat.quartiles(data2);
         //tValue = tData[0] + ", " + tData[1] + ", " + tData[2];
-        editStatsTable2(5, "Quartiles", tData[0] + ", " + tData[1] + ", " + tData[2], tData2[0] + ", " + tData2[1] + ", " + tData2[2]);
+        editStatsTable2(4, "Quartiles", tData[0] + ", " + tData[1] + ", " + tData[2], tData2[0] + ", " + tData2[1] + ", " + tData2[2]);
         //skewness
         tData = jStat.skewness(data);
         tData2 = jStat.skewness(data2);
-        editStatsTable2(6, "Skewness", round(tData, 8), round(tData2, 8));
+        editStatsTable2(5, "Skewness", round(tData, 8), round(tData2, 8));
         //covariance
         tData = jStat.covariance(data, data2);
-        editStatsTable2(7, "Covariance", round(tData, 2), "comp");
+        editStatsTable2(6, "Covariance", round(tData, 2), "comp");
         //rho correlation
         tData = jStat.corrcoeff(data, data2);
-        editStatsTable2(8, "Correlation Coefficient", round(tData, 4), "comp");
+        editStatsTable2(7, "Correlation Coefficient", round(tData, 4), "comp");
     } else {
         var table = document.getElementById("stats"+stats_table_id.toString());
 
         var tData = jStat.mean(data);
-        editStatsTable(1, "Mean", round(tData,2));
+        editStatsTable(0, "Mean", round(tData,2));
         //min and max
         tData = jStat.min(data);
         var tData2 = jStat.max(data);
-        editStatsTable(2, "Min, Max", tData + ", " + tData2);
+        editStatsTable(1, "Min, Max", tData + ", " + tData2);
         //variance
         tData = jStat.variance(data);
-        editStatsTable(3, "Variance", round(tData,2));
+        editStatsTable(2, "Variance", round(tData,2));
         //standard deviation
         tData = jStat.stdev(data);
-        editStatsTable(4, "Standard Deviation", round(tData,2));
+        editStatsTable(3, "Standard Deviation", round(tData,2));
         //Quartiles
         tData = jStat.quartiles(data);
         //tValue = tData[0] + ", " + tData[1] + ", " + tData[2];
-        editStatsTable(5, "Quartiles", tData[0] + ", " + tData[1] + ", " + tData[2]);
+        editStatsTable(4, "Quartiles", tData[0] + ", " + tData[1] + ", " + tData[2]);
         //skewness
         tData = jStat.skewness(data);
-        editStatsTable(6, "Skewness", round(tData, 8));
+        editStatsTable(5, "Skewness", round(tData, 8));
     }
 }
 
@@ -1112,6 +1114,7 @@ function statsData(data, type, data2) {
 //value is the calculated value of the statistic
 function editStatsTable(rowNum, label, value) {
     var table = document.getElementById("stats"+stats_table_id.toString());
+    table = table.getElementsByTagName("tbody")[0];
     var tRow = table.insertRow(rowNum);
     var tLabel = tRow.insertCell(0);
     var tValue = tRow.insertCell(1);
@@ -1124,6 +1127,7 @@ function editStatsTable(rowNum, label, value) {
 //value2 is for the second dog
 function editStatsTable2(rowNum, label, value1, value2) {
     var table = document.getElementById("stats"+stats_table_id.toString()+"Comp");
+    table = table.getElementsByTagName("tbody")[0];
     var tRow = table.insertRow(rowNum);
     var tLabel = tRow.insertCell(0);
     tLabel.innerHTML = label;
