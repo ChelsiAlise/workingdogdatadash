@@ -51,16 +51,16 @@ def main():
         # for each dog, compute the percent active, rest, awake
         for dog in dogs:
             total = dog.total
-            active = float(dog.awake_total) / total * 100
+            active = float(dog.active_total) / total * 100
             rest = float(dog.rest_total) / total * 100
-            awake = float(dog.active_total) / total * 100
+            awake = float(dog.awake_total) / total * 100
             active_p.append(active)
             rest_p.append(rest)
             awake_p.append(awake)
         # average percentages within the outcome
-        awake_avg = average(active_p)
+        awake_avg = average(awake_p)
         rest_avg = average(rest_p)
-        active_avg = average(awake_p)
+        active_avg = average(active_p)
         # store and print the results formatted nicely
         values = {
             "awake": awake_avg,
