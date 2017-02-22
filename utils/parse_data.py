@@ -364,7 +364,7 @@ def parse_dog_data(data_dir=None, use_individual=True,
     return data
 
 
-def filter_data(data, day_total_threshold=1008):
+def filter_data(data, day_total_threshold=1008, deep_copy=True):
     """filters the data from parse_dog_data
 
     Arguments:
@@ -376,25 +376,28 @@ def filter_data(data, day_total_threshold=1008):
     Returns:
         the filtered data dict
     """
-    filtered = deepcopy(data)
+    if deep_copy:
+        filtered = deepcopy(data)
+    else:
+        filtered = data
     for dog in filtered:
         dog = filtered[dog]
         dog.total = 0
         dog.awake_total = 0
         dog.active_total = 0
         dog.rest_total = 0
-        del_keys = []
+        del_days = []
         for day in dog.days:
             if dog.days[day].total < day_total_threshold:
-                del_keys.append(day)
+                del_days.append(day)
             else:
                 dayd = dog.days[day]
                 dog.total += (dayd.awake + dayd.rest + dayd.active)
                 dog.awake_total += dayd.awake
                 dog.active_total += dayd.active
                 dog.rest_total += dayd.rest
-        for key in del_keys:
-            del dog.days[key]
+        for day in del_days:
+            del dog.days[day]
     return filtered
 
 

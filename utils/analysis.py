@@ -25,7 +25,7 @@ def main():
     """
     # load the data
     data = parse_data.parse_dog_data()
-    data = parse_data.filter_data(data)
+    data = parse_data.filter_data(data, deep_copy=False)
     # sort dogs into buckets by outcome
     by_outcome = defaultdict(list)
     for _, dog in data.iteritems():
