@@ -20,6 +20,10 @@ def variance(values):
     avg = average(values)
     return float(sum((v-avg)**2 for v in values)) / (len(values)-1)
 
+def kth_maximum(values, k):
+    values = sorted(values)
+    return values[-k]
+
 def main():
     """this computes some simple statistics over the dog data
     """
@@ -30,7 +34,10 @@ def main():
     by_outcome = defaultdict(list)
     for _, dog in data.iteritems():
         status = dog.dog_status
+        if status == '':
+            status = 'Unknown Status'
         by_outcome[status].append(dog)
+    outcomes = sorted(by_outcome.keys())
     # we will store computed results for each outcome here
     outcome_results = {}
     # these are the percentages of active / total * 100, etc for each dog
@@ -40,7 +47,8 @@ def main():
     print "="*80
     print "Averages & Outcomes By Outcome:"
     # look at dogs by their outcome and compute statistics.
-    for outcome, dogs in by_outcome.iteritems():
+    for outcome in outcomes:
+        dogs = by_outcome[outcome]
         print "-"*80
         print "outcome = '"+outcome+"'"
         awake_avg = rest_avg = active_avg = 0
@@ -69,8 +77,15 @@ def main():
             "awake s^2": variance(awake_p),
             "rest s^2": variance(rest_p),
             "active s^2": variance(active_p),
+            "percents": [{
+                "rest": rest_p[i],
+                "awake": awake_p[i],
+                "active": active_p[i],
+            } for i in xrange(len(awake_p))],
         }
-        for key, value in sorted(values.iteritems()):
+        print "   num dogs: %d" % (len(active_p))
+        for key in ["awake", "rest", "active"]:
+            value = values[key]
             print "%12s %.5f" % (key+":", value)
         outcome_results[outcome] = values
         # store the percentages of all dogs together for later use
@@ -98,6 +113,34 @@ def main():
     print "      rest: %.5f" % (average(all_rest_p))
     print "  rest s^2: %.5f" % (variance(all_rest_p))
     print "="*80
+    # explore dogs by top percentage in field
+    n_dogs = len(data)
+    rest_threshold = kth_maximum(all_rest_p, int(n_dogs*.33))
+    for outcome in outcomes:
+        computed = outcome_results[outcome]
+        count = 0
+        for percents in computed["percents"]:
+            if percents["rest"] >= rest_threshold:
+                count += 1
+        print "'%s' has %d dogs with rest %% >= %.5f" % (outcome, count, rest_threshold)
+    print "-"*80
+    active_threshold = kth_maximum(all_active_p, int(n_dogs*.33))
+    for outcome in outcomes:
+        computed = outcome_results[outcome]
+        count = 0
+        for percents in computed["percents"]:
+            if percents["active"] >= active_threshold:
+                count += 1
+        print "'%s' has %d dogs with active %% >= %.5f" % (outcome, count, active_threshold)
+    print "-"*80
+    awake_threshold = kth_maximum(all_awake_p, int(n_dogs*.33))
+    for outcome in outcomes:
+        computed = outcome_results[outcome]
+        count = 0
+        for percents in computed["percents"]:
+            if percents["awake"] >= awake_threshold:
+                count += 1
+        print "'%s' has %d dogs with awake %% >= %.5f" % (outcome, count, awake_threshold)
 
 
 if __name__ == "__main__":
