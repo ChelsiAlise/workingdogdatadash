@@ -1020,7 +1020,7 @@ function insertNewStatsTable() {
         +'<thead>'
             +'<tr style="background-color: #016197; color: white;">'
                 +'<th>Statistic</th>'
-                +'<th>Value</th>'
+                +'<th>Series One Value</th>'
             +'</tr>'
         +'</thead><tbody></tbody>'
     +'</table>';
@@ -1035,8 +1035,8 @@ function insertNewStatsTable2() {
         +'<thead>'
             +'<tr style="background-color: #016197; color: white;">'
                 +'<th>Statistic</th>'
-                +'<th>Series 1 Value</th>'
-                +'<th>Series 2 Value</th>'
+                +'<th>Series One Value</th>'
+                +'<th>Series Two Value</th>'
             +'</tr>'
         +'</thead><tbody></tbody>'
     +'</table>';
