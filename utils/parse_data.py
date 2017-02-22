@@ -11,10 +11,10 @@
 
 from __future__ import print_function
 from os import path # for path joining
-import sys # for script arguments
 import csv # for file parsing
 import datetime # for dates
 import glob # for finding files
+from copy import deepcopy
 
 # object to hold parsed data for a dog
 class DogData(object):
@@ -362,6 +362,41 @@ def parse_dog_data(data_dir=None, use_individual=True,
         outcomes_path = path.join(data_dir, "..", "outcomes.csv")
         parse_outcomes_file(outcomes_path, data)
     return data
+
+
+def filter_data(data, day_total_threshold=1008):
+    """filters the data from parse_dog_data
+
+    Arguments:
+        data: a dict from parse_dog_data
+
+        day_total_threshold: the minimum threshold for the minute total
+        for a day to filter by (inclusive), defaults to 70% of a day.
+
+    Returns:
+        the filtered data dict
+    """
+    filtered = deepcopy(data)
+    for dog in filtered:
+        dog = filtered[dog]
+        dog.total = 0
+        dog.awake_total = 0
+        dog.active_total = 0
+        dog.rest_total = 0
+        del_keys = []
+        for day in dog.days:
+            if dog.days[day].total < day_total_threshold:
+                del_keys.append(day)
+            else:
+                dayd = dog.days[day]
+                dog.total += (dayd.awake + dayd.rest + dayd.active)
+                dog.awake_total += dayd.awake
+                dog.active_total += dayd.active
+                dog.rest_total += dayd.rest
+        for key in del_keys:
+            del dog.days[key]
+    return filtered
+
 
 def main():
     """example script, loads the dog data, checks for outcomes
