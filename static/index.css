@@ -2,10 +2,17 @@
  * Base structure
  */
 
-/* Move down content because we have a fixed navbar that is 50px tall */
 body {
+  /* Move down content because we have a fixed navbar that is 50px tall */
   padding-top: 50px;
+  padding-bottom: 2.5em; 
   font-size: 18px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  letter-spacing: .01em;
+***REMOVED***
+
+.navbar {
+  font-weight: bold;
 ***REMOVED***
 
 
@@ -26,6 +33,7 @@ body {
  .navbar-brand {
    color: white !Important;
  }
+
 .navbar-fixed-top {
   border: 0;
   background-color: #016197;
@@ -39,57 +47,16 @@ body {
   color: #fff;
 ***REMOVED***
 
+.navbar-header {
+  margin-left: -.75em !important;
+***REMOVED***
+
 .navbar-nav > ul.li.a {
   color: white;
 ***REMOVED***
 
-
-
-/*
- * Sidebar
- */
-
-/* Hide for mobile, show later */
-.sidebar {
-  display: none;
-***REMOVED***
-@media (min-width: 768px) {
-  .sidebar {
-    position: fixed;
-    top: 51px;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-    display: block;
-    padding: 20px;
-    overflow-x: hidden;
-    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-    background-color: #f5f5f5;
-    border-right: 1px solid #eee;
-  }
-***REMOVED***
-
-/* Sidebar navigation */
-.nav-sidebar {
-  margin-right: -21px; /* 20px padding + 1px border */
-  margin-bottom: 20px;
-  margin-left: -20px;
-  color: #016197;
-***REMOVED***
-.nav-sidebar > li > a {
-  padding-right: 20px;
-  padding-left: 20px;
-  color: #016197;
-***REMOVED***
 .navbar-right > li > a {
   color: white !Important;
-***REMOVED***
-.nav-sidebar > .active > a,
-.nav-sidebar > .active > a:hover,
-.nav-sidebar > .active > a:focus {
-  color: #fff;
-  text-indent: 14px;
-  background-color: #FBD000;
 ***REMOVED***
 
 
@@ -98,18 +65,27 @@ body {
  */
 
 .main {
-  padding: 20px;
+  padding: 0px;
+  margin: 0px;
+  margin-top: 1em;
 ***REMOVED***
+
 @media (min-width: 768px) {
   .main {
-    padding-right: 40px;
-    padding-left: 40px;
+    /*padding-right: 40px;
+    padding-left: 40px;*/
   }
 ***REMOVED***
 .main .page-header {
   margin-top: 0;
 ***REMOVED***
-
+.page-header, .sub-header {
+  border-color: black;
+***REMOVED***
+hr {
+  border: none;
+  border-bottom: .5px solid black;
+***REMOVED***
 
 /*
  * Placeholder dashboard ideas
@@ -130,67 +106,9 @@ body {
   border-radius: 50%;
 ***REMOVED***
 
-.x_panel {
-  position: relative;
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 10px 17px;
-  display: inline-block;
-  background: #fff;
-  border: 1px solid ;
-  border-color: white;
-  -webkit-column-break-inside: avoid;
-  -moz-column-break-inside: avoid;
-  column-break-inside: avoid;
-  opacity: 1;
-  transition: all .2s ease; 
-***REMOVED***
-
-.x_title {
-  border-bottom: 2px solid #E6E9ED;
-  padding: 1px 5px 6px;
-  margin-bottom: 10px; 
-  text-align: center;
-  clear: both;
-***REMOVED***
-
-.x_title .filter {
-  width: 40%;
-  float: right; 
-***REMOVED***
-
-.x_title h4 {
-  margin: 5px 0 6px;
-  float: left;
-  display: block;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap; 
-  text-align: center;
-  clear: both;
-***REMOVED***
-
-.x_title h4 small {
-  margin-left: 10px; 
-***REMOVED***
-
-.x_title span {
-  color: #BDBDBD; 
-***REMOVED***
-
-.x_content {
-  padding: 0 5px 6px;
-  position: relative;
-  width: 100%;
-  float: left;
-  clear: both;
-  margin-top: 5px; 
-***REMOVED***
-
-.x_content h4 {
-  font-size: 16px;
-  font-weight: 500; 
-***REMOVED***
+/*
+ general ui rules
+*/
 
 .row {
   margin-right: -10px;
@@ -203,32 +121,38 @@ body {
   display: block;
   height: 0;
   clear: both;
-  visibility: hidden; }
+  visibility: hidden;
+***REMOVED***
 
-  .btn {
-  border-radius: 3px; }
+.btn {
+  border-radius: 3px;
+***REMOVED***
 
-  .btn-round {
-  border-radius: 30px; }
+.btn-round {
+  border-radius: 30px;
+***REMOVED***
 
-.popup {
+.custom-graph-form {
   margin: 10px auto;
+  font-size:1.5em;
   float: left;
   padding: 20px;
-  background: lightyellow;
-  border-radius: 5px;
-  height: 200px;
+  /*background: lightyellow;*/
+  min-height: 9em;
   width: 100%;
   position: relative;
   transition: all 5s ease-in-out;
+  border-radius: 5px;
+  border: .1em solid #016197;
 ***REMOVED***
 
-.popup h2 {
+.custom-graph-form h2 {
   margin-top: 0;
   color: #333;
   font-family: Tahoma, Arial, sans-serif;
 ***REMOVED***
-.popup .close {
+
+.custom-graph-form .close {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -238,22 +162,31 @@ body {
   text-decoration: none;
   color: #333;
 ***REMOVED***
-.popup .close:hover {
+
+.custom-graph-form .close:hover {
   color: orange;
 ***REMOVED***
-.popup .content {
-  max-height: 30%;
-  overflow: auto;
+.custom-graph-form .input-row {
+  margin: .5em;
 ***REMOVED***
 
-.popup button {
-  position: absolute;
+.custom-graph-form button {
+  /*position: absolute;
   bottom: 20px;
-  right: 20px;
-  background:blue; 
-  color:yellow;
-  border-radius: 30px;
-  border-color: blue;
+  right: 20px;*/
+  background:#016197; 
+  color:white;
+  border-radius: .5em;
+  border-width: .1em;
+  border-color: #016197;
+  font-weight: bold;
+  padding-left: .5em;
+  padding-right: .5em;
+***REMOVED***
+
+.custom-graph-form button:hover {
+  background: #0381c7;
+  color: white;
 ***REMOVED***
 
 .overlay:target {
@@ -262,20 +195,84 @@ body {
 ***REMOVED***
 
 /* nav button hover */
-ul.nav > li > a:hover, .selected {
+ul.nav > li > a:hover {
+    background-color: #0381c7 !important;
+    color: white !important;
+***REMOVED***
+
+ul.nav > li > a.selected {
+    /*background-color: #014971 !important;
+    color: white !important;*/
     background-color: white !important;
     color: #016197 !important;
 ***REMOVED***
 
-ul.nav > li > .selected {
-    background-color: #014971 !important;
-    color: white !important;
-***REMOVED***
-
 .delete-button {
-  float:right;
+  float: right;
 ***REMOVED***
 
 p.card-text {
   font-size: 24px;
+***REMOVED***
+
+.page-content {
+  width: 100%;
+***REMOVED***
+
+.page-content > div {
+  padding-left: .5em;
+  padding-right: .5em;
+***REMOVED***
+
+
+body > .container-fluid {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+***REMOVED***
+
+
+.row, .row .container-fluid, .row .container-fluid .col-md-12 {
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+***REMOVED***
+
+.row .container-fluid hr {
+  border: 1px solid black;
+  margin: .4em 0 .4em 0;
+***REMOVED***
+
+.unselected {
+  color: #6b6b6b;
+***REMOVED***
+
+#series-rows {
+  width: 100%;
+***REMOVED***
+#series-rows select {
+  margin-left: 1em;
+***REMOVED***
+
+.stats {
+  width: 100%;
+  margin: 0;
+  margin-top: 2em;
+  padding-right: 0em;
+  padding-left: 2em;
+  border-collapse: initial;
+***REMOVED***
+
+.stats > thead {
+  border-collapse: collapse;
+***REMOVED***
+
+.stats > tbody {
+  border-collapse: collapse;
+***REMOVED***
+.stats > thead > tr > th {
+  border: .1em solid black !important;
+***REMOVED***
+
+.stats > tbody > tr > td {
+  border: .1em solid black !important;
 ***REMOVED***
