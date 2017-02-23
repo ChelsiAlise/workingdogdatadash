@@ -11,10 +11,10 @@
 
 from __future__ import print_function
 from os import path # for path joining
-import sys # for script arguments
 import csv # for file parsing
 import datetime # for dates
 import glob # for finding files
+from copy import deepcopy
 
 # object to hold parsed data for a dog
 class DogData(object):
@@ -82,7 +82,7 @@ def compare_dog_names(n1, n2):
     return n1.lower() == n2.lower()
 
 
-def parse_outcomes_file(file_name, data):
+def parse_outcomes_file(file_name, data, debug=False):
     """parses the outcomes data file (outcomes.csv)
 
     Args:
@@ -115,7 +115,8 @@ def parse_outcomes_file(file_name, data):
                     key = dog
                     break
             if key is None:
-                print("Failed to match dog name! (%s)"%(name))
+                if debug:
+                    print("Failed to match dog name! (%s)"%(name))
                 continue
             # add the outcome data
             dog = data[key]
@@ -360,8 +361,46 @@ def parse_dog_data(data_dir=None, use_individual=True,
             data = parse_dog_file(file_name, data)
     if parse_outcomes:
         outcomes_path = path.join(data_dir, "..", "outcomes.csv")
-        parse_outcomes_file(outcomes_path, data)
+        parse_outcomes_file(outcomes_path, data, debug)
     return data
+
+
+def filter_data(data, min_day_total=1008, deep_copy=True):
+    """filters the data from parse_dog_data
+
+    Arguments:
+        data: a dict from parse_dog_data
+
+        min_day_total: the minimum threshold for the minute total
+        for a day to filter by (inclusive), defaults to 70% of a day.
+
+    Returns:
+        the filtered data dict
+    """
+    if deep_copy:
+        filtered = deepcopy(data)
+    else:
+        filtered = data
+    for dog in filtered:
+        dog = filtered[dog]
+        dog.total = 0
+        dog.awake_total = 0
+        dog.active_total = 0
+        dog.rest_total = 0
+        del_days = []
+        for day in dog.days:
+            if dog.days[day].total < min_day_total:
+                del_days.append(day)
+            else:
+                dayd = dog.days[day]
+                dog.total += (dayd.awake + dayd.rest + dayd.active)
+                dog.awake_total += dayd.awake
+                dog.active_total += dayd.active
+                dog.rest_total += dayd.rest
+        for day in del_days:
+            del dog.days[day]
+    return filtered
+
 
 def main():
     """example script, loads the dog data, checks for outcomes
