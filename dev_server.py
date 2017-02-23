@@ -12,6 +12,7 @@ then provide login credentials for the P.A.W.S. service
 """
 
 import os
+import getpass
 import SocketServer
 import SimpleHTTPServer
 import cookielib
@@ -106,8 +107,8 @@ def login(opener):
     """
     login_url = HOST+"/login"
     print("please enter credentials for P.A.W.S.")
-    user = raw_input("user: ")
-    password = raw_input("password: ")
+    user = raw_input("Username: ")
+    password = getpass.getpass()
     form_data = {"username": user, "password": password}
     params = urllib.urlencode(form_data)
     response = opener.open(login_url, data=params)

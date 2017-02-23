@@ -5,6 +5,7 @@
     ~~~~~~~~~~~~~~~~
 
     This script performs some basic analysis on the dog data
+    Note: this is depreciated in favor of the Outcome Analysis Ipython notebook
 """
 
 import math
