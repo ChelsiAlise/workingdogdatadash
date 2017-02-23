@@ -1,2 +1,5 @@
+# generic python
 *.pyc
+.ipynb_checkpoints
+# project specific
 keys.go
