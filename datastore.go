@@ -21,7 +21,7 @@ func AddDataDog(ctx appengine.Context, d *Dog) (id int64, err error) {
 		return 0, fmt.Errorf("datastoredb: could not put Dog: %v", err)
 	}
 	return key.IntID(), nil
-***REMOVED***
+}
 
 // AddDay adds a day to the datastore
 func AddDataDay(ctx appengine.Context, d *Day) (id int64, err error) {
@@ -31,7 +31,7 @@ func AddDataDay(ctx appengine.Context, d *Day) (id int64, err error) {
 		return 0, fmt.Errorf("datastoredb: could not put Day: %v", err)
 	}
 	return key.IntID(), nil
-***REMOVED***
+}
 
 func GetDataDogs(ctx appengine.Context) ([]*Dog, error) {
 	var dogs []*Dog
@@ -41,7 +41,7 @@ func GetDataDogs(ctx appengine.Context) ([]*Dog, error) {
 		return nil, fmt.Errorf("datastore: could not list dogs: %v", err)
 	}
 	return dogs, nil
-***REMOVED***
+}
 
 func GetDataDays(ctx appengine.Context) ([]*Day, error) {
 	var days []*Day
@@ -51,7 +51,7 @@ func GetDataDays(ctx appengine.Context) ([]*Day, error) {
 		return nil, fmt.Errorf("datastore: could not list days: %v", err)
 	}
 	return days, nil
-***REMOVED***
+}
 
 func GetDataBlob(ctx appengine.Context) (data DataBlob, err error) {
 	dogs, err := GetDataDogs(ctx)
@@ -65,7 +65,7 @@ func GetDataBlob(ctx appengine.Context) (data DataBlob, err error) {
 	data.Dogs = dogs
 	data.Days = days
 	return data, nil
-***REMOVED***
+}
 
 func GetDataFilteredDays(ctx appengine.Context) ([]*Day, error) {
 	days, err := GetDataDays(ctx)
@@ -86,7 +86,7 @@ func GetDataFilteredDays(ctx appengine.Context) ([]*Day, error) {
 		}
 	}
 	return filteredDays, nil
-***REMOVED***
+}
 
 func GetDataFilteredDogs(ctx appengine.Context) ([]*Dog, error) {
 	days, err := GetDataFilteredDays(ctx)
@@ -116,7 +116,7 @@ func GetDataFilteredDogs(ctx appengine.Context) ([]*Dog, error) {
 		}
 	}
 	return dogs, nil
-***REMOVED***
+}
 
 func GetDataFilteredBlob(ctx appengine.Context) (data DataBlob, err error) {
 	days, err := GetDataFilteredDays(ctx)
@@ -148,4 +148,4 @@ func GetDataFilteredBlob(ctx appengine.Context) (data DataBlob, err error) {
 	data.Dogs = dogs
 	data.Days = days
 	return data, nil
-***REMOVED***
+}
