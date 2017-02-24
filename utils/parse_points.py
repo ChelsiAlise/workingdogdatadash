@@ -12,9 +12,8 @@
 from __future__ import print_function
 from os import path # for path joining
 import csv # for file parsing
-from datetime import datetime, tzinfo, timedelta # for dates
 import glob # for finding files
-import time
+import time # for debugging performance
 
 def parse_points(data_dir=None, debug=False):
     """parses the point intensity data
@@ -37,24 +36,12 @@ def parse_points(data_dir=None, debug=False):
     files = glob.glob(glob_path)
     data = {"all_times": set()}
     for file_name in files:
-        print(file_name)
+        print(path.basename(file_name))
         data = parse_point_file(file_name, data, debug)
     data["all_times"] = list(data["all_times"])
     if debug:
-        print("done after: %s" % (time.time() - start_time))
+        print("done after: %s s" % (time.time() - start_time))
     return data
-
-class UTC(tzinfo):
-    """UTC"""
-
-    def utcoffset(self, dt):
-        return timedelta(0)
-
-    def tzname(self, dt):
-        return "UTC"
-
-    def dst(self, dt):
-        return timedelta(0)
 
 def parse_point_file(file_name, data, debug=False):
     """parses a points_[0-9]+.csv file
@@ -96,19 +83,15 @@ def parse_point_file(file_name, data, debug=False):
             if len(row) != row_len:
                 raise Exception("Line does not have enough cells!")
             """
-            # parse date
-            timestmap = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")
-            timestmap.replace(tzinfo=UTC())
-            timestmap = int((timestmap - datetime(1970, 1, 1)).total_seconds())
-            data["all_times"].add(timestmap)
+            # parse date (ignore :00 for seconds at the end)
+            timestamp = row[0][:-3]
+            data["all_times"].add(timestamp)
             for i, value in enumerate(row[1:]):
                 if value == "":
                     continue
-                value = float(value)
-                # None is cheaper to store than 0
-                if value == 0:
-                    value = None
-                data[names[i]][timestmap] = value
+                # no point in parsing all those zeros
+                value = float(value) if value[0] != "0" else 0
+                data[names[i]][timestamp] = value
             try:
                 row = reader.next()
             except StopIteration:
@@ -123,12 +106,10 @@ def write_data(data, file_name):
         print(names)
         csv_writer.writerow(["timestamp"]+names)
         times = sorted(data["all_times"])
-        for _time in times:
-            timestamp = datetime.fromtimestamp(float(_time))\
-                                .strftime("%Y-%m-%d %H:%M:%S")
+        for timestamp in times:
             row = [timestamp]
             for name in names:
-                value = data[name].get(_time, "")
+                value = data[name].get(timestamp, "")
                 if value is None:
                     value = 0
                 row.append(value)
@@ -139,7 +120,6 @@ def main():
     """
     _ = parse_points(debug=True)
     print("done")
-
 
 if __name__ == "__main__":
     main()
