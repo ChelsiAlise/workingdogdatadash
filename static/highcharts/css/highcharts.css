@@ -17,88 +17,88 @@
   -webkit-tap-highlight-color: transparent;
   font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
   font-size: 12px;
-}
+***REMOVED***
 
 .highcharts-root text {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-background {
   fill: #ffffff;
-}
+***REMOVED***
 
 .highcharts-plot-border, .highcharts-plot-background {
   fill: none;
-}
+***REMOVED***
 
 .highcharts-label-box {
   fill: none;
-}
+***REMOVED***
 
 .highcharts-button-box {
   fill: inherit;
-}
+***REMOVED***
 
 /* Titles */
 .highcharts-title {
   fill: #333333;
   font-size: 1.5em;
-}
+***REMOVED***
 
 .highcharts-subtitle {
   fill: #666666;
-}
+***REMOVED***
 
 /* Axes */
 .highcharts-axis-line {
   fill: none;
   stroke: #ccd6eb;
-}
+***REMOVED***
 
 .highcharts-yaxis .highcharts-axis-line {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-axis-title {
   fill: #666666;
-}
+***REMOVED***
 
 .highcharts-axis-labels {
   fill: #666666;
   cursor: default;
   font-size: 0.9em;
-}
+***REMOVED***
 
 .highcharts-grid-line {
   fill: none;
   stroke: #e6e6e6;
-}
+***REMOVED***
 
 .highcharts-xaxis-grid .highcharts-grid-line {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-tick {
   stroke: #ccd6eb;
-}
+***REMOVED***
 
 .highcharts-yaxis .highcharts-tick {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-minor-grid-line {
   stroke: #f2f2f2;
-}
+***REMOVED***
 
 .highcharts-crosshair-thin {
   stroke-width: 1px;
   stroke: #cccccc;
-}
+***REMOVED***
 
 .highcharts-crosshair-category {
   stroke: #ccd6eb;
   stroke-opacity: 0.25;
-}
+***REMOVED***
 
 /* Credits */
 .highcharts-credits {
@@ -106,12 +106,12 @@
   fill: #999999;
   font-size: 0.7em;
   transition: fill 250ms, font-size 250ms;
-}
+***REMOVED***
 
 .highcharts-credits:hover {
   fill: black;
   font-size: 1em;
-}
+***REMOVED***
 
 /* Tooltip */
 .highcharts-tooltip {
@@ -119,279 +119,279 @@
   pointer-events: none;
   white-space: nowrap;
   transition: stroke 150ms;
-}
+***REMOVED***
 
 .highcharts-tooltip text {
   fill: #333333;
-}
+***REMOVED***
 
 .highcharts-tooltip .highcharts-header {
   font-size: 0.85em;
-}
+***REMOVED***
 
 .highcharts-tooltip-box {
   stroke-width: 1px;
   fill: #f7f7f7;
   fill-opacity: 0.85;
-}
+***REMOVED***
 
 .highcharts-selection-marker {
   fill: #335cad;
   fill-opacity: 0.25;
-}
+***REMOVED***
 
 .highcharts-graph {
   fill: none;
   stroke-width: 2px;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
+***REMOVED***
 
 .highcharts-state-hover .highcharts-graph {
   stroke-width: 3;
-}
+***REMOVED***
 
 .highcharts-state-hover path {
   transition: stroke-width 50;
   /* quick in */
-}
+***REMOVED***
 
 .highcharts-state-normal path {
   transition: stroke-width 250ms;
   /* slow out */
-}
+***REMOVED***
 
 /* Legend hover affects points and series */
 g.highcharts-series, .highcharts-point {
   transition: opacity 250ms;
-}
+***REMOVED***
 
 .highcharts-legend-series-active g.highcharts-series:not(.highcharts-series-hover),
 .highcharts-legend-point-active .highcharts-point:not(.highcharts-point-hover) {
   opacity: 0.2;
-}
+***REMOVED***
 
 /* Series options */
 /* Default colors */
 .highcharts-color-0 {
   fill: #7cb5ec;
   stroke: #7cb5ec;
-}
+***REMOVED***
 
 .highcharts-color-1 {
   fill: #434348;
   stroke: #434348;
-}
+***REMOVED***
 
 .highcharts-color-2 {
   fill: #90ed7d;
   stroke: #90ed7d;
-}
+***REMOVED***
 
 .highcharts-color-3 {
   fill: #f7a35c;
   stroke: #f7a35c;
-}
+***REMOVED***
 
 .highcharts-color-4 {
   fill: #8085e9;
   stroke: #8085e9;
-}
+***REMOVED***
 
 .highcharts-color-5 {
   fill: #f15c80;
   stroke: #f15c80;
-}
+***REMOVED***
 
 .highcharts-color-6 {
   fill: #e4d354;
   stroke: #e4d354;
-}
+***REMOVED***
 
 .highcharts-color-7 {
   fill: #2b908f;
   stroke: #2b908f;
-}
+***REMOVED***
 
 .highcharts-color-8 {
   fill: #f45b5b;
   stroke: #f45b5b;
-}
+***REMOVED***
 
 .highcharts-color-9 {
   fill: #91e8e1;
   stroke: #91e8e1;
-}
+***REMOVED***
 
 .highcharts-area {
   fill-opacity: 0.75;
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-markers {
   stroke-width: 1px;
   stroke: #ffffff;
-}
+***REMOVED***
 
 .highcharts-point {
   stroke-width: 1px;
-}
+***REMOVED***
 
 .highcharts-dense-data .highcharts-point {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-data-label {
   font-size: 0.9em;
   font-weight: bold;
-}
+***REMOVED***
 
 .highcharts-data-label-box {
   fill: none;
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-data-label text {
   fill: #333333;
-}
+***REMOVED***
 
 .highcharts-data-label-connector {
   fill: none;
-}
+***REMOVED***
 
 .highcharts-halo {
   fill-opacity: 0.25;
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-point-select {
   fill: #cccccc;
   stroke: #000000;
-}
+***REMOVED***
 
 .highcharts-column-series .highcharts-point {
   stroke: #ffffff;
   transition: fill-opacity 250ms;
-}
+***REMOVED***
 
 .highcharts-column-series .highcharts-point-hover {
   fill-opacity: 0.75;
   transition: fill-opacity 50ms;
-}
+***REMOVED***
 
 .highcharts-pie-series .highcharts-point {
   stroke-linejoin: round;
   stroke: #ffffff;
-}
+***REMOVED***
 
 .highcharts-pie-series .highcharts-point-hover {
   fill-opacity: 0.75;
   transition: fill-opacity 50ms;
-}
+***REMOVED***
 
 .highcharts-pie-series .highcharts-point-select {
   fill: inherit;
   stroke: inherit;
-}
+***REMOVED***
 
 .highcharts-funnel-series .highcharts-point {
   stroke-linejoin: round;
   stroke: #ffffff;
-}
+***REMOVED***
 
 .highcharts-funnel-series .highcharts-point-hover {
   fill-opacity: 0.75;
   transition: fill-opacity 50ms;
-}
+***REMOVED***
 
 .highcharts-funnel-series .highcharts-point-select {
   fill: inherit;
   stroke: inherit;
-}
+***REMOVED***
 
 .highcharts-pyramid-series .highcharts-point {
   stroke-linejoin: round;
   stroke: #ffffff;
-}
+***REMOVED***
 
 .highcharts-pyramid-series .highcharts-point-hover {
   fill-opacity: 0.75;
   transition: fill-opacity 50ms;
-}
+***REMOVED***
 
 .highcharts-pyramid-series .highcharts-point-select {
   fill: inherit;
   stroke: inherit;
-}
+***REMOVED***
 
 .highcharts-solidgauge-series .highcharts-point {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-treemap-series .highcharts-point {
   stroke-width: 1px;
   stroke: #e6e6e6;
   transition: stroke 250ms, fill 250ms, fill-opacity 250ms;
-}
+***REMOVED***
 
 .highcharts-treemap-series .highcharts-point-hover {
   stroke: #999999;
   transition: stroke 25ms, fill 25ms, fill-opacity 25ms;
-}
+***REMOVED***
 
 .highcharts-treemap-series .highcharts-above-level {
   display: none;
-}
+***REMOVED***
 
 .highcharts-treemap-series .highcharts-internal-node {
   fill: none;
-}
+***REMOVED***
 
 .highcharts-treemap-series .highcharts-internal-node-interactive {
   fill-opacity: 0.15;
   cursor: pointer;
-}
+***REMOVED***
 
 .highcharts-treemap-series .highcharts-internal-node-interactive:hover {
   fill-opacity: 0.75;
-}
+***REMOVED***
 
 /* Legend */
 .highcharts-legend-box {
   fill: none;
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-legend-item text {
   fill: #333333;
   font-weight: bold;
   cursor: pointer;
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-legend-item:hover text {
   fill: #000000;
-}
+***REMOVED***
 
 .highcharts-legend-item-hidden * {
   fill: #cccccc !important;
   stroke: #cccccc !important;
   transition: fill 250ms;
-}
+***REMOVED***
 
 .highcharts-legend-nav-active {
   fill: #003399;
   cursor: pointer;
-}
+***REMOVED***
 
 .highcharts-legend-nav-inactive {
   fill: #cccccc;
-}
+***REMOVED***
 
 .highcharts-legend-title-box {
   fill: none;
   stroke-width: 0;
-}
+***REMOVED***
 
 /* Loading */
 .highcharts-loading {
@@ -401,151 +401,151 @@ g.highcharts-series, .highcharts-point {
   text-align: center;
   z-index: 10;
   transition: opacity 250ms;
-}
+***REMOVED***
 
 .highcharts-loading-hidden {
   height: 0 !important;
   opacity: 0;
   overflow: hidden;
   transition: opacity 250ms, height 250ms step-end;
-}
+***REMOVED***
 
 .highcharts-loading-inner {
   font-weight: bold;
   position: relative;
   top: 45%;
-}
+***REMOVED***
 
 /* Plot bands and polar pane backgrounds */
 .highcharts-plot-band {
   fill: #000000;
   fill-opacity: 0.05;
-}
+***REMOVED***
 
 .highcharts-plot-line {
   fill: none;
   stroke: #999999;
   stroke-width: 1px;
-}
+***REMOVED***
 
 /* Highcharts More */
 .highcharts-boxplot-box {
   fill: #ffffff;
-}
+***REMOVED***
 
 .highcharts-boxplot-median {
   stroke-width: 2px;
-}
+***REMOVED***
 
 .highcharts-bubble-series .highcharts-point {
   fill-opacity: 0.5;
-}
+***REMOVED***
 
 .highcharts-errorbar-series .highcharts-point {
   stroke: #000000;
-}
+***REMOVED***
 
 .highcharts-gauge-series .highcharts-data-label-box {
   stroke: #cccccc;
   stroke-width: 1px;
-}
+***REMOVED***
 
 .highcharts-gauge-series .highcharts-dial {
   fill: #000000;
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-polygon-series .highcharts-graph {
   fill: inherit;
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-waterfall-series .highcharts-graph {
   stroke: #333333;
   stroke-dasharray: 1, 3;
-}
+***REMOVED***
 
 /* Highstock */
 .highcharts-navigator-mask {
   fill: #6685c2;
   /* navigator.maskFill option */
   fill-opacity: 0.25;
-}
+***REMOVED***
 
 .highcharts-navigator-mask-inside {
   fill: #6685c2;
   /* navigator.maskFill option */
   fill-opacity: 0.25;
   cursor: ew-resize;
-}
+***REMOVED***
 
 .highcharts-navigator-outline {
   stroke: #cccccc;
   fill: none;
-}
+***REMOVED***
 
 .highcharts-navigator-handle {
   stroke: #cccccc;
   fill: #f2f2f2;
   cursor: ew-resize;
-}
+***REMOVED***
 
 .highcharts-navigator-series {
   fill: #335cad;
   stroke: #335cad;
-}
+***REMOVED***
 
 .highcharts-navigator-series .highcharts-graph {
   stroke-width: 1px;
-}
+***REMOVED***
 
 .highcharts-navigator-series .highcharts-area {
   fill-opacity: 0.05;
-}
+***REMOVED***
 
 .highcharts-navigator-xaxis .highcharts-axis-line {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-navigator-xaxis .highcharts-grid-line {
   stroke-width: 1px;
   stroke: #e6e6e6;
-}
+***REMOVED***
 
 .highcharts-navigator-xaxis.highcharts-axis-labels {
   fill: #999999;
-}
+***REMOVED***
 
 .highcharts-navigator-yaxis .highcharts-grid-line {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-scrollbar-thumb {
   fill: #cccccc;
   stroke: #cccccc;
   stroke-width: 1px;
-}
+***REMOVED***
 
 .highcharts-scrollbar-button {
   fill: #e6e6e6;
   stroke: #cccccc;
   stroke-width: 1px;
-}
+***REMOVED***
 
 .highcharts-scrollbar-arrow {
   fill: #666666;
-}
+***REMOVED***
 
 .highcharts-scrollbar-rifles {
   stroke: #666666;
   stroke-width: 1px;
-}
+***REMOVED***
 
 .highcharts-scrollbar-track {
   fill: #f2f2f2;
   stroke: #f2f2f2;
   stroke-width: 1px;
-}
+***REMOVED***
 
 .highcharts-button {
   fill: #f7f7f7;
@@ -553,47 +553,47 @@ g.highcharts-series, .highcharts-point {
   cursor: default;
   stroke-width: 1px;
   transition: fill 250ms;
-}
+***REMOVED***
 
 .highcharts-button text {
   fill: #333333;
-}
+***REMOVED***
 
 .highcharts-button-hover {
   transition: fill 0ms;
   fill: #e6e6e6;
   stroke: #333333;
-}
+***REMOVED***
 
 .highcharts-button-pressed {
   font-weight: bold;
   fill: #e6ebf5;
   stroke: #335cad;
-}
+***REMOVED***
 
 .highcharts-button-disabled text {
   fill: #cccccc;
-}
+***REMOVED***
 
 .highcharts-range-selector-buttons .highcharts-button {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-range-label rect {
   fill: none;
-}
+***REMOVED***
 
 .highcharts-range-label text {
   fill: #666666;
-}
+***REMOVED***
 
 .highcharts-range-input rect {
   fill: none;
-}
+***REMOVED***
 
 .highcharts-range-input text {
   fill: #333333;
-}
+***REMOVED***
 
 input.highcharts-range-selector {
   position: absolute;
@@ -605,93 +605,93 @@ input.highcharts-range-selector {
   text-align: center;
   left: -9em;
   /* #4798 */
-}
+***REMOVED***
 
 .highcharts-crosshair-label text {
   fill: #ffffff;
   font-size: 1.1em;
-}
+***REMOVED***
 
 .highcharts-crosshair-label .highcharts-label-box {
   fill: inherit;
-}
+***REMOVED***
 
 .highcharts-candlestick-series .highcharts-point {
   stroke: #000000;
   stroke-width: 1px;
-}
+***REMOVED***
 
 .highcharts-candlestick-series .highcharts-point-up {
   fill: #ffffff;
-}
+***REMOVED***
 
 .highcharts-ohlc-series .highcharts-point-hover {
   stroke-width: 3px;
-}
+***REMOVED***
 
 .highcharts-flags-series .highcharts-point {
   stroke: #999999;
   fill: #ffffff;
-}
+***REMOVED***
 
 .highcharts-flags-series .highcharts-point-hover {
   stroke: #000000;
   fill: #ccd6eb;
-}
+***REMOVED***
 
 .highcharts-flags-series .highcharts-point text {
   fill: #000000;
   font-size: 0.9em;
   font-weight: bold;
-}
+***REMOVED***
 
 /* Highmaps */
 .highcharts-map-series .highcharts-point {
   transition: fill 500ms, fill-opacity 500ms, stroke-width 250ms;
   stroke: #cccccc;
-}
+***REMOVED***
 
 .highcharts-map-series .highcharts-point-hover {
   transition: fill 0ms, fill-opacity 0ms;
   fill-opacity: 0.5;
   stroke-width: 2px;
-}
+***REMOVED***
 
 .highcharts-mapline-series .highcharts-point {
   fill: none;
-}
+***REMOVED***
 
 .highcharts-heatmap-series .highcharts-point {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-map-navigation {
   font-size: 1.3em;
   font-weight: bold;
   text-align: center;
-}
+***REMOVED***
 
 .highcharts-coloraxis {
   stroke-width: 0;
-}
+***REMOVED***
 
 .highcharts-coloraxis-marker {
   fill: #999999;
-}
+***REMOVED***
 
 .highcharts-null-point {
   fill: #f7f7f7;
-}
+***REMOVED***
 
 /* 3d charts */
 .highcharts-3d-frame {
   fill: transparent;
-}
+***REMOVED***
 
 .highcharts-column-series .highcharts-point {
   stroke: inherit;
   /* use point color */
-}
+***REMOVED***
 
 /* Exporting module */
 .highcharts-contextbutton {
@@ -699,24 +699,24 @@ input.highcharts-range-selector {
   /* needed to capture hover */
   stroke: none;
   stroke-linecap: round;
-}
+***REMOVED***
 
 .highcharts-contextbutton:hover {
   fill: #e6e6e6;
   stroke: #e6e6e6;
-}
+***REMOVED***
 
 .highcharts-button-symbol {
   stroke: #666666;
   stroke-width: 3px;
-}
+***REMOVED***
 
 .highcharts-menu {
   border: 1px solid #999999;
   background: #ffffff;
   padding: 5px 0;
   box-shadow: 3px 3px 10px #888;
-}
+***REMOVED***
 
 .highcharts-menu-item {
   padding: 0.5em 1em;
@@ -724,28 +724,28 @@ input.highcharts-range-selector {
   color: #333333;
   cursor: pointer;
   transition: background 250ms, color 250ms;
-}
+***REMOVED***
 
 .highcharts-menu-item:hover {
   background: #335cad;
   color: #ffffff;
-}
+***REMOVED***
 
 /* Drilldown module */
 .highcharts-drilldown-point {
   cursor: pointer;
-}
+***REMOVED***
 
 .highcharts-drilldown-data-label text, .highcharts-drilldown-axis-label {
   cursor: pointer;
   fill: #003399;
   font-weight: bold;
   text-decoration: underline;
-}
+***REMOVED***
 
 /* No-data module */
 .highcharts-no-data text {
   font-weight: bold;
   font-size: 12px;
   fill: #666666;
-}
+***REMOVED***

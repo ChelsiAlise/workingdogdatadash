@@ -22,7 +22,7 @@ type CacheResponseWriter struct {
 	buffer         *bytes.Buffer
 	gzipWriter     *gzip.Writer
 	multiWriter    io.Writer
-}
+***REMOVED***
 
 func NewCacheResponseWriter(w http.ResponseWriter) *CacheResponseWriter {
 	buffer := bytes.NewBuffer([]byte{})
@@ -35,37 +35,37 @@ func NewCacheResponseWriter(w http.ResponseWriter) *CacheResponseWriter {
 		gzipWriter:     gzipWriter,
 		multiWriter:    multiWriter,
 	}
-}
+***REMOVED***
 
 func (c *CacheResponseWriter) Header() http.Header {
 	return c.responseWriter.Header()
-}
+***REMOVED***
 
 func (c *CacheResponseWriter) Write(bytes []byte) (int, error) {
 	return c.multiWriter.Write(bytes)
-}
+***REMOVED***
 
 func (c *CacheResponseWriter) WriteHeader(code int) {
 	c.code = code
 	c.responseWriter.WriteHeader(code)
-}
+***REMOVED***
 
 func (c *CacheResponseWriter) Code() int {
 	return c.code
-}
+***REMOVED***
 
 func (c *CacheResponseWriter) Bytes() []byte {
 	c.gzipWriter.Flush()
 	c.gzipWriter.Close()
 	return c.buffer.Bytes()
-}
+***REMOVED***
 
 // ensure CacheResponseWriter implements http.ResponseWriter
 var _ http.ResponseWriter = &CacheResponseWriter{}
 
 type cacheEntity struct {
 	Value []byte
-}
+***REMOVED***
 
 var _ http.ResponseWriter = (*CacheResponseWriter)(nil)
 
@@ -141,4 +141,4 @@ func GetApiCached(w http.ResponseWriter, r *http.Request) {
 	} else {
 		ctx.Errorf("cache code is not http.StatusOK: %v", cacheResponseWriter.Code())
 	}
-}
+***REMOVED***
