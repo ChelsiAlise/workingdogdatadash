@@ -40,13 +40,13 @@ func init() {
 	AddApi("data/filtered/blob", dataFilteredBlobHandler)
 	AddApi("data/filtered/days", dataFilteredDaysHandler)
 	AddApi("data/filtered/dogs", dataFilteredDogsHandler)
-***REMOVED***
+}
 
 func AddApi(path string, handler http.HandlerFunc) {
 	authRequiredMux.HandleFunc("/api/"+path, handler)
 	authRequiredMux.HandleFunc("/api/cached/"+path, GetApiCached)
 	apiPaths[path] = true
-***REMOVED***
+}
 
 // TODO: remove encrypt and decrypt
 // ... there is a lot wrong with this, but it will serve POC behind https
@@ -62,7 +62,7 @@ func encrypt(keyString, textString string) string {
 	cfb.XORKeyStream(ciphertext[aes.BlockSize:], text)
 	b := base64.StdEncoding.EncodeToString(ciphertext)
 	return b
-***REMOVED***
+}
 
 func decrypt(keyString, textString string) string {
 	key := []byte(keyString)
@@ -74,7 +74,7 @@ func decrypt(keyString, textString string) string {
 	cfb := cipher.NewCFBDecrypter(block, iv)
 	cfb.XORKeyStream(text, text)
 	return string(text)
-***REMOVED***
+}
 
 // RootHandler handles authorization and login
 func RootHandler(w http.ResponseWriter, r *http.Request) {
@@ -135,11 +135,11 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	authRequiredMux.ServeHTTP(w, r)
-***REMOVED***
+}
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "ok")
-***REMOVED***
+}
 
 func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
 	if key, ok := r.Header["Upload-Key"]; ok {
@@ -184,7 +184,7 @@ func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-***REMOVED***
+}
 
 func dataBlobHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
@@ -194,7 +194,7 @@ func dataBlobHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
-***REMOVED***
+}
 
 func dataDaysHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
@@ -204,7 +204,7 @@ func dataDaysHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
-***REMOVED***
+}
 
 func dataDogsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
@@ -214,7 +214,7 @@ func dataDogsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
-***REMOVED***
+}
 
 func dataFilteredBlobHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
@@ -224,7 +224,7 @@ func dataFilteredBlobHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
-***REMOVED***
+}
 
 func dataFilteredDaysHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
@@ -234,7 +234,7 @@ func dataFilteredDaysHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
-***REMOVED***
+}
 
 func dataFilteredDogsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
@@ -244,4 +244,4 @@ func dataFilteredDogsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
-***REMOVED***
+}

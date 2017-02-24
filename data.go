@@ -15,7 +15,7 @@ type Dog struct {
 	Sex            string `json:"sex"`
 	DogStatus      string `json:"dog_status"`
 	RegionalCenter string `json:"regional_center"`
-***REMOVED***
+}
 
 // DayData represents one dog's data for a day
 type DayData struct {
@@ -24,16 +24,16 @@ type DayData struct {
 	Awake  int `json:"awake"`
 	Rest   int `json:"rest"`
 	Active int `json:"active"`
-***REMOVED***
+}
 
 // Day represents the data for a day
 type Day struct {
 	Date string    `json:"date"`
 	Dogs []DayData `json:"dogs"`
-***REMOVED***
+}
 
 // DataBlob contains all data
 type DataBlob struct {
 	Dogs []*Dog `json:"dogs"`
 	Days []*Day `json:"days"`
-***REMOVED***
+}

@@ -101,7 +101,7 @@ function loadDataAndInitialize() {
             normalizeDogData(filtered_blob.dogs);
         }
     });
-***REMOVED***
+}
 
 // general javascript utilities
 
@@ -128,7 +128,7 @@ function normalizeDogData(dogs) {
             dog.regional_center = "Unknown";
         }
     }
-***REMOVED***
+}
 
 // get max total minutes for scaling points
 function getMaxTotal(dogs) {
@@ -140,7 +140,7 @@ function getMaxTotal(dogs) {
         }
     }
     return max_total;
-***REMOVED***
+}
 
 // this copies all dog objects from a dog array (eg filtered_dogs)
 // to a new array for use as series points
@@ -168,7 +168,7 @@ function makeDogPoints(dogs, setPointKeysFunc) {
         series.push(point);
     }
     return series;
-***REMOVED***
+}
 
 //============= javascript for dashboard graphs ================================
 
@@ -750,7 +750,7 @@ function mostActiveDog(data) {
     var highest_name = hashMostActiveDog[data.length - 1]["name"];
     var highest_val = hashMostActiveDog[data.length - 1]["val"];
     return highest_name;
-***REMOVED***
+}
 
 // least active dog card
 // TODO: this does not handle duplicate values
@@ -767,7 +767,7 @@ function leastActiveDog(data) {
     var lowest_name = hashLeastActiveDog[0]["name"];
     var lowest_val = hashLeastActiveDog[0]["val"];
     return lowest_name;
-***REMOVED***
+}
 
 // dog with the most rest time card
 // TODO: this does not handle duplicate values
@@ -784,7 +784,7 @@ function mostRestDog(data) {
     var most_rest_name = hashMostRestDog[data.length - 1]["name"];
     var most_rest_val = hashMostRestDog[data.length - 1]["val"];
     return most_rest_name;
-***REMOVED***
+}
 
 // dog with most awake time card
 // TODO: this does not handle duplicate values
@@ -801,7 +801,7 @@ function mostAwakeDog(data) {
     var most_awake_name = hashMostAwakeDog[data.length - 1]["name"];
     var most_awake_val = hashMostAwakeDog[data.length - 1]["val"];
     return most_awake_name;
-***REMOVED***
+}
 
 //============= /javascript for cards at top of dashboard ======================
 
@@ -847,7 +847,7 @@ function fieldcheck() {
         $('#mySelect3').hide();
         $('#mySelect4').hide();
     }
-***REMOVED***
+}
 
 function fieldcheck2() {
     var temp = $("#mySelect2 option:selected").text();
@@ -902,7 +902,7 @@ function fieldcheck2() {
             chartOptionsAreValid = false;
         }
     }
-***REMOVED***
+}
 
 function fieldcheck3() {
     var select1 = $("#mySelect2 option:selected").text();
@@ -916,7 +916,7 @@ function fieldcheck3() {
     }  else {
         chartOptionsAreValid = false;
     }
-***REMOVED***
+}
 
 function fieldcheck4() {
     var select1 = $("#mySelect2 option:selected").text();
@@ -931,7 +931,7 @@ function fieldcheck4() {
     }  else {
         chartOptionsAreValid = false;
     }
-***REMOVED***
+}
 
 function barOptions(item, options) {
     $(item).empty();
@@ -945,7 +945,7 @@ function barOptions(item, options) {
             text: options[i].text
             }));
     }
-***REMOVED***
+}
 
 function generateGraph() {
     if (chartOptionsAreValid) {
@@ -976,7 +976,7 @@ function generateGraph() {
     } else {
         alert("You must make a selection for each option first.");
     }
-***REMOVED***
+}
 
 
 // this inserts a new row with a graph container and returns the element
@@ -989,7 +989,7 @@ function insertNewGraphRow() {
     var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">x</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto;"></div></div>';
     graphs.insertAdjacentHTML('afterbegin', newElement);
     return id;
-***REMOVED***
+}
 
 // inserts a new custom graph dom object and renders the Highcharts options to it
 function renderNewCustomGraph(options, compare) {
@@ -1002,12 +1002,12 @@ function renderNewCustomGraph(options, compare) {
     } else if(compare == "normal"){
         insertNewStatsTable();
     }
-***REMOVED***
+}
 
 // deletes e's parent from its parent
 function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
-***REMOVED***
+}
 
 //inserts a new stats table alongside the new custom graph row
 var stats_table_id = 0;
@@ -1025,7 +1025,7 @@ function insertNewStatsTable() {
         +'</thead><tbody></tbody>'
     +'</table>';
     graph.insertAdjacentHTML('afterend', newTable);
-***REMOVED***
+}
 function insertNewStatsTable2() {
     stats_table_id += 1;
     var id = "stats"+stats_table_id.toString()+"Comp";
@@ -1041,7 +1041,7 @@ function insertNewStatsTable2() {
         +'</thead><tbody></tbody>'
     +'</table>';
     graph.insertAdjacentHTML('afterend', newTable);
-***REMOVED***
+}
 
 //handles stats calculations and tests
 //data is from the first dog
@@ -1107,7 +1107,7 @@ function statsData(data, type, data2) {
         tData = jStat.skewness(data);
         editStatsTable(5, "Skewness", round(tData, 8));
     }
-***REMOVED***
+}
 
 //handles inserting data into the stats table
 //label is the name/type of statistic
@@ -1120,7 +1120,7 @@ function editStatsTable(rowNum, label, value) {
     var tValue = tRow.insertCell(1);
     tLabel.innerHTML = label;
     tValue.innerHTML = value;
-***REMOVED***
+}
 //handles inserting data into comparison stats table
 //label is the name/type of statistic
 //value is the calculated value of the statistic
@@ -1142,7 +1142,7 @@ function editStatsTable2(rowNum, label, value1, value2) {
         tValue.innerHTML = value1;
         tValue2.innerHTML = value2;
     }
-***REMOVED***
+}
 function makeBar(data, type) {
     var arr = new Array();
     var arr1 = new Array();
@@ -1196,7 +1196,7 @@ function makeBar(data, type) {
     };
     renderNewCustomGraph(options, "normal");
     statsData(arr1)
-***REMOVED***
+}
 
 function makeBar2(data, typeA, typeB) {
     var arr = new Array();
@@ -1257,7 +1257,7 @@ function makeBar2(data, typeA, typeB) {
     };
     renderNewCustomGraph(options, "compare");
     statsData(arr1, "compare", arr2);
-***REMOVED***
+}
 
 function makePie(data, dog) {
     var arr = new Array();
@@ -1318,7 +1318,7 @@ function makePie(data, dog) {
     };
     renderNewCustomGraph(options);
 
-***REMOVED***
+}
 
 function makeLine(data, dog, type) {
     console.log(type);
@@ -1401,7 +1401,7 @@ function makeLine(data, dog, type) {
         }]
     };
     renderNewCustomGraph(options);
-***REMOVED***
+}
 
 function makePie2(data, dog1, dog2){
     var arr = new Array();
@@ -1437,7 +1437,7 @@ function makePie2(data, dog1, dog2){
         }
     };
     renderNewCustomGraph(options);
-***REMOVED***
+}
 
 function getBarInfo(dog, type){
     if (type == 'Rest') {
@@ -1449,10 +1449,10 @@ function getBarInfo(dog, type){
     } else if (type == 'Total') {
         return dog.total;
     }
-***REMOVED***
+}
 
 
 function round(value, decimals) {
   return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-***REMOVED***
+}
 //============= /javascript for custom graphs ==================================
