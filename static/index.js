@@ -72,7 +72,7 @@ function loadDataAndInitialize() {
             filtered_dogs_max_total = getMaxTotal(filtered_dogs);
             // normalize data
             normalizeDogData(filtered_dogs);
-            JSONstring2 = data; // TODO: remove this
+            filtered_dogs = data; // TODO: remove this
             // update the cards
             updateCards();
             // create all graphs that use this data.
@@ -94,7 +94,6 @@ function loadDataAndInitialize() {
         success: function(data) {
             // store the data
             filtered_blob = data;
-            JSONstring3 = data; // TOOD: remove this
             // normalize data
             normalizeDogData(filtered_blob.dogs);
         }
@@ -810,8 +809,6 @@ function mostAwakeDog(data) {
 //    graphs that use these ranges.
 // TODO: rename / remove these. EG: What is string{1,2,3} supposed to be?
 var JSONstring1 = '';
-var JSONstring2 = '';
-var JSONstring3 = '';
 var chartOptionsAreValid = false;
 var id;
 var barchoices3 = [];
@@ -838,8 +835,8 @@ function fieldcheck() {
     if (filterValue != "All Dogs") {
         $('#myFilter2').show();
         // var j = 0;
-        // JSONstring1 = JSONstring3;
-        // for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+        // JSONstring1 = filtered_blob;
+        // for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
         //     helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
         //     alldogs[j] = helper;
         //     j++;
@@ -849,11 +846,11 @@ function fieldcheck() {
         if(filterValue == "Region"){
             region = true;
             var j = 0;
-            //console.log(JSONstring3);
-            JSONstring1 = JSONstring3;
+            //console.log(filtered_blob);
+            JSONstring1 = filtered_blob;
             var uniques = [];
             barchoicesRegion = [];
-            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                 if (uniques.indexOf(JSONstring1.dogs[i].regional_center) > -1) {
                     //console.log(JSONstring1.dogs[i].regional_center);
                     //test;
@@ -871,10 +868,10 @@ function fieldcheck() {
         } else if(filterValue == "Dog Status"){
             status = true;
             var j = 0;
-            console.log(JSONstring3);
-            JSONstring1 = JSONstring3;
+            console.log(filtered_blob);
+            JSONstring1 = filtered_blob;
             var uniques = [];
-            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                 if (uniques.indexOf(JSONstring1.dogs[i].dog_status) > -1) {
                     //console.log(JSONstring1.dogs[i].regional_center);
                     //test;
@@ -892,12 +889,12 @@ function fieldcheck() {
         } else if(filterValue == "Sex"){
             status = true;
             var j = 0;
-            //console.log(JSONstring3);
-            JSONstring1 = JSONstring3;
+            //console.log(filtered_blob);
+            JSONstring1 = filtered_blob;
             var uniques = [];
             barchoicesSex = [];
 
-            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                 if (uniques.indexOf(JSONstring1.dogs[i].sex) > -1) {
                     //console.log(JSONstring1.dogs[i].regional_center);
                     //test;
@@ -931,8 +928,8 @@ function fieldcheck() {
         }
         else if (temp == "Line"){
             var j = 0;
-            JSONstring1 = JSONstring3;
-            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+            JSONstring1 = filtered_blob;
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                 helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                 barchoices3[j] = helper;
                 j++;
@@ -961,10 +958,10 @@ function fieldcheck2() {
         $('#myFilter3').show();
         if(tempfilter2 == "Region") {
             var j = 0;
-            JSONstring1 = JSONstring3;
+            JSONstring1 = filtered_blob;
             barchoicesRegion2 = [];
 
-            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                 console.log(JSONstring1.dogs[i].region);
                 console.log(tempfilter);
                 console.log("-------");
@@ -979,10 +976,10 @@ function fieldcheck2() {
             $('#myFilter4').hide();
         } else if(tempfilter2 == "Dog Status") {
             var j = 0;
-            JSONstring1 = JSONstring3;
+            JSONstring1 = filtered_blob;
             barchoicesStatus2 = [];
 
-            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                 // console.log(JSONstring1.dogs[i].region);
                 // console.log(tempfilter);
                 // console.log("-------");
@@ -997,9 +994,9 @@ function fieldcheck2() {
             $('#myFilter4').hide();
         } else if(tempfilter2 == "Sex") {
             var j = 0;
-            JSONstring1 = JSONstring3;
+            JSONstring1 = filtered_blob;
             barchoicesSex2 = [];
-            for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                 console.log(JSONstring1.dogs[i].sex);
                 console.log(tempfilter);
                 console.log("-------");
@@ -1033,12 +1030,12 @@ function fieldcheck2() {
                     //chartOptionsAreValid = true;
             } else if (temp2 == "Pie") {
                 var j = 0;
-                JSONstring1 = JSONstring3;
+                JSONstring1 = filtered_blob;
                 // console.log("hi");
                 //
                 // console.log($("#myFilter").selected);
                 // console.log("ho");
-                for (var i = 0; i < Object.keys(JSONstring3.dogs).length; i++) {
+                for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                     helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                     barchoices3[j] = helper;
                     j++;
@@ -1057,10 +1054,10 @@ function fieldcheck2() {
                     barOptions('#mySelect4', barchoices2);
                 } else if (temp2 == "Pie") {
                     var j = 0;
-                    JSONstring1 = JSONstring2;
+                    JSONstring1 = filtered_dogs;
 
 
-                    for (var i = 0; i < JSONstring2.length; i++) {
+                    for (var i = 0; i < filtered_dogs.length; i++) {
                         helper = {"value": JSONstring1[i].name, "text": JSONstring1[i].name}
                         barchoices3[j] = helper;
                         j++;
@@ -1136,28 +1133,28 @@ function generateGraph() {
             var select1 = $("#mySelect2 option:selected").text();
             if (select1 == "Raw Data"){
                 var type = $("#mySelect3 option:selected").text();
-                makeBar(JSONstring2, type);
+                makeBar(filtered_dogs, type);
             }
             if (select1 == "Comparisons"){
                 var typeA = $("#mySelect3 option:selected").text();
                 var typeB = $("#mySelect4 option:selected").text();
-                makeBar2(JSONstring2, typeA, typeB);
+                makeBar2(filtered_dogs, typeA, typeB);
             }
         } else if (temp1 == "Pie") {
             var select1 = $("#mySelect2 option:selected").text();
             if (select1 == "Raw Data"){
                 var type = $("#mySelect3 option:selected").text();
-                makePie(JSONstring2, type);
+                makePie(filtered_dogs, type);
             }
         } else if (temp1 == "Line") {
             var select1 = $("#mySelect2 option:selected").text();
             var type = $("#mySelect3 option:selected").text();
-            makeLine(JSONstring3, select1, type);
+            makeLine(filtered_blob, select1, type);
         } else if (temp1 == "Box") {
             var select1 = $("#mySelect2 option:selected").text();
             if (select1 == "Raw Data"){
                 var type = $("#mySelect3 option:selected").text();
-                makeBox(JSONstring2, type);
+                makeBox(filtered_dogs, type);
             }
         }
     } else {
@@ -1729,25 +1726,25 @@ function makeLine(data, dog, type) {
     var dates = [];
     var index;
     JSONstring1 = data;
-    for (var k =0; k < Object.keys(JSONstring3.dogs).length; k++) {
-        if (JSONstring3.dogs[k].name == dog) {
-            id = JSONstring3.dogs[k].id;
+    for (var k =0; k < Object.keys(filtered_blob.dogs).length; k++) {
+        if (filtered_blob.dogs[k].name == dog) {
+            id = filtered_blob.dogs[k].id;
         }
     }
     var j = 0;
-    for (var i =0; i < Object.keys(JSONstring3.days).length; i++) {
-        var dateSplit = JSONstring3.days[i].date.split("-");
-        for (var m =0; m < Object.keys(JSONstring3.days[i].dogs).length; m++) {
-            if (JSONstring3.days[i].dogs[m].id == id) {
-                //console.log(JSONstring3.days[i].date);
+    for (var i =0; i < Object.keys(filtered_blob.days).length; i++) {
+        var dateSplit = filtered_blob.days[i].date.split("-");
+        for (var m =0; m < Object.keys(filtered_blob.days[i].dogs).length; m++) {
+            if (filtered_blob.days[i].dogs[m].id == id) {
+                //console.log(filtered_blob.days[i].date);
                 if (type == "Total") {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), JSONstring3.days[i].dogs[m].total];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), filtered_blob.days[i].dogs[m].total];
                 } else if (type == "Rest") {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), JSONstring3.days[i].dogs[m].rest];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), filtered_blob.days[i].dogs[m].rest];
                 } else if (type == "Active") {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), JSONstring3.days[i].dogs[m].active];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), filtered_blob.days[i].dogs[m].active];
                 } else {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), JSONstring3.days[i].dogs[m].awake];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), filtered_blob.days[i].dogs[m].awake];
                 }
                 j++;
             }
