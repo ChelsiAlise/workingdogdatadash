@@ -834,6 +834,10 @@ function fieldcheck() {
     var sex = false;
     if (filterValue != "All Dogs") {
         $('#myFilter2').show();
+        if (temp == "Pie" || temp == "Line") {
+            $('#mySelect2').hide();
+
+        }
         // var j = 0;
         // JSONstring1 = filtered_blob;
         // for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
@@ -1076,6 +1080,9 @@ function fieldcheck2() {
             $('#myFilter4').hide();
             chartOptionsAreValid = false;
         }
+    } else {
+        console.log("eror");
+        chartOptionsAreValid = false;
     }
     if (temp != "Select One") {
         if (boxCheck) {
@@ -1106,7 +1113,7 @@ function fieldcheck2() {
                     barchoices3[j] = helper;
                     j++;
                 }
-                chartOptionsAreValid = false;
+                //chartOptionsAreValid = false;
                     //if ($("#myFilter2 option:selected").text();)
                     barOptions('#mySelect3', barchoices3);
                     $('#mySelect4').hide();
@@ -1195,6 +1202,12 @@ function barOptions(item, options) {
 
 //Generates the graph after clicking the button
 function generateGraph() {
+    console.log("!!!A");
+    console.log($("#mySelect2 option:selected").text());
+    console.log($("#mySelect3 option:selected").text());
+    console.log($("#myFilter3 option"));
+    console.log( $("#myFilter3").css('display'));
+
     if (chartOptionsAreValid) {
             name1 = $("#mySelect1 option:selected").text();
             var temp1 = $("#mySelect option:selected").text();
@@ -1210,14 +1223,15 @@ function generateGraph() {
                 makeBar2(filtered_dogs, typeA, typeB);
             }
         } else if (temp1 == "Pie") {
-            var select1 = $("#mySelect2 option:selected").text();
+            var select1 = $("#mySelect3 option:selected").text();
 
-            if (select1 == "Raw Data"){
+            if (select1 != "Select One"){
                 var type = $("#mySelect3 option:selected").text();
                 makePie(filtered_dogs, type);
 
             }
             else {
+
                 var type = $("#myFilter3 option:selected").text();
                 makePie(filtered_dogs, type);
             }
@@ -1226,7 +1240,8 @@ function generateGraph() {
             var type = $("#mySelect3 option:selected").text();
             // console.log("!");
             // console.log($("#mySelect2 option:selected").text());
-            if (select1 == "Select One") {
+            var filterVar = $("#myFilter3").css('display')
+            if ($("#myFilter3").css('display') != "none") {
                 //console.log("!!");
 
                 select1 = $("#myFilter3 option:selected").text();
