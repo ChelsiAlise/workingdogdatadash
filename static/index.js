@@ -37,9 +37,9 @@ function loadDataAndInitialize() {
                     y: 35
                 },
                 relativeTo: 'chart'
-            },
-            spacingLeft: 0,
-            spacingRight: 0
+                },
+              spacingLeft: 0,
+              spacingRight: 0
         },
         title: {
             style: {
@@ -74,7 +74,7 @@ function loadDataAndInitialize() {
             filtered_dogs_max_total = getMaxTotal(filtered_dogs);
             // normalize data
             normalizeDogData(filtered_dogs);
-            string2 = data; // TODO: remove this
+            filtered_dogs = data; // TODO: remove this
             // update the cards
             updateCards();
             // create all graphs that use this data.
@@ -96,14 +96,11 @@ function loadDataAndInitialize() {
         success: function(data) {
             // store the data
             filtered_blob = data;
-            string3 = data; // TOOD: remove this
             // normalize data
             normalizeDogData(filtered_blob.dogs);
         }
     });
 }
-
-// general javascript utilities
 
 // utility methods for interacting with the dog data
 
@@ -806,36 +803,146 @@ function mostAwakeDog(data) {
 //============= /javascript for cards at top of dashboard ======================
 
 
+
+
 //============= javascript for custom graphs ===================================
 // TODO: rewrite custom graphs entirely:
 //    Users should be able to select multiple data ranges and then create
 //    graphs that use these ranges.
 // TODO: rename / remove these. EG: What is string{1,2,3} supposed to be?
-var string1 = '';
-var string2 = '';
-var string3 = '';
+var JSONstring1 = '';
 var chartOptionsAreValid = false;
 var id;
 var barchoices3 = [];
+var barchoices5 = [];
+barchoicesRegion = [];
+barchoicesSex = [];
+barchoicesStatus = [];
+var barchoicesRegion2 = [];
+var barchoicesSex2 = [];
+var barchoicesStatus2 = [];
+var alldogs = [];
 var barchoices1 = [{"value": "Raw Data", "text": "Raw Data"}, {"value": "Comparisons", "text": "Comparisons"}];
 var barchoices2 = [{"value": "Active", "text": "Active"}, {"value": "Awake", "text": "Awake"}, {"value": "Rest", "text": "Rest"}, {"value": "Total", "text": "Total"}];
 var barchoices4 = [{"value": "Raw Data", "text": "Raw Data"}];
 
+// Checks the logic behind first field for generate graph. If sucessful goes to fieldcheck2.
 function fieldcheck() {
     var temp = $("#mySelect option:selected").text();
+    var filterValue = $("#myFilter option:selected").text();
     chartOptionsAreValid = false;
+    var status = false;
+    var region = false;
+    var sex = false;
+    if (filterValue != "All Dogs") {
+        $('#myFilter2').show();
+        if (temp == "Pie" || temp == "Line") {
+            $('#mySelect2').hide();
+
+        }
+        // var j = 0;
+        // JSONstring1 = filtered_blob;
+        // for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
+        //     helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
+        //     alldogs[j] = helper;
+        //     j++;
+        // }
+        // barOptions('#myFilter2', alldogs);
+
+        if(filterValue == "Region"){
+            region = true;
+            var j = 0;
+            //console.log(filtered_blob);
+            JSONstring1 = filtered_blob;
+            var uniques = [];
+            barchoicesRegion = [];
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
+                if (uniques.indexOf(JSONstring1.dogs[i].regional_center) > -1) {
+                    //console.log(JSONstring1.dogs[i].regional_center);
+                    //test;
+                    continue;
+                }
+                helper = {"value": JSONstring1.dogs[i].regional_center, "text": JSONstring1.dogs[i].regional_center}
+                uniques.push(JSONstring1.dogs[i].regional_center);
+                //console.log(uniques);
+
+                barchoicesRegion[j] = helper;
+                j++;
+            }
+            barOptions('#myFilter2', barchoicesRegion);
+
+        } else if(filterValue == "Dog Status"){
+            status = true;
+            var j = 0;
+            console.log(filtered_blob);
+            JSONstring1 = filtered_blob;
+            var uniques = [];
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
+                if (uniques.indexOf(JSONstring1.dogs[i].dog_status) > -1) {
+                    //console.log(JSONstring1.dogs[i].regional_center);
+                    //test;
+                    continue;
+                }
+                helper = {"value": JSONstring1.dogs[i].dog_status, "text": JSONstring1.dogs[i].dog_status}
+                uniques.push(JSONstring1.dogs[i].dog_status);
+                //console.log(uniques);
+
+                barchoicesStatus[j] = helper;
+                j++;
+            }
+            barOptions('#myFilter2', barchoicesStatus);
+
+        } else if(filterValue == "Sex"){
+            status = true;
+            var j = 0;
+            //console.log(filtered_blob);
+            JSONstring1 = filtered_blob;
+            var uniques = [];
+            barchoicesSex = [];
+
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
+                if (uniques.indexOf(JSONstring1.dogs[i].sex) > -1) {
+                    //console.log(JSONstring1.dogs[i].regional_center);
+                    //test;
+                    continue;
+                }
+                helper = {"value": JSONstring1.dogs[i].sex, "text": JSONstring1.dogs[i].sex}
+                uniques.push(JSONstring1.dogs[i].sex);
+                //console.log(uniques);
+
+                barchoicesSex[j] = helper;
+                j++;
+            }
+            barOptions('#myFilter2', barchoicesSex);
+
+        }
+
+    } else {
+        chartOptionsAreValid = false;
+        $('#myFilter2').hide();
+        $('#myFilter3').hide();
+        $('#myFilter4').hide();
+    }
     if (temp != "Select One") {
         $('#mySelect2').show();
         if(temp == "Bar"){
             barOptions('#mySelect2', barchoices1);
+            $('#myFilter3').hide();
+
         } else if (temp == "Pie"){
             barOptions('#mySelect2', barchoices4);
+        } else if (temp == "Box"){
+            barOptions('#mySelect2', barchoices4);
+            $('#myFilter2').hide();
+            $('#myFilter3').hide();
+
+
         }
         else if (temp == "Line"){
             var j = 0;
-            string1 = string3;
-            for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+            JSONstring1 = filtered_blob;
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
+                helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                 barchoices3[j] = helper;
                 j++;
             }
@@ -847,28 +954,169 @@ function fieldcheck() {
         $('#mySelect3').hide();
         $('#mySelect4').hide();
     }
+
+
 }
 
+// Check the second fieldcheck field, different options cause i different filters/inputs
 function fieldcheck2() {
+    var boxCheck = true;
     var temp = $("#mySelect2 option:selected").text();
     var temp2 = $("#mySelect option:selected").text();
+    var tempfilter = $("#myFilter2 option:selected").text();
+    //console.log("hello");
+    var tempfilter2 = $("#myFilter option:selected").text();
+    //console.log(tempfilter2);
+    if (tempfilter != "Select One") {
+        if (temp2 != "Bar" && temp2 != "Box") {
+            $('#myFilter3').show();
+
+        }
+        if(tempfilter2 == "Region") {
+            var j = 0;
+            JSONstring1 = filtered_blob;
+            barchoicesRegion2 = [];
+
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
+                console.log(JSONstring1.dogs[i].region);
+                console.log(tempfilter);
+                console.log("-------");
+                if (tempfilter == JSONstring1.dogs[i].regional_center) {
+                    helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
+                    barchoicesRegion2[j] = helper;
+                    j++;
+
+                }
+            }
+            barOptions('#myFilter3', barchoicesRegion2);
+            $('#myFilter4').hide();
+            if (temp2 == "Line" || temp2 == "Pie") {
+                $('#mySelect2').hide();
+                if (temp2 == "Line") {
+                    barOptions('#mySelect3', barchoices2);
+                    $('#mySelect3').show();
+                    console.log("aa");
+
+                } else {
+                    $('#mySelect3').hide();
+                    boxCheck = false;
+
+                }
+                $('#mySelect4').hide();
+
+                chartOptionsAreValid = true;
+
+
+            }
+        } else if(tempfilter2 == "Dog Status") {
+            var j = 0;
+            JSONstring1 = filtered_blob;
+            barchoicesStatus2 = [];
+
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
+                // console.log(JSONstring1.dogs[i].region);
+                // console.log(tempfilter);
+                // console.log("-------");
+                if (tempfilter == JSONstring1.dogs[i].dog_status) {
+                    helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
+                    barchoicesStatus2[j] = helper;
+                    j++;
+
+                }
+            }
+            barOptions('#myFilter3', barchoicesStatus2);
+            $('#myFilter4').hide();
+            if (temp2 == "Line" || temp2 == "Pie") {
+                $('#mySelect2').hide();
+                if (temp2 == "Line") {
+                    barOptions('#mySelect3', barchoices2);
+                    $('#mySelect3').show();
+
+                } else {
+                    $('#mySelect3').hide();
+                    boxCheck = false;
+
+
+                }
+                $('#mySelect4').hide();
+
+                chartOptionsAreValid = true;
+
+
+            }
+        } else if(tempfilter2 == "Sex") {
+            var j = 0;
+            JSONstring1 = filtered_blob;
+            barchoicesSex2 = [];
+            for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
+                console.log(JSONstring1.dogs[i].sex);
+                console.log(tempfilter);
+                console.log("-------");
+                if (tempfilter == JSONstring1.dogs[i].sex) {
+                    helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
+                    barchoicesSex2[j] = helper;
+                    j++;
+
+                }
+            }
+            barOptions('#myFilter3', barchoicesSex2);
+            $('#myFilter4').hide();
+            if (temp2 == "Line" || temp2 == "Pie") {
+                $('#mySelect2').hide();
+                if (temp2 == "Line") {
+                    barOptions('#mySelect3', barchoices2);
+                    $('#mySelect3').show();
+
+                } else {
+                    $('#mySelect3').hide();
+                    boxCheck = false;
+
+                }
+                $('#mySelect4').hide();
+                chartOptionsAreValid = true;
+
+
+            }
+        } else {
+            $('#myFilter3').hide();
+            $('#myFilter4').hide();
+            chartOptionsAreValid = false;
+        }
+    } else {
+        console.log("eror");
+        chartOptionsAreValid = false;
+    }
     if (temp != "Select One") {
-        $('#mySelect3').show();
+        if (boxCheck) {
+            $('#mySelect3').show();
+
+        }
         if(temp == "Raw Data"){
             if (temp2 == "Bar") {
+                chartOptionsAreValid = false;
+                    barOptions('#mySelect3', barchoices2);
+                    $('#mySelect4').hide();
+
+                    //chartOptionsAreValid = true;
+            } else if (temp2 == "Box") {
                 chartOptionsAreValid = false;
                     barOptions('#mySelect3', barchoices2);
                     $('#mySelect4').hide();
                     //chartOptionsAreValid = true;
             } else if (temp2 == "Pie") {
                 var j = 0;
-                string1 = string3;
-                for (var i = 0; i < Object.keys(string3.dogs).length; i++) {
-                    helper = {"value": string1.dogs[i].name, "text": string1.dogs[i].name}
+                JSONstring1 = filtered_blob;
+                // console.log("hi");
+                //
+                // console.log($("#myFilter").selected);
+                // console.log("ho");
+                for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
+                    helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                     barchoices3[j] = helper;
                     j++;
                 }
-                chartOptionsAreValid = false;
+                //chartOptionsAreValid = false;
+                    //if ($("#myFilter2 option:selected").text();)
                     barOptions('#mySelect3', barchoices3);
                     $('#mySelect4').hide();
             }
@@ -881,9 +1129,11 @@ function fieldcheck2() {
                     barOptions('#mySelect4', barchoices2);
                 } else if (temp2 == "Pie") {
                     var j = 0;
-                    string1 = string2;
-                    for (var i = 0; i < string2.length; i++) {
-                        helper = {"value": string1[i].name, "text": string1[i].name}
+                    JSONstring1 = filtered_dogs;
+
+
+                    for (var i = 0; i < filtered_dogs.length; i++) {
+                        helper = {"value": JSONstring1[i].name, "text": JSONstring1[i].name}
                         barchoices3[j] = helper;
                         j++;
                     }
@@ -899,11 +1149,15 @@ function fieldcheck2() {
         } else {
             $('#mySelect3').hide();
             $('#mySelect4').hide();
-            chartOptionsAreValid = false;
+            //chartOptionsAreValid = false;
         }
+    } else {
+        $('#mySelect3').hide();
+        $('#mySelect4').hide();
     }
 }
 
+//Checks the logic for the 3rd field
 function fieldcheck3() {
     var select1 = $("#mySelect2 option:selected").text();
     var temp = $("#mySelect3 option:selected").text();
@@ -914,10 +1168,11 @@ function fieldcheck3() {
             idValiBar = false;
         }
     }  else {
-        chartOptionsAreValid = false;
+        //chartOptionsAreValid = false;
     }
 }
 
+//chckes the logic for last field, should only be used in comparisons
 function fieldcheck4() {
     var select1 = $("#mySelect2 option:selected").text();
     var temp = $("#mySelect4 option:selected").text();
@@ -947,7 +1202,14 @@ function barOptions(item, options) {
     }
 }
 
+//Generates the graph after clicking the button
 function generateGraph() {
+    console.log("!!!A");
+    console.log($("#mySelect2 option:selected").text());
+    console.log($("#mySelect3 option:selected").text());
+    console.log($("#myFilter3 option"));
+    console.log( $("#myFilter3").css('display'));
+
     if (chartOptionsAreValid) {
             name1 = $("#mySelect1 option:selected").text();
             var temp1 = $("#mySelect option:selected").text();
@@ -955,23 +1217,49 @@ function generateGraph() {
             var select1 = $("#mySelect2 option:selected").text();
             if (select1 == "Raw Data"){
                 var type = $("#mySelect3 option:selected").text();
-                makeBar(string2, type);
+                makeBar(filtered_dogs, type);
             }
             if (select1 == "Comparisons"){
                 var typeA = $("#mySelect3 option:selected").text();
                 var typeB = $("#mySelect4 option:selected").text();
-                makeBar2(string2, typeA, typeB);
+                makeBar2(filtered_dogs, typeA, typeB);
             }
         } else if (temp1 == "Pie") {
-            var select1 = $("#mySelect2 option:selected").text();
-            if (select1 == "Raw Data"){
+            var select1 = $("#mySelect3 option:selected").text();
+
+            if (select1 != "Select One"){
                 var type = $("#mySelect3 option:selected").text();
-                makePie(string2, type);
+                makePie(filtered_dogs, type);
+
+            }
+            else {
+
+                var type = $("#myFilter3 option:selected").text();
+                if (type == "Select One") {
+                    alert("You must make a selection for each option first.");
+                } else {
+                    makePie(filtered_dogs, type);
+
+                }
             }
         } else if (temp1 == "Line") {
             var select1 = $("#mySelect2 option:selected").text();
             var type = $("#mySelect3 option:selected").text();
-            makeLine(string3, select1, type);
+            // console.log("!");
+            // console.log($("#mySelect2 option:selected").text());
+            var filterVar = $("#myFilter3").css('display')
+            if ($("#myFilter3").css('display') != "none") {
+                //console.log("!!");
+
+                select1 = $("#myFilter3 option:selected").text();
+            }
+            makeLine(filtered_blob, select1, type);
+        } else if (temp1 == "Box") {
+            var select1 = $("#mySelect2 option:selected").text();
+            if (select1 == "Raw Data"){
+                var type = $("#mySelect3 option:selected").text();
+                makeBox(filtered_dogs, type);
+            }
         }
     } else {
         alert("You must make a selection for each option first.");
@@ -987,6 +1275,7 @@ function insertNewGraphRow() {
     var id = "custom-graph-"+custom_graph_id.toString();
     var graphs = document.getElementById("custom-graphs");
     var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">x</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto;"></div></div>';
+
     graphs.insertAdjacentHTML('afterbegin', newElement);
     return id;
 }
@@ -1009,6 +1298,44 @@ function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
 }
 
+// Used to check filter conditions of generate graph. Uses first filter input to generalize the next ones.
+function filterCheck() {
+    var filterTxt = $("#myFilter option:selected").text();
+    var filterTxt2 = $("#myFilter2 option:selected").text();
+    var filterTxt3 = $("#myFilter3 option:selected").text();
+    if (filterTxt == 'All Dogs') {
+        return null;
+    } else if (filterTxt == 'Region') {
+        return barchoicesRegion2;
+    } else if (filterTxt == 'Sex') {
+        return barchoicesSex2;
+    } else if (filterTxt == 'Dog Status') {
+        // console.log("zzz");
+        // console.log(barchoicesStatus2);
+        return barchoicesStatus2;
+    }
+}
+
+//Filtercheck2 returns the initial types for the filter rather then specific dogs
+function filterCheck2() {
+    var filterTxt = $("#myFilter option:selected").text();
+    var filterTxt2 = $("#myFilter2 option:selected").text();
+    var filterTxt3 = $("#myFilter3 option:selected").text();
+    if (filterTxt == 'All Dogs') {
+        return null;
+    } else if (filterTxt == 'Region') {
+        return barchoicesRegion;
+    } else if (filterTxt == 'Sex') {
+        return barchoicesSex;
+    } else if (filterTxt == 'Dog Status') {
+        // console.log("zzz");
+        // console.log(barchoicesStatus2);
+        return barchoicesStatus;
+    }
+}
+
+
+
 //inserts a new stats table alongside the new custom graph row
 var stats_table_id = 0;
 function insertNewStatsTable() {
@@ -1022,7 +1349,7 @@ function insertNewStatsTable() {
                 +'<th>Statistic</th>'
                 +'<th>Series One Value</th>'
             +'</tr>'
-        +'</thead><tbody></tbody>'
+            +'</thead><tbody></tbody>'
     +'</table>';
     graph.insertAdjacentHTML('afterend', newTable);
 }
@@ -1031,14 +1358,14 @@ function insertNewStatsTable2() {
     var id = "stats"+stats_table_id.toString()+"Comp";
     var graph = document.getElementById("custom-graph-"+custom_graph_id.toString());
     var newTable =
-    '<table class="table table-hover stats" id="'+id+'">'
+        '<table class="table table-hover stats" id="'+id+'">'
         +'<thead>'
             +'<tr style="background-color: #016197; color: white;">'
                 +'<th>Statistic</th>'
                 +'<th>Series One Value</th>'
-                +'<th>Series Two Value</th>'
+-                +'<th>Series Two Value</th>'
             +'</tr>'
-        +'</thead><tbody></tbody>'
+            +'</thead><tbody></tbody>'
     +'</table>';
     graph.insertAdjacentHTML('afterend', newTable);
 }
@@ -1146,13 +1473,33 @@ function editStatsTable2(rowNum, label, value1, value2) {
 function makeBar(data, type) {
     var arr = new Array();
     var arr1 = new Array();
-    string1 = data;
+    JSONstring1 = data;
     var j = 0;
-    for (var i =0; i < string1.length; i++) {
-        arr[j] = string1[i].name;
-        var ratio = getBarInfo(string1[i], type);
-        arr1[j] = ratio;
-        j++;
+    var tempArr = filterCheck();
+    var arr2 = [];
+    if (tempArr != null) {
+        arr2 = tempArr.map(function(item) {
+            return item['text'];
+        });
+    }
+    // console.log("test");
+    // console.log(arr2);
+    for (var i =0; i < JSONstring1.length; i++) {
+        if (tempArr == null) {
+            arr[j] = JSONstring1[i].name;
+            var ratio = getBarInfo(JSONstring1[i], type);
+            arr1[j] = ratio;
+            j++;
+        } else {
+            //console.log(JSONstring1[i].name);
+            if(arr2.includes(JSONstring1[i].name)) {
+                arr[j] = JSONstring1[i].name;
+                var ratio = getBarInfo(JSONstring1[i], type);
+                arr1[j] = ratio;
+                j++;
+            }
+        }
+
     };
     var options = {
         chart: {
@@ -1198,20 +1545,43 @@ function makeBar(data, type) {
     statsData(arr1)
 }
 
+//Used to generate the comparison bar graph
 function makeBar2(data, typeA, typeB) {
     var arr = new Array();
     var arr1 = new Array();
     var arr2 = new Array();
-    string1 = data;
+    JSONstring1 = data;
     var j = 0;
-    for (var i =0; i < string1.length; i++) {
-        arr[j] = string1[i].name;
-        var ratio = getBarInfo(string1[i], typeA);
-        var ratio2 = getBarInfo(string1[i], typeB);
-        arr1[j] = ratio;
-        arr2[j] = ratio2;
-        j++;
+    var tempArr = filterCheck();
+    var arr2 = [];
+    if (tempArr != null) {
+        arr2 = tempArr.map(function(item) {
+            return item['text'];
+        });
     }
+    for (var i =0; i < JSONstring1.length; i++) {
+        if (tempArr == null) {
+
+            arr[j] = JSONstring1[i].name;
+            var ratio = getBarInfo(JSONstring1[i], typeA);
+            var ratio2 = getBarInfo(JSONstring1[i], typeB);
+            arr1[j] = ratio;
+            arr2[j] = ratio2;
+            j++;
+        } else {
+            if(arr2.includes(JSONstring1[i].name)) {
+                arr[j] = JSONstring1[i].name;
+                var ratio = getBarInfo(JSONstring1[i], typeA);
+                var ratio2 = getBarInfo(JSONstring1[i], typeB);
+                arr1[j] = ratio;
+                arr2[j] = ratio2;
+                j++;
+            }
+
+        }
+    }
+    console.log("aa");
+    console.log(arr);
     var options = {
             chart: {
                 type: 'column'
@@ -1223,6 +1593,8 @@ function makeBar2(data, typeA, typeB) {
                 text: 'Dog activity tracked in minutes'
             },
             xAxis: {
+                endOnTick: true,
+                max: arr.length-1,
                 categories: arr,
                 crosshair: true
             },
@@ -1259,16 +1631,149 @@ function makeBar2(data, typeA, typeB) {
     statsData(arr1, "compare", arr2);
 }
 
+//Creates the box graph, can use filters to change aspects of the box
+function makeBox(data, type) {
+    // var arr = new Array();
+    var arr1 = new Array();
+    JSONstring1 = data;
+    var arr = filterCheck2();
+    var arr2 = ['All Dogs'];
+    // var tempArr = filterCheck();
+    // var arr2 = [];
+    if (arr != null) {
+        arr2 = arr.map(function(item) {
+            return item['text'];
+        });
+    }
+    // console.log("test");
+    // console.log(arr2);
+    var arrData = [];
+    var filterSelected = $("#myFilter option:selected").text();
+    for (var m=0; m < arr2.length; m++) {
+        var arrTemp = [];
+        var j = 0;
+        for (var i =0; i < JSONstring1.length; i++) {
+                if(filterSelected == "Region" && JSONstring1[i].regional_center == arr2[m]) {
+                    var ratio = getBarInfo(JSONstring1[i], type);
+                    arrTemp[j] = ratio;
+                    j++;
+                } else if(filterSelected == "Dog Status" && JSONstring1[i].dog_status == arr2[m]) {
+                    var ratio = getBarInfo(JSONstring1[i], type);
+                    arrTemp[j] = ratio;
+                    j++;
+                } else if(filterSelected == "Sex" && JSONstring1[i].sex == arr2[m]) {
+                    var ratio = getBarInfo(JSONstring1[i], type);
+                    arrTemp[j] = ratio;
+                    j++;
+                } else if(filterSelected == "All Dogs") {
+                    var ratio = getBarInfo(JSONstring1[i], type);
+                    arrTemp[j] = ratio;
+                    j++;
+                }
+                // } else {
+                //     var ratio = getBarInfo(JSONstring1[i], type);
+                //     arr1[j] = ratio;
+                //     j++;
+                // }
+
+        };
+        arrData[m] = arrTemp;
+    }
+    console.log(arrData);
+    console.log(arr1);
+    //arrNum = arr1;
+    function sortNumber(a,b) {
+        return a - b;
+    }
+    var finalData = [];
+    for (var k=0; k < arrData.length; k++) {
+        var boxData = [];
+        arrData[k] = arrData[k].sort(sortNumber);
+        var arrNum = [];
+        arrNum = arrData[k];
+        boxData[0] = arrNum[0];
+        console.log("testing");
+        //console.log(arrNum[Math.floor(arrNum.length/2)]);
+        boxData[1] = arrNum[Math.floor(arrNum.length/4)];
+        boxData[2] = arrNum[Math.floor(arrNum.length/2)];
+        boxData[3] = arrNum[Math.floor(arrNum.length - arrNum.length/4)];
+        boxData[4] = arrNum[Math.floor(arrNum.length -1)];
+        finalData[k] = boxData;
+    }
+    console.log(finalData);
+
+
+
+    console.log(arr1);
+    var options = {
+
+    chart: {
+        type: 'boxplot'
+    },
+
+    title: {
+        text: 'Box plot series for ' + filterSelected
+    },
+
+    legend: {
+        enabled: false
+    },
+
+    xAxis: {
+        endOnTick: true,
+        max: arr2.length-1,
+        categories: arr2,
+        title: {
+            text: filterSelected
+        }
+    },
+
+    yAxis: {
+        title: {
+            text: 'Minutes ' + type
+        },
+        // plotLines: [{
+        //     value: 932,
+        //     color: 'red',
+        //     width: 1,
+        //     label: {
+        //         text: 'Theoretical mean: 932',
+        //         align: 'center',
+        //         style: {
+        //             color: 'gray'
+        //         }
+        //     }
+        // }]
+    },
+
+    series: [{
+        name: 'Observations',
+        data: finalData,
+        tooltip: {
+            headerFormat: '<em>Experiment No {point.key}</em><br/>'
+        }
+    }]
+
+};
+    renderNewCustomGraph(options);
+    //statsData(arr1)
+}
+
+//Makes a pie chart using options selected in the generate graph attributes
 function makePie(data, dog) {
     var arr = new Array();
     var arr1 = new Array();
-    string1 = data;
+    JSONstring1 = data;
     var j = 0;
-    for (var i =0; i < string1.length; i++) {
-        if (string1[i].name == dog) {
-            var data1 = getBarInfo(string1[i], "Rest");
-            var data2 = getBarInfo(string1[i], "Active");
-            var data3 = getBarInfo(string1[i], "Awake");
+    // console.log("----");
+    // console.log($("#myFilter3 option:selected").text());
+    // console.log("----");
+
+    for (var i =0; i < JSONstring1.length; i++) {
+        if (JSONstring1[i].name == dog) {
+            var data1 = getBarInfo(JSONstring1[i], "Rest");
+            var data2 = getBarInfo(JSONstring1[i], "Active");
+            var data3 = getBarInfo(JSONstring1[i], "Awake");
             var dataT = data1 + data2 + data3;
             var ratioA = data1/dataT;
             var ratioB = data2/dataT;
@@ -1320,32 +1825,33 @@ function makePie(data, dog) {
 
 }
 
+//Makes line graph that are created for specific dogs
 function makeLine(data, dog, type) {
-    console.log(type);
+    //console.log(type);
     var arr = new Array();
     var arr1 = new Array();
     var dates = [];
     var index;
-    string1 = data;
-    for (var k =0; k < Object.keys(string3.dogs).length; k++) {
-        if (string3.dogs[k].name == dog) {
-            id = string3.dogs[k].id;
+    JSONstring1 = data;
+    for (var k =0; k < Object.keys(filtered_blob.dogs).length; k++) {
+        if (filtered_blob.dogs[k].name == dog) {
+            id = filtered_blob.dogs[k].id;
         }
     }
     var j = 0;
-    for (var i =0; i < Object.keys(string3.days).length; i++) {
-        var dateSplit = string3.days[i].date.split("-");
-        for (var m =0; m < Object.keys(string3.days[i].dogs).length; m++) {
-            if (string3.days[i].dogs[m].id == id) {
-                console.log(string3.days[i].date);
+    for (var i =0; i < Object.keys(filtered_blob.days).length; i++) {
+        var dateSplit = filtered_blob.days[i].date.split("-");
+        for (var m =0; m < Object.keys(filtered_blob.days[i].dogs).length; m++) {
+            if (filtered_blob.days[i].dogs[m].id == id) {
+                //console.log(filtered_blob.days[i].date);
                 if (type == "Total") {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].total];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), filtered_blob.days[i].dogs[m].total];
                 } else if (type == "Rest") {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].rest];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), filtered_blob.days[i].dogs[m].rest];
                 } else if (type == "Active") {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].active];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), filtered_blob.days[i].dogs[m].active];
                 } else {
-                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), string3.days[i].dogs[m].awake];
+                    dates[j] = [Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]), filtered_blob.days[i].dogs[m].awake];
                 }
                 j++;
             }
@@ -1406,20 +1912,20 @@ function makeLine(data, dog, type) {
 function makePie2(data, dog1, dog2){
     var arr = new Array();
     var arr1 = new Array();
-    string1 = data;
+    JSONstring1 = data;
     var j = 0;
-    for (var i =0; i < string1.length; i++) {
-        if (string1[i].name == dog1) {
-            console.log(string1[i].name);
-            var data1 = getBarInfo(string1[i], "Rest");
-            var data2 = getBarInfo(string1[i], "Active");
-            var data3 = getBarInfo(string1[i], "Awake");
+    for (var i =0; i < JSONstring1.length; i++) {
+        if (JSONstring1[i].name == dog1) {
+            //console.log(JSONstring1[i].name);
+            var data1 = getBarInfo(JSONstring1[i], "Rest");
+            var data2 = getBarInfo(JSONstring1[i], "Active");
+            var data3 = getBarInfo(JSONstring1[i], "Awake");
         }
-        if (string1[i].name == dog2) {
-            console.log(string1[i].name);
-            var data4 = getBarInfo(string1[i], "Rest");
-            var data5 = getBarInfo(string1[i], "Active");
-            var data6 = getBarInfo(string1[i], "Awake");
+        if (JSONstring1[i].name == dog2) {
+            //console.log(JSONstring1[i].name);
+            var data4 = getBarInfo(JSONstring1[i], "Rest");
+            var data5 = getBarInfo(JSONstring1[i], "Active");
+            var data6 = getBarInfo(JSONstring1[i], "Awake");
         }
     }
     var options = {
@@ -1450,6 +1956,7 @@ function getBarInfo(dog, type){
         return dog.total;
     }
 }
+
 
 
 function round(value, decimals) {
