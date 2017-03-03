@@ -1235,7 +1235,12 @@ function generateGraph() {
             else {
 
                 var type = $("#myFilter3 option:selected").text();
-                makePie(filtered_dogs, type);
+                if (type == "Select One") {
+                    alert("You must make a selection for each option first.");
+                } else {
+                    makePie(filtered_dogs, type);
+
+                }
             }
         } else if (temp1 == "Line") {
             var select1 = $("#mySelect2 option:selected").text();
