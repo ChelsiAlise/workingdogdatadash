@@ -85,6 +85,7 @@ function loadDataAndInitialize() {
             createChartFive();
             createChartSix();
             createChartSeven();
+            createChartEight();
         }
     });
     // load the full data set next
@@ -711,6 +712,119 @@ function createChartSeven() {
     options.series[2].data = processed_json_awake;
     var chart = new Highcharts.Chart(options);
 };
+
+function createChartEight() {
+    var processed_json_rest = new Array();
+    var processed_json_active = new Array();
+    var processed_json_awake = new Array();
+    // sort dogs by name
+    var region_data = dogsByField(filtered_dogs, "regional_center");
+    var regions = Object.keys(region_data);
+    regions.sort(function (a, b) {
+        return a.localeCompare(b);
+    });
+    filtered_dogs.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+    });
+    // chart options
+    var options = {
+        chart: {
+            renderTo: 'chart8',
+            type: 'column',
+            zoomType: 'x'
+        },
+        title: {
+            text: 'Rest, Active, and Awake Percentages Averages per Region'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        xAxis: {
+            type: 'category',
+            title: {
+                text: "Region"
+            },
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Percentages of Total Time'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.0f} percent</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 60,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
+        },
+        series: [{
+            name: 'Rest Average',
+        }, {
+            name: 'Active Average',
+        }, {
+            name: 'Awake Average',
+        }]
+    };
+    // convert the filtered_data to the appropriate arrays
+    for (i = 0; i < regions.length; i++) {
+        var selected_region = region_data[regions[i]];
+        var rest_average = getAverage(selected_region,"rest");
+        var active_average = getAverage(selected_region,"active");
+        var awake_average = getAverage(selected_region,"awake");
+        var total_average = getAverage(selected_region,"total");
+
+        processed_json_rest.push([regions[i], 100 * rest_average/total_average]);
+        processed_json_active.push([regions[i], 100 * active_average/total_average]);
+        processed_json_awake.push([regions[i], 100 * awake_average/total_average]);
+    }
+    // create the chart
+    options.series[0].data = processed_json_rest;
+    options.series[1].data = processed_json_active;
+    options.series[2].data = processed_json_awake;
+    var chart = new Highcharts.Chart(options);
+};
+
+function dogsByField(dogs, field) {
+    by_field = {};
+    for (var i = 0; i < dogs.length; i++) {
+        var value = dogs[i][field];
+        if (!(value in by_field)) {
+            by_field[value] = [dogs[i]];
+        } else {
+            by_field[value].push(dogs[i]);
+        }
+    }
+    return by_field;
+}
+
+function getAverage(array,field){
+    var sum = 0;
+    for (var i = 0; i < array.length; i++){
+        sum = sum + array[i][field];
+    }
+    var average = sum/array.length;
+    return average;
+}
 //============= /javascript for dashboard graphs ===============================
 
 
