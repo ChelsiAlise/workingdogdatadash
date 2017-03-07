@@ -85,6 +85,9 @@ function loadDataAndInitialize() {
             createChartFive();
             createChartSix();
             createChartSeven();
+            // 
+            example2();
+            // 
         }
     });
     // load the full data set next
@@ -178,6 +181,147 @@ var dogPointFormat = '<b>{point.name}</b><hr style="margin-top: .5em">'+
     '<tr><td>Birth Date:&nbsp;&nbsp;</td><td>{point.birth_date}</td></tr>'+
     '<tr><td>Breed:&nbsp;&nbsp;</td><td>{point.breed}</td></tr></table><hr>';
 
+//***************************************************************************** */
+
+// example 2 - High Activty Dogs vs. Low Activity Dogs
+function example2() {
+    var low_activity_val = new Array();
+    var high_activity_val = new Array();
+    var low_activity_name = new Array();
+    var high_activity_name = new Array();
+    var activity = new Array();
+    //names for categories on x-axis. sorted from high activity to low activity
+    var names = new Array();
+
+    // push filtered_data name and activity key value pair to the activity array 
+    for (i = 0; i < filtered_dogs.length; i++) {
+        activity.push({ name: filtered_dogs[i].name, val: filtered_dogs[i].active, total: filtered_dogs[i].total});
+    }
+    // sort activity data from lowest to highest
+    activity.sort(function (a, b) {
+        return a.val - b.val;
+    });
+
+    //calculate top and lowest 10% number range 
+    var ten_percent = Math.round(activity.length * 0.10);
+    console.log(ten_percent);
+
+    //highest values
+    var high_counter = 1;
+    for (i = 0; i < ten_percent; i++) {
+        //var highest = activity[filtered_dogs.length - high_counter];
+        
+        //perc is used if you would like it done by percentage instead of total minutes
+        //var perc = ((activity[filtered_dogs.length - high_counter]["val"]) / (activity[filtered_dogs.length - high_counter]["total"]))*100;
+        //high_activity_name.push(activity[filtered_dogs.length - high_counter]["name"]);
+        //high_activity_val.push(perc);
+
+        //gives top 10% highest activity dogs by total minutes recorded 
+        high_activity_name.push(activity[filtered_dogs.length - high_counter]["name"]);
+        high_activity_val.push(activity[filtered_dogs.length - high_counter]["val"]);
+        high_counter++;
+    }
+
+    //lowest values
+    var low_counter = 0;
+    for (i = 0; i < ten_percent; i++) {
+        //var lowest = activity[low_counter];
+       
+        //perc is used if you would like it done by percentage instead of total minutes
+        //var perc = ((activity[low_counter]["val"]) / (activity[low_counter]["total"]))*100;
+        //low_activity_name.push(activity[low_counter]["name"]);
+        //low_activity_val.push(perc);
+
+        //gives top 10% lowest activity dogs by total minutes recorded 
+        low_activity_name.push(activity[low_counter]["name"]);
+        low_activity_val.push(activity[low_counter]["val"]);
+        low_counter++;
+    }
+
+    //create names array for "categories" on x-axis
+    //high_activity_name + low_activity_name
+    names = high_activity_name.concat(low_activity_name);
+    console.log(names);
+
+    length
+    //add padding of 0's for where high activity vs. low activity data should be displayed
+    for (i = 0; i < ten_percent; i++) {
+        high_activity_val.push(0);
+    }
+    console.log(high_activity_val);
+
+    //add padding of 0's for where high activity vs. low activity data should be displayed
+    for (i = 0; i < ten_percent; i++) {
+        low_activity_val.unshift(0);
+    }
+    console.log(low_activity_val);
+
+    // chart options
+    var options = {
+        chart: {
+            renderTo: 'example2',
+            type: 'column',
+            zoomType: 'x'
+        },
+        title: {
+            text: 'Top 10% High Activity Dogs by Total Minutes vs. Top 10% Low Activity Dogs by Total Minutes'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        xAxis: {
+            title: {
+                text: "Dog's Names"
+            },
+            categories: names,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Total Minutes'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-weight:bold;">{point.key}</span><hr style="margin-top:.5em;"><table>',
+            pointFormat: '<tr><td style="padding:0">{series.name}:&nbsp;</td>' +
+            '<td style="padding:0">{point.y:.0f} mins</td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 60,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
+        },
+        series: [{
+            name: 'High Activity',
+            data: high_activity_val,
+        }, {
+            name: 'Low Activity',
+            data: low_activity_val,
+        }]
+    };
+
+    // create the chart
+    var chart = new Highcharts.Chart(options);
+
+};
+
+//***************************************************************************** */
 
 // chart 1 - Awake Versus Rest of All Dogs by Name
 function createChartOne() {
