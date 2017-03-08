@@ -99,6 +99,8 @@ function loadDataAndInitialize() {
             filtered_blob = data;
             // normalize data
             normalizeDogData(filtered_blob.dogs);
+            // create all graphs that use this data.
+            example1();
         }
     });
 }
@@ -178,6 +180,129 @@ var dogPointFormat = '<b>{point.name}</b><hr style="margin-top: .5em">'+
     '<tr><td>Sex:&nbsp;&nbsp;</td><td>{point.sex}</td></tr>'+
     '<tr><td>Birth Date:&nbsp;&nbsp;</td><td>{point.birth_date}</td></tr>'+
     '<tr><td>Breed:&nbsp;&nbsp;</td><td>{point.breed}</td></tr></table><hr>';
+
+
+/******************** NEW COMPARISON MULTI LINE GRAPH FOR DASHBOARD ********************/ 
+function example1() {
+
+    var dates_rest = [];
+    var dates_active = [];
+    var dates_awake = [];
+    var dates_total = [];
+    var id = "";
+
+    //line up date information with specific dog id
+    //in this case it is hardcoded to be for Juma
+    for (var k = 0; k < Object.keys(filtered_blob.dogs).length; k++) {
+        if (filtered_blob.dogs[k].name == "Juma") {
+            id = filtered_blob.dogs[k].id;
+        }
+    }
+
+    //convert the filtered_bolb to the appropriate arrays
+    // Define the data points. All series have a dummy year
+    // of 1970/71 in order to be compared on the same x axis. Note
+    // that in JavaScript, months start at 0 for January, 1 for February etc.
+    var j = 0;
+    for (var i = 0; i < Object.keys(filtered_blob.days).length; i++) {
+        var dateSplit = filtered_blob.days[i].date.split("-");
+        for (var m = 0; m < Object.keys(filtered_blob.days[i].dogs).length; m++) {
+            if (filtered_blob.days[i].dogs[m].id == id) {
+                //done by percentage of time
+                dates_rest[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), ((filtered_blob.days[i].dogs[m].rest/filtered_blob.days[i].dogs[m].total)*100)];
+                dates_active[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), ((filtered_blob.days[i].dogs[m].active/filtered_blob.days[i].dogs[m].total)*100)];
+                dates_awake[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), ((filtered_blob.days[i].dogs[m].awake/filtered_blob.days[i].dogs[m].total)*100)];
+                
+                ////done without percentage by total minutes 
+                //dates_rest[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), filtered_blob.days[i].dogs[m].rest];
+                //dates_active[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), filtered_blob.days[i].dogs[m].active];
+                //dates_awake[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), filtered_blob.days[i].dogs[m].awake];
+
+                j++;
+            }
+        }
+    }
+
+    // chart options
+    var options = {
+        chart: {
+            type: 'spline',
+            renderTo: 'example1',
+            zoomType: 'x'
+        },
+        title: {
+            text: 'Percentage of Time Active, Rest and Awake Comparison for Juma by Date'
+        },
+        subtitle: {
+            text: 'Over irregular dates'
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: { 
+                // month: '%e. %b',
+	            // year: '%Y'
+                // month: '%Y-%m',
+                second: '%Y-%b-%d<br/>%H:%M:%S',
+                minute: '%Y-%b-%d<br/>%H:%M',
+                hour: '%Y-%b-%d<br/>%H:%M',
+                day: '%Y-%b-%d',
+                week: '%Y-%b-%d',
+                month: '%Y-%b',
+                year: '%Y'
+            },
+            title: {
+                text: 'Date'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Percentage of Time (% of Total Time)'
+            },
+            min: 0
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 60,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.1f} %</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+
+        plotOptions: {
+            spline: {
+                marker: {
+                    enabled: true
+                }
+            }
+        },
+
+        series: [{
+            name: 'Rest',
+            data: dates_rest
+        }, {
+            name: 'Active',
+            data: dates_active
+        }, {
+            name: 'Awake',
+            data: dates_awake
+        }]
+    };
+
+    var chart = new Highcharts.Chart(options);
+};
+//************************ / NEW COMPARISON MULTI LINE GRAPH FOR DASHBOARD ************************ */
+
 
 
 // chart 1 - Awake Versus Rest of All Dogs by Name
