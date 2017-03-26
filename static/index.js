@@ -838,6 +838,7 @@ function createChartSeven() {
     var chart = new Highcharts.Chart(options);
 };
 
+// chart for average rest, awake, and active percentages per region
 function createChartEight() {
     var processed_json_rest = new Array();
     var processed_json_active = new Array();
@@ -929,6 +930,7 @@ function createChartEight() {
     var chart = new Highcharts.Chart(options);
 };
 
+// creates arrays for each individual field of the json data
 function dogsByField(dogs, field) {
     by_field = {};
     for (var i = 0; i < dogs.length; i++) {
@@ -941,7 +943,7 @@ function dogsByField(dogs, field) {
     }
     return by_field;
 }
-
+// iterates through an array and returns the average for the specified field
 function getAverage(array,field){
     var sum = 0;
     for (var i = 0; i < array.length; i++){
@@ -957,6 +959,7 @@ function getAverage(array,field){
 
 //============= javascript for cards at top of dashboard =======================
 
+// showcases the dogs that have the most accumalated minutes in each of the sections
 function updateCards() {
     document.getElementById("most_active_card").innerHTML = mostActiveDog(filtered_dogs);
     document.getElementById("most_active_card_title").innerHTML = "Most Active Dog";
