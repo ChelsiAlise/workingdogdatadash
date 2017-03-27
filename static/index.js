@@ -77,7 +77,6 @@ function loadDataAndInitialize() {
             filtered_dogs = data; // TODO: remove this
             // update the cards
             updateCards();
-            console.log(dogsByField(filtered_dogs, "dog_status"));
             // create all graphs that use this data.
             createChartOne();
             createChartTwo();
