@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -40,6 +41,8 @@ func init() {
 	AddApi("data/filtered/blob", dataFilteredBlobHandler)
 	AddApi("data/filtered/days", dataFilteredDaysHandler)
 	AddApi("data/filtered/dogs", dataFilteredDogsHandler)
+	// user bootstrap api
+	http.HandleFunc("/api/users/upload", userUploadHandler)
 }
 
 func AddApi(path string, handler http.HandlerFunc) {
@@ -76,9 +79,18 @@ func decrypt(keyString, textString string) string {
 	return string(text)
 }
 
+func userhash(username, password string) string {
+	h := sha256.New()
+	io.WriteString(h, salt1)
+	io.WriteString(h, username)
+	io.WriteString(h, salt2)
+	io.WriteString(h, password)
+	return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%x", h.Sum(nil))))
+}
+
 // RootHandler handles authorization and login
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: this is horrible.
+	ctx := appengine.NewContext(r)
 	AUTH_COOKIE_NAME := "auth"
 	// handle login
 	if r.URL.Path == "/login" {
@@ -88,18 +100,23 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 			r.ParseForm()
 			username := r.FormValue("username")
 			password := r.FormValue("password")
-			if userPassword, ok := users[username]; !ok || userPassword != password {
+			passwordHash := userhash(username, password)
+			// get info from DB and compare
+			userInfo, err := GetUser(ctx, username)
+			if err != nil || userInfo.PasswordHash != passwordHash {
+				ctx.Infof("Failed to match hashes (login)! %s %s", userInfo.PasswordHash, passwordHash)
 				http.Redirect(w, r, "/login?retry=true", 303)
 				return
 			}
 			cookie := http.Cookie{
 				Name:     AUTH_COOKIE_NAME,
-				Value:    encrypt(uploadKey, username+"\r"+password),
+				Value:    encrypt(uploadKey, username+"\r"+passwordHash),
 				Secure:   true,
 				HttpOnly: true,
 				Path:     "/",
 				Expires:  time.Now().Add(time.Hour * 24 * 7 * 3),
 			}
+			ctx.Infof("All good.")
 			http.SetCookie(w, &cookie)
 			http.Redirect(w, r, "/", 303)
 		}
@@ -120,9 +137,11 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	username := strs[0]
-	password := strs[1]
-	if userPassword, ok := users[username]; !ok || userPassword != password {
-		http.Redirect(w, r, "/login", 303)
+	passwordHash := strs[1]
+	// get info from DB and compare
+	userInfo, err := GetUser(ctx, username)
+	if err != nil || userInfo.PasswordHash != passwordHash {
+		http.Redirect(w, r, "/login?retry=true", 303)
 		return
 	}
 	// at this point we have a cookie and it matches, so handle normally
@@ -244,4 +263,35 @@ func dataFilteredDogsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
+}
+
+func userUploadHandler(w http.ResponseWriter, r *http.Request) {
+	if key, ok := r.Header["Upload-Key"]; ok {
+		if len(key) != 1 || key[0] != uploadKey {
+			http.Error(w, "Invalid authorization key.", http.StatusUnauthorized)
+			return
+		}
+	} else {
+		http.Error(w, "Invalid request.", http.StatusUnauthorized)
+		return
+	}
+	ctx := appengine.NewContext(r)
+	ctx.Infof("upload request!")
+	decoder := json.NewDecoder(r.Body)
+	var users []*User
+	err := decoder.Decode(&users)
+	defer r.Body.Close()
+	if err != nil {
+		http.Error(w, "Failed to handle import! "+err.Error(),
+			http.StatusInternalServerError)
+		return
+	}
+	for _, user := range users {
+		_, err = AddUser(ctx, user)
+		if err != nil {
+			http.Error(w, "Failed to handle import! "+err.Error(),
+				http.StatusInternalServerError)
+			return
+		}
+	}
 }

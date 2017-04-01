@@ -1,5 +1,11 @@
 package main
 
+type User struct {
+	IsAdmin      bool   `json:"is_admin"`
+	Username     string `json:"username"`
+	PasswordHash string `json:"password_hash"`
+}
+
 // Dog represents a dog's data
 type Dog struct {
 	Name         string `json:"name"`

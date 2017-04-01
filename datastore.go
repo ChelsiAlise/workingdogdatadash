@@ -13,6 +13,24 @@ const (
 	FilterThreshold int = 1008
 )
 
+func AddUser(ctx appengine.Context, u *User) (id int64, err error) {
+	key := datastore.NewKey(ctx, "Users", u.Username, 0, nil)
+	key, err = datastore.Put(ctx, key, u)
+	if err != nil {
+		return 0, fmt.Errorf("datastoredb: could not put User: %v", err)
+	}
+	return key.IntID(), nil
+}
+
+func GetUser(ctx appengine.Context, username string) (u *User, err error) {
+	u = new(User)
+	key := datastore.NewKey(ctx, "Users", username, 0, nil)
+	if err = datastore.Get(ctx, key, u); err != nil {
+		return nil, fmt.Errorf("datastoredb: could not get User with username: %s Err: %v", username, err)
+	}
+	return u, err
+}
+
 // AddDog adds a dog to the datastore
 func AddDataDog(ctx appengine.Context, d *Dog) (id int64, err error) {
 	key := datastore.NewKey(ctx, "Dog", "", int64(d.ID), nil)
