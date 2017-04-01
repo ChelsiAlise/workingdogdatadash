@@ -122,7 +122,7 @@ def main():
     handler = DevHTTPRequestHandler
     httpd = SocketServer.TCPServer(("", port), handler)
     login(DevHTTPRequestHandler.opener)
-    print "serving at localhost:%s"%(port)
+    print "serving at localhost:%d"%(port)
     try:
         httpd.serve_forever()
     except:
