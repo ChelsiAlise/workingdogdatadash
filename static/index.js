@@ -86,6 +86,7 @@ function loadDataAndInitialize() {
             createChartSix();
             createChartSeven();
             createChartEight();
+            createChartNine();
         }
     });
     // load the full data set next
@@ -853,6 +854,7 @@ function createChartSeven() {
     var chart = new Highcharts.Chart(options);
 };
 
+// chart for average rest, awake, and active percentages per region
 function createChartEight() {
     var processed_json_rest = new Array();
     var processed_json_active = new Array();
@@ -944,6 +946,125 @@ function createChartEight() {
     var chart = new Highcharts.Chart(options);
 };
 
+function createChartNine() {
+    var processed_json_rest = new Array();
+    var processed_json_active = new Array();
+    var processed_json_awake = new Array();
+    // sort dogs by name
+    var status_data = dogsByField(filtered_dogs, "dog_status");
+    var statuses = Object.keys(status_data);
+    var pie_data = [];
+    statuses.sort(function (a, b) {
+        return a.localeCompare(b);
+    });
+    filtered_dogs.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+    });
+    // chart options
+    var options = {
+        chart: {
+            renderTo: 'chart9',
+            type: 'column',
+            zoomType: 'x'
+        },
+        title: {
+            text: 'Rest, Active, and Awake Percentages Averages per Dog Status'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+         labels: {
+            items: [{
+                html: 'Number of Total Dogs Tracked per Status',
+                style: {
+                    left: '175px',
+                    top: '40px',
+                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+                }
+            }]
+        },
+        xAxis: {
+            type: 'category',
+            title: {
+                text: "Status"
+            },
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Percentages of Total Time'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.0f}</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -5,
+            y: 60,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
+        },
+        series: [{
+            name: 'Rest Average Percent',
+        }, {
+            name: 'Active Average Percent',
+        }, {
+            name: 'Awake Average Percent',
+        }, {
+            type: 'pie',
+            name: '# of Total Dogs Tracked',
+            center: [250, 120],
+            size: 80,
+            showInLegend: false,
+            dataLabels: {
+                enabled: true
+            }
+        }]
+    };
+    // convert the filtered_data to the appropriate arrays
+    for (i = 0; i < statuses.length; i++) {
+        var selected = status_data[statuses[i]];
+        var rest_average = getAverage(selected,"rest");
+        var active_average = getAverage(selected,"active");
+        var awake_average = getAverage(selected,"awake");
+        var total_average = getAverage(selected,"total");
+
+        processed_json_rest.push([statuses[i], 100 * rest_average/total_average]);
+        processed_json_active.push([statuses[i], 100 * active_average/total_average]);
+        processed_json_awake.push([statuses[i], 100 * awake_average/total_average]);
+        var json1 = {
+            "name": statuses[i],
+            "y": selected.length
+        }
+        pie_data.push(json1);
+    }
+    // create the chart
+    options.series[0].data = processed_json_rest;
+    options.series[1].data = processed_json_active;
+    options.series[2].data = processed_json_awake;
+    options.series[3].data = pie_data;
+    var chart = new Highcharts.Chart(options);
+};
+
+
+// creates arrays for each individual field of the json data
 function dogsByField(dogs, field) {
     by_field = {};
     for (var i = 0; i < dogs.length; i++) {
@@ -956,7 +1077,7 @@ function dogsByField(dogs, field) {
     }
     return by_field;
 }
-
+// iterates through an array and returns the average for the specified field
 function getAverage(array,field){
     var sum = 0;
     for (var i = 0; i < array.length; i++){
@@ -972,6 +1093,7 @@ function getAverage(array,field){
 
 //============= javascript for cards at top of dashboard =======================
 
+// showcases the dogs that have the most accumalated minutes in each of the sections
 function updateCards() {
     document.getElementById("most_active_card").innerHTML = mostActiveDog(filtered_dogs);
     document.getElementById("most_active_card_title").innerHTML = "Most Active Dog";
