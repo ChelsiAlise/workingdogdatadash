@@ -372,6 +372,11 @@ function createChartOne() {
             }
         },
         series:[{
+            regression: true ,
+            regressionSettings: {
+                type: 'linear',
+                color:  'rgba(40, 100, 255, .9)'
+            },
             name: 'Dogs',
             data: series_data
         }]
@@ -447,6 +452,11 @@ function createChartTwo() {
             }
         },
         series:[{
+            regression: true ,
+            regressionSettings: {
+                type: 'linear',
+                color:  'rgba(40, 100, 255, .9)'
+            },
             name: 'Dogs',
             data: series_data
         }]
@@ -523,6 +533,11 @@ function createChartThree() {
             }
         },
         series:[{
+            regression: true ,
+            regressionSettings: {
+                type: 'linear',
+                color:  'rgba(40, 100, 255, .9)'
+            },
             name: 'Dogs',
             data: series_data
         }]
