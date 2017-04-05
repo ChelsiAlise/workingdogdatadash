@@ -89,6 +89,7 @@ data = parse_data.parse_dog_data()
 # convert to json
 print("Converting Data")
 json_data = data_to_json(data)
+print(json_data)
 
 # upload
 print("Uploading.")

@@ -90,6 +90,7 @@ func GetApiCached(w http.ResponseWriter, r *http.Request) {
 	}
 	// attempt to serve from db
 	{
+		ctx.Infof("Attempting to serve from DB")
 		key := datastore.NewKey(ctx, "Cache", uri, 0, nil)
 		entity := cacheEntity{}
 		err := datastore.Get(ctx, key, &entity)
@@ -114,6 +115,7 @@ func GetApiCached(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	ctx.Infof("Attempting to serve from live API result")
 	// otherwise serve from un-cached api, and then cache the results
 	realPath := "/api/" + strings.TrimPrefix(r.URL.Path, "/api/cached/")
 	r.URL.Path = realPath
@@ -139,6 +141,6 @@ func GetApiCached(w http.ResponseWriter, r *http.Request) {
 			ctx.Errorf("datastoredb: could not put Cache: %v", err)
 		}
 	} else {
-		ctx.Errorf("cache code is not http.StatusOK: %v", cacheResponseWriter.Code())
+		ctx.Errorf("cache response writer code is not http.StatusOK: %v", cacheResponseWriter.Code())
 	}
 }
