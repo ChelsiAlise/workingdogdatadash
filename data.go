@@ -16,11 +16,15 @@ type Dog struct {
 	Rest         int    `json:"rest"`
 	Active       int    `json:"active"`
 	// outcome data
-	BirthDate      string `json:"birth_date"`
-	Breed          string `json:"breed"`
-	Sex            string `json:"sex"`
-	DogStatus      string `json:"dog_status"`
-	RegionalCenter string `json:"regional_center"`
+	BirthDate       string `json:"birth_date"`
+	Breed           string `json:"breed"`
+	Sex             string `json:"sex"`
+	DogStatus       string `json:"dog_status"`
+	HearingTraining string `json:"hearing_training"`
+	RegionalCenter  string `json:"regional_center"`
+	// convenience fields parsed from regional center
+	RegionalCentersRaised  []string `json:"regional_centers_raised"`
+	RegionalCentersTrained []string `json:"regional_centers_trained"`
 }
 
 // DayData represents one dog's data for a day

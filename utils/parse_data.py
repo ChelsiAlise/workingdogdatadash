@@ -50,6 +50,9 @@ class DogData(object):
         self.sex = ""
         self.dog_status = ""
         self.regional_center = ""
+        self.regional_centers_raised = []
+        self.regional_centers_trained = []
+        self.hearing_training = ""
 
     def __repr__(self):
         # NOTE! this no longer contains all fields
@@ -125,6 +128,21 @@ def parse_outcomes_file(file_name, data, debug=False):
             dog.sex = row[3]
             dog.dog_status = row[4]
             dog.regional_center = row[5]
+            if not "raised," in dog.regional_center:
+                dog.regional_centers_raised = [dog.regional_center]
+                dog.regional_centers_trained = [dog.regional_center]
+            else:
+                idx = dog.regional_center.index("raised,")
+                #TODO if they add multiple raised locations we will
+                # need to see what format they used and parse it
+                raised = dog.regional_center[:idx].rstrip()
+                dog.regional_centers_raised = [raised]
+                trained = dog.regional_center[idx+len("raised,"):]
+                trained = trained.replace('training', '')
+                trained = trained.rstrip().lstrip()
+                trained = trained.split('&')
+                dog.regional_centers_trained = trained
+            dog.hearing_training = row[6]
     return data
 
 # method to parse a "cci-puppy_minutes-*.csv" file
