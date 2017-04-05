@@ -102,7 +102,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 			password := r.FormValue("password")
 			passwordHash := userhash(username, password)
 			// get info from DB and compare
-			userInfo, err := GetUser(ctx, username)
+			userInfo, err := GetUserCached(ctx, username)
 			if err != nil || userInfo.PasswordHash != passwordHash {
 				ctx.Infof("Failed to match hashes (login)! %s %s", userInfo.PasswordHash, passwordHash)
 				http.Redirect(w, r, "/login?retry=true", 303)
@@ -138,8 +138,8 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	username := strs[0]
 	passwordHash := strs[1]
-	// get info from DB and compare
-	userInfo, err := GetUser(ctx, username)
+	// check memcache first then fallback to DB and compare
+	userInfo, err := GetUserCached(ctx, username)
 	if err != nil || userInfo.PasswordHash != passwordHash {
 		http.Redirect(w, r, "/login?retry=true", 303)
 		return
