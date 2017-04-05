@@ -61,6 +61,7 @@ def data_to_json(data):
             "regional_center": dog.regional_center,
             "regional_centers_trained": dog.regional_centers_trained,
             "regional_centers_raised": dog.regional_centers_raised,
+            "hearing_training": dog.hearing_training,
         }
         dataBlob["dogs"].append(upload_dog)
     for day in days:
@@ -89,7 +90,6 @@ data = parse_data.parse_dog_data()
 # convert to json
 print("Converting Data")
 json_data = data_to_json(data)
-print(json_data)
 
 # upload
 print("Uploading.")
