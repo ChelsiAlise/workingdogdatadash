@@ -66,6 +66,7 @@ func GetDataDays(ctx appengine.Context) ([]*Day, error) {
 	q := datastore.NewQuery("Day")
 	_, err := q.GetAll(ctx, &days)
 	if err != nil {
+		ctx.Errorf("datastore: could not list days: %v", err)
 		return nil, fmt.Errorf("datastore: could not list days: %v", err)
 	}
 	return days, nil
@@ -88,6 +89,7 @@ func GetDataBlob(ctx appengine.Context) (data DataBlob, err error) {
 func GetDataFilteredDays(ctx appengine.Context) ([]*Day, error) {
 	days, err := GetDataDays(ctx)
 	if err != nil {
+		ctx.Errorf("Failed to GetDataDays %v", err)
 		return nil, err
 	}
 	filteredDays := days[:0]
@@ -109,10 +111,12 @@ func GetDataFilteredDays(ctx appengine.Context) ([]*Day, error) {
 func GetDataFilteredDogs(ctx appengine.Context) ([]*Dog, error) {
 	days, err := GetDataFilteredDays(ctx)
 	if err != nil {
+		ctx.Errorf("Failed to GetDataFilteredDays %v", err)
 		return nil, err
 	}
 	dogs, err := GetDataDogs(ctx)
 	if err != nil {
+		ctx.Errorf("Failed to GetDataDogs %v", err)
 		return nil, err
 	}
 	// replace totals with filtered totals

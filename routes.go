@@ -90,7 +90,7 @@ func userhash(username, password string) string {
 
 // RootHandler handles authorization and login
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	AUTH_COOKIE_NAME := "auth"
 	// handle login
 	if r.URL.Path == "/login" {
@@ -170,7 +170,7 @@ func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request.", http.StatusUnauthorized)
 		return
 	}
-	ctx := appengine.NewContext(r)
+	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	ctx.Infof("upload request!")
 	decoder := json.NewDecoder(r.Body)
 	var data DataBlob
@@ -206,7 +206,7 @@ func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func dataBlobHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	data, err := GetDataBlob(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -216,7 +216,7 @@ func dataBlobHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func dataDaysHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	data, err := GetDataDays(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -226,7 +226,7 @@ func dataDaysHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func dataDogsHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	data, err := GetDataDogs(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -236,7 +236,7 @@ func dataDogsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func dataFilteredBlobHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	data, err := GetDataFilteredBlob(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -246,7 +246,7 @@ func dataFilteredBlobHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func dataFilteredDaysHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	data, err := GetDataFilteredDays(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -256,7 +256,7 @@ func dataFilteredDaysHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func dataFilteredDogsHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.NewContext(r)
+	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	data, err := GetDataFilteredDogs(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -275,7 +275,7 @@ func userUploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request.", http.StatusUnauthorized)
 		return
 	}
-	ctx := appengine.NewContext(r)
+	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	ctx.Infof("upload request!")
 	decoder := json.NewDecoder(r.Body)
 	var users []*User
