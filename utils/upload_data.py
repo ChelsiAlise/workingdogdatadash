@@ -13,6 +13,7 @@ import json
 import urllib
 import urllib2
 import cookielib
+from getpass import getpass
 
 key = sys.argv[-1]
 
@@ -58,6 +59,8 @@ def data_to_json(data):
             "sex": dog.sex,
             "dog_status": dog.dog_status,
             "regional_center": dog.regional_center,
+            "regional_centers_trained": dog.regional_centers_trained,
+            "regional_centers_raised": dog.regional_centers_raised,
         }
         dataBlob["dogs"].append(upload_dog)
     for day in days:
@@ -71,7 +74,7 @@ opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 login_url = "https://working-dog-data-dash.appspot.com/login"
 print("please enter credentials for P.A.W.S.")
 user = raw_input("user: ")
-password = raw_input("password: ")
+password = getpass("password: ")
 form_data = {"username": user, "password": password}
 params = urllib.urlencode(form_data)
 response = opener.open(login_url, data=params)
