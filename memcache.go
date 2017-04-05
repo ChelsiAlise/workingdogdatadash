@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"compress/gzip"
+	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
@@ -12,6 +13,39 @@ import (
 	"appengine/datastore"
 	"appengine/memcache"
 )
+
+func GetUserCached(ctx appengine.Context, username string) (u *User, err error) {
+	// check memcache
+	userCacheKey := "user/" + username
+	item, err := memcache.Get(ctx, userCacheKey)
+	if err == nil {
+		u = new(User)
+		err = json.Unmarshal(item.Value, u)
+		if err == nil {
+			return u, err
+		}
+	}
+	// try from DB
+	u, err = GetUser(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	// cache if we got a result from the DB
+	b, err := json.Marshal(u)
+	if err != nil {
+		ctx.Errorf("error marshalling user: %v", err)
+	} else {
+		item := &memcache.Item{
+			Key:        userCacheKey,
+			Value:      b,
+			Expiration: CacheDuration,
+		}
+		if err := memcache.Set(ctx, item); err != nil {
+			ctx.Errorf("error setting user in memcache: %v", err)
+		}
+	}
+	return u, nil
+}
 
 //TODO: What should this be?
 var CacheDuration time.Duration = time.Hour * 24
