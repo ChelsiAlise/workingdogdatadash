@@ -1,5 +1,11 @@
+/*
+	This file contains the data structures used to
+	store and serialize data
+*/
+
 package main
 
+// User represents an application user in the datastore
 type User struct {
 	IsAdmin      bool   `json:"is_admin"`
 	Username     string `json:"username"`

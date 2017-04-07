@@ -1,3 +1,7 @@
+/*
+	this file contains all code for interacting with memecache
+*/
+
 package main
 
 import (
@@ -14,7 +18,10 @@ import (
 	"appengine/memcache"
 )
 
-func GetUserCached(ctx appengine.Context, username string) (u *User, err error) {
+// getUserCached fetches UserInfo for a user, attempting to use
+// memcache before the database and to insert users into memcache
+// when the database is used
+func getUserCached(ctx appengine.Context, username string) (u *User, err error) {
 	// check memcache
 	userCacheKey := "user/" + username
 	item, err := memcache.Get(ctx, userCacheKey)
@@ -26,7 +33,7 @@ func GetUserCached(ctx appengine.Context, username string) (u *User, err error) 
 		}
 	}
 	// try from DB
-	u, err = GetUser(ctx, username)
+	u, err = getUser(ctx, username)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +54,7 @@ func GetUserCached(ctx appengine.Context, username string) (u *User, err error) 
 	return u, nil
 }
 
-//TODO: What should this be?
+// TODO: What should this be?
 var CacheDuration time.Duration = time.Hour * 24
 
 type CacheResponseWriter struct {
@@ -103,8 +110,18 @@ type cacheEntity struct {
 
 var _ http.ResponseWriter = (*CacheResponseWriter)(nil)
 
-func GetApiCached(w http.ResponseWriter, r *http.Request) {
-	// TODO: expire database cache
+// getApiCached fetches api results for a cached api route,
+// attempting to use  memcache before the database
+// results are inserted into memcache when the database is used
+func getApiCached(w http.ResponseWriter, r *http.Request) {
+	realPath := "/api/" + strings.TrimPrefix(r.URL.Path, "/api/cached/")
+	// make sure the api to serve should be cached
+	if _, ok := cachedApiPaths[realPath]; !ok {
+		http.Error(w, "There is no such cached api route.",
+			http.StatusInternalServerError)
+		return
+	}
+	// TODO: expire database cache automatically
 	ctx := appengine.NewContext(r)
 	uri := r.URL.RequestURI()
 	// attempt to serve from memcached
@@ -151,7 +168,6 @@ func GetApiCached(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx.Infof("Attempting to serve from live API result")
 	// otherwise serve from un-cached api, and then cache the results
-	realPath := "/api/" + strings.TrimPrefix(r.URL.Path, "/api/cached/")
 	r.URL.Path = realPath
 	cacheResponseWriter := NewCacheResponseWriter(w)
 	authRequiredMux.ServeHTTP(cacheResponseWriter, r)
