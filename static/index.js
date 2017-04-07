@@ -183,7 +183,7 @@ var dogPointFormat = '<b>{point.name}</b><hr style="margin-top: .5em">'+
     '<tr><td>Breed:&nbsp;&nbsp;</td><td>{point.breed}</td></tr></table><hr>';
 
 
-/******************** NEW COMPARISON MULTI LINE GRAPH FOR DASHBOARD ********************/ 
+/******************** NEW COMPARISON MULTI LINE GRAPH FOR DASHBOARD ********************/
 function example1() {
 
     var dates_rest = [];
@@ -213,8 +213,8 @@ function example1() {
                 dates_rest[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), ((filtered_blob.days[i].dogs[m].rest/filtered_blob.days[i].dogs[m].total)*100)];
                 dates_active[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), ((filtered_blob.days[i].dogs[m].active/filtered_blob.days[i].dogs[m].total)*100)];
                 dates_awake[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), ((filtered_blob.days[i].dogs[m].awake/filtered_blob.days[i].dogs[m].total)*100)];
-                
-                ////done without percentage by total minutes 
+
+                ////done without percentage by total minutes
                 //dates_rest[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), filtered_blob.days[i].dogs[m].rest];
                 //dates_active[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), filtered_blob.days[i].dogs[m].active];
                 //dates_awake[j] = [Date.UTC(dateSplit[0], dateSplit[1] - 1, dateSplit[2]), filtered_blob.days[i].dogs[m].awake];
@@ -239,7 +239,7 @@ function example1() {
         },
         xAxis: {
             type: 'datetime',
-            dateTimeLabelFormats: { 
+            dateTimeLabelFormats: {
                 // month: '%e. %b',
 	            // year: '%Y'
                 // month: '%Y-%m',
@@ -1250,7 +1250,7 @@ function fieldcheck() {
         } else if(filterValue == "Dog Status"){
             status = true;
             var j = 0;
-            console.log(filtered_blob);
+            //console.log(filtered_blob);
             JSONstring1 = filtered_blob;
             var uniques = [];
             for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
@@ -1327,6 +1327,7 @@ function fieldcheck() {
     } else {
         chartOptionsAreValid = false;
         $('#mySelect2').hide();
+        console.log("dd");
         $('#mySelect3').hide();
         $('#mySelect4').hide();
     }
@@ -1342,7 +1343,7 @@ function fieldcheck2() {
     var tempfilter = $("#myFilter2 option:selected").text();
     //console.log("hello");
     var tempfilter2 = $("#myFilter option:selected").text();
-    //console.log(tempfilter2);
+    console.log("BB");
     if (tempfilter != "Select One") {
         if (temp2 != "Bar" && temp2 != "Box") {
             $('#myFilter3').show();
@@ -1354,9 +1355,9 @@ function fieldcheck2() {
             barchoicesRegion2 = [];
 
             for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
-                console.log(JSONstring1.dogs[i].region);
-                console.log(tempfilter);
-                console.log("-------");
+                // console.log(JSONstring1.dogs[i].region);
+                // console.log(tempfilter);
+                // console.log("-------");
                 if (tempfilter == JSONstring1.dogs[i].regional_center) {
                     helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                     barchoicesRegion2[j] = helper;
@@ -1371,9 +1372,10 @@ function fieldcheck2() {
                 if (temp2 == "Line") {
                     barOptions('#mySelect3', barchoices2);
                     $('#mySelect3').show();
-                    console.log("aa");
+                    //console.log("aa");
 
                 } else {
+                    console.log("eee");
                     $('#mySelect3').hide();
                     boxCheck = false;
 
@@ -1409,6 +1411,7 @@ function fieldcheck2() {
                     $('#mySelect3').show();
 
                 } else {
+                    console.log("He");
                     $('#mySelect3').hide();
                     boxCheck = false;
 
@@ -1425,9 +1428,9 @@ function fieldcheck2() {
             JSONstring1 = filtered_blob;
             barchoicesSex2 = [];
             for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
-                console.log(JSONstring1.dogs[i].sex);
-                console.log(tempfilter);
-                console.log("-------");
+                // console.log(JSONstring1.dogs[i].sex);
+                // console.log(tempfilter);
+                // console.log("-------");
                 if (tempfilter == JSONstring1.dogs[i].sex) {
                     helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                     barchoicesSex2[j] = helper;
@@ -1442,8 +1445,10 @@ function fieldcheck2() {
                 if (temp2 == "Line") {
                     barOptions('#mySelect3', barchoices2);
                     $('#mySelect3').show();
+                    console.log("WORKING");
 
                 } else {
+                    console.log("fff");
                     $('#mySelect3').hide();
                     boxCheck = false;
 
@@ -1454,6 +1459,8 @@ function fieldcheck2() {
 
             }
         } else {
+            console.log("WORKING2");
+
             $('#myFilter3').hide();
             $('#myFilter4').hide();
             chartOptionsAreValid = false;
@@ -1523,12 +1530,15 @@ function fieldcheck2() {
             barOptions('#mySelect3', barchoices2);
             $('#mySelect4').hide();
         } else {
+            console.log("AAA");
             $('#mySelect3').hide();
             $('#mySelect4').hide();
             //chartOptionsAreValid = false;
         }
     } else {
-        $('#mySelect3').hide();
+        console.log("cc");
+
+        //$('#mySelect3').hide();
         $('#mySelect4').hide();
     }
 }
@@ -1584,7 +1594,14 @@ function generateGraph() {
     console.log($("#mySelect2 option:selected").text());
     console.log($("#mySelect3 option:selected").text());
     console.log($("#myFilter3 option"));
-    console.log( $("#myFilter3").css('display'));
+    console.log("TEST");
+    console.log( $("#mySelect").css('display'));
+    console.log( $("#mySelect2").css('display'));
+    console.log( $("#mySelect3").css('display'));
+    console.log( $("#mySelect4").css('display'));
+
+    console.log("TEST");
+
 
     if (chartOptionsAreValid) {
             name1 = $("#mySelect1 option:selected").text();
@@ -1603,7 +1620,7 @@ function generateGraph() {
         } else if (temp1 == "Pie") {
             var select1 = $("#mySelect3 option:selected").text();
 
-            if (select1 != "Select One"){
+            if ($("#myFilter3").css('display') == "none"){
                 var type = $("#mySelect3 option:selected").text();
                 makePie(filtered_dogs, type);
 
@@ -2055,8 +2072,8 @@ function makeBox(data, type) {
         };
         arrData[m] = arrTemp;
     }
-    console.log(arrData);
-    console.log(arr1);
+    // console.log(arrData);
+    // console.log(arr1);
     //arrNum = arr1;
     function sortNumber(a,b) {
         return a - b;
