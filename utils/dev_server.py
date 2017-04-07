@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf8 -*-
 
 """
 local development server for working dog data dash
@@ -10,6 +11,8 @@ from the local working directory.
 run like `./dev_server.py` from the project root.
 then provide login credentials for the P.A.W.S. service
 """
+
+from __future__ import print_function
 
 import os
 import getpass
@@ -118,11 +121,14 @@ def login(opener):
 
 def main():
     """main runs login, and then starts the local server"""
+    # cd to project root before running
+    self_path = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(os.path.join(self_path, ".."))
     port = 8080
     handler = DevHTTPRequestHandler
     httpd = SocketServer.TCPServer(("", port), handler)
     login(DevHTTPRequestHandler.opener)
-    print "serving at localhost:%d"%(port)
+    print("serving at localhost:%d"%(port))
     try:
         httpd.serve_forever()
     except:

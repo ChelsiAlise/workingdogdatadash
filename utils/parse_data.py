@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
+
 """
     utils.parse_data
     ~~~~~~~~~~~~~~~~
@@ -10,6 +11,7 @@
 """
 
 from __future__ import print_function
+
 from os import path # for path joining
 import csv # for file parsing
 import datetime # for dates

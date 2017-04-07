@@ -1,3 +1,7 @@
+/*
+	this file contains all code for interacting with cloud datastore
+*/
+
 package main
 
 import (
@@ -13,7 +17,8 @@ const (
 	FilterThreshold int = 1008
 )
 
-func AddUser(ctx appengine.Context, u *User) (id int64, err error) {
+// addUser puts a user in the datastore
+func addUser(ctx appengine.Context, u *User) (id int64, err error) {
 	key := datastore.NewKey(ctx, "Users", u.Username, 0, nil)
 	key, err = datastore.Put(ctx, key, u)
 	if err != nil {
@@ -22,7 +27,8 @@ func AddUser(ctx appengine.Context, u *User) (id int64, err error) {
 	return key.IntID(), nil
 }
 
-func GetUser(ctx appengine.Context, username string) (u *User, err error) {
+// getUser returns a user from the datastore if they exist
+func getUser(ctx appengine.Context, username string) (u *User, err error) {
 	u = new(User)
 	key := datastore.NewKey(ctx, "Users", username, 0, nil)
 	if err = datastore.Get(ctx, key, u); err != nil {
@@ -31,8 +37,8 @@ func GetUser(ctx appengine.Context, username string) (u *User, err error) {
 	return u, err
 }
 
-// AddDog adds a dog to the datastore
-func AddDataDog(ctx appengine.Context, d *Dog) (id int64, err error) {
+// addDataDog adds a dog to the datastore
+func addDataDog(ctx appengine.Context, d *Dog) (id int64, err error) {
 	key := datastore.NewKey(ctx, "Dog", "", int64(d.ID), nil)
 	key, err = datastore.Put(ctx, key, d)
 	if err != nil {
@@ -41,8 +47,8 @@ func AddDataDog(ctx appengine.Context, d *Dog) (id int64, err error) {
 	return key.IntID(), nil
 }
 
-// AddDay adds a day to the datastore
-func AddDataDay(ctx appengine.Context, d *Day) (id int64, err error) {
+// addDataDay adds a day to the datastore
+func addDataDay(ctx appengine.Context, d *Day) (id int64, err error) {
 	key := datastore.NewKey(ctx, "Day", d.Date, 0, nil)
 	key, err = datastore.Put(ctx, key, d)
 	if err != nil {
@@ -51,7 +57,8 @@ func AddDataDay(ctx appengine.Context, d *Day) (id int64, err error) {
 	return key.IntID(), nil
 }
 
-func GetDataDogs(ctx appengine.Context) ([]*Dog, error) {
+// getDataDogs returns all of the dogs in the datastore
+func getDataDogs(ctx appengine.Context) ([]*Dog, error) {
 	var dogs []*Dog
 	q := datastore.NewQuery("Dog")
 	_, err := q.GetAll(ctx, &dogs)
@@ -61,7 +68,8 @@ func GetDataDogs(ctx appengine.Context) ([]*Dog, error) {
 	return dogs, nil
 }
 
-func GetDataDays(ctx appengine.Context) ([]*Day, error) {
+// getDataDays returns all of the days in the datastore
+func getDataDays(ctx appengine.Context) ([]*Day, error) {
 	var days []*Day
 	q := datastore.NewQuery("Day")
 	_, err := q.GetAll(ctx, &days)
@@ -72,12 +80,13 @@ func GetDataDays(ctx appengine.Context) ([]*Day, error) {
 	return days, nil
 }
 
-func GetDataBlob(ctx appengine.Context) (data DataBlob, err error) {
-	dogs, err := GetDataDogs(ctx)
+// getDataBlob creates a DataBlob from the datastore
+func getDataBlob(ctx appengine.Context) (data DataBlob, err error) {
+	dogs, err := getDataDogs(ctx)
 	if err != nil {
 		return data, fmt.Errorf("datastore: Failed to get dogs!")
 	}
-	days, err := GetDataDays(ctx)
+	days, err := getDataDays(ctx)
 	if err != nil {
 		return data, fmt.Errorf("datastore: Failed to get days!")
 	}
@@ -86,8 +95,9 @@ func GetDataBlob(ctx appengine.Context) (data DataBlob, err error) {
 	return data, nil
 }
 
-func GetDataFilteredDays(ctx appengine.Context) ([]*Day, error) {
-	days, err := GetDataDays(ctx)
+// getDataFilteredDays returns getDataDays filtered by FilterThreshold
+func getDataFilteredDays(ctx appengine.Context) ([]*Day, error) {
+	days, err := getDataDays(ctx)
 	if err != nil {
 		ctx.Errorf("Failed to GetDataDays %v", err)
 		return nil, err
@@ -108,13 +118,14 @@ func GetDataFilteredDays(ctx appengine.Context) ([]*Day, error) {
 	return filteredDays, nil
 }
 
-func GetDataFilteredDogs(ctx appengine.Context) ([]*Dog, error) {
-	days, err := GetDataFilteredDays(ctx)
+// getDataFilteredDogs returns getDataDogs filtered by FilterThreshold
+func getDataFilteredDogs(ctx appengine.Context) ([]*Dog, error) {
+	days, err := getDataFilteredDays(ctx)
 	if err != nil {
 		ctx.Errorf("Failed to GetDataFilteredDays %v", err)
 		return nil, err
 	}
-	dogs, err := GetDataDogs(ctx)
+	dogs, err := getDataDogs(ctx)
 	if err != nil {
 		ctx.Errorf("Failed to GetDataDogs %v", err)
 		return nil, err
@@ -140,12 +151,13 @@ func GetDataFilteredDogs(ctx appengine.Context) ([]*Dog, error) {
 	return dogs, nil
 }
 
-func GetDataFilteredBlob(ctx appengine.Context) (data DataBlob, err error) {
-	days, err := GetDataFilteredDays(ctx)
+// getDataFilteredBlob returns getDataBlob filtered by FilterThreshold
+func getDataFilteredBlob(ctx appengine.Context) (data DataBlob, err error) {
+	days, err := getDataFilteredDays(ctx)
 	if err != nil {
 		return data, err
 	}
-	dogs, err := GetDataDogs(ctx)
+	dogs, err := getDataDogs(ctx)
 	if err != nil {
 		return data, err
 	}

@@ -1,3 +1,5 @@
+# appengine configuration file
+
 # use the standard go runtime on appengine
 runtime: go
 api_version: go1
@@ -5,11 +7,6 @@ version: v1-beta
 
 # url handlers
 handlers:
-# map / to static/index.html
-# actually: this is now handled in routes.go
-#- url: /
-#  static_files: static/index.html
-#  upload: static/index.html
 # map /static(.*) to /static\1
 - url: /
   script: _go_app

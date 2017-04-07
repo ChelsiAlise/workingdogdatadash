@@ -1,3 +1,8 @@
+/*
+	this is the heart of the backend, it contains all
+	api routes and initialization
+*/
+
 package main
 
 import (
@@ -16,44 +21,56 @@ import (
 	"appengine"
 )
 
-var apiPaths = make(map[string]bool)
+// set of all api routes that should be cached
+var cachedApiPaths = make(map[string]bool)
 
-// mux for routes that should be served behind authorization
+// mux for routes that should be served behind account authorization
 var authRequiredMux = http.NewServeMux()
 
-// TODO: login, have "/" be the homepage
+// mux for routes that should be served behind uploadKey authorization
+var keyRequiredMux = http.NewServeMux()
+
+// TODO: have "/" be the homepage (?)
 func init() {
 	// set up http handlers
-	http.HandleFunc("/", RootHandler)
-	http.HandleFunc("/login", RootHandler)
+	http.HandleFunc("/", rootHandler)
+	http.HandleFunc("/login", rootHandler)
+
 	// we don't want anyone crawling our site
 	http.HandleFunc("/robots.txt",
 		func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("User-agent: *\nDisallow: /"))
+			fmt.Fprint(w, "User-agent: *\nDisallow: /")
 		})
-	// health checks
-	http.HandleFunc("/_ah/health", healthCheckHandler)
+
+	// handle appengine health checks
+	http.HandleFunc("/_ah/health",
+		func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprint(w, "ok")
+		})
+
 	// api routes
-	AddApi("data/upload", dataUploadHandler)
-	AddApi("data/blob", dataBlobHandler)
-	AddApi("data/days", dataDaysHandler)
-	AddApi("data/dogs", dataDogsHandler)
-	AddApi("data/filtered/blob", dataFilteredBlobHandler)
-	AddApi("data/filtered/days", dataFilteredDaysHandler)
-	AddApi("data/filtered/dogs", dataFilteredDogsHandler)
+	// dogs and their minute totals (initial dataset + outcomes)
+	addCachedAPI("data/blob", dataBlobHandler)
+	addCachedAPI("data/days", dataDaysHandler)
+	addCachedAPI("data/dogs", dataDogsHandler)
+	addCachedAPI("data/filtered/blob", dataFilteredBlobHandler)
+	addCachedAPI("data/filtered/days", dataFilteredDaysHandler)
+	addCachedAPI("data/filtered/dogs", dataFilteredDogsHandler)
+
+	// data upload api (dogs, minute totals, outcomes)
+	keyRequiredMux.HandleFunc("/api/upload/data", dataUploadHandler)
 	// user bootstrap api
-	http.HandleFunc("/api/users/upload", userUploadHandler)
+	keyRequiredMux.HandleFunc("/api/upload/users", userUploadHandler)
 }
 
-func AddApi(path string, handler http.HandlerFunc) {
+// addCachedAPI registers an api route and handler to be cached
+func addCachedAPI(path string, handler http.HandlerFunc) {
 	authRequiredMux.HandleFunc("/api/"+path, handler)
-	authRequiredMux.HandleFunc("/api/cached/"+path, GetApiCached)
-	apiPaths[path] = true
+	authRequiredMux.HandleFunc("/api/cached/"+path, getApiCached)
+	cachedApiPaths["/api/"+path] = true
 }
 
-// TODO: remove encrypt and decrypt
-// ... there is a lot wrong with this, but it will serve POC behind https
-// fine
+// AES encrypt
 func encrypt(keyString, textString string) string {
 	key := []byte(keyString)
 	text := []byte(textString)
@@ -67,6 +84,7 @@ func encrypt(keyString, textString string) string {
 	return b
 }
 
+// AES decrypt
 func decrypt(keyString, textString string) string {
 	key := []byte(keyString)
 	textDecoded, _ := base64.StdEncoding.DecodeString(textString)
@@ -79,6 +97,9 @@ func decrypt(keyString, textString string) string {
 	return string(text)
 }
 
+// SHA256 hash with two salts
+// Note: using the user name also prevents rainbow tables
+// returns Base-64(SHA-256(salt1 + username + salt2 + password))
 func userhash(username, password string) string {
 	h := sha256.New()
 	io.WriteString(h, salt1)
@@ -88,8 +109,8 @@ func userhash(username, password string) string {
 	return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%x", h.Sum(nil))))
 }
 
-// RootHandler handles authorization and login
-func RootHandler(w http.ResponseWriter, r *http.Request) {
+// rootHandler handles authorization and login
+func rootHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	AUTH_COOKIE_NAME := "auth"
 	// handle login
@@ -102,7 +123,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 			password := r.FormValue("password")
 			passwordHash := userhash(username, password)
 			// get info from DB and compare
-			userInfo, err := GetUserCached(ctx, username)
+			userInfo, err := getUserCached(ctx, username)
 			if err != nil || userInfo.PasswordHash != passwordHash {
 				ctx.Infof("Failed to match hashes (login)! %s %s", userInfo.PasswordHash, passwordHash)
 				http.Redirect(w, r, "/login?retry=true", 303)
@@ -123,8 +144,6 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// check authorization
-	// TODO: _please_ replace this with something more secure
-	// unfortunately we cannot use Oauth so...
 	c, err := r.Cookie(AUTH_COOKIE_NAME)
 	if err != nil {
 		http.Redirect(w, r, "/login", 303)
@@ -139,28 +158,30 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	username := strs[0]
 	passwordHash := strs[1]
 	// check memcache first then fallback to DB and compare
-	userInfo, err := GetUserCached(ctx, username)
+	userInfo, err := getUserCached(ctx, username)
 	if err != nil || userInfo.PasswordHash != passwordHash {
 		http.Redirect(w, r, "/login?retry=true", 303)
 		return
 	}
 	// at this point we have a cookie and it matches, so handle normally
+	// special case / to the index
 	if r.URL.Path == "/" {
 		http.ServeFile(w, r, "static/index.html")
 		return
 	}
-	if r.URL.Path == "/customChart.html" {
-		http.ServeFile(w, r, "static/customChart.html")
+	// handle upload apis
+	if strings.HasPrefix(r.URL.Path, "/api/upload") {
+		keyRequiredMux.ServeHTTP(w, r)
 		return
 	}
+	// handle remaining apis
 	authRequiredMux.ServeHTTP(w, r)
 }
 
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "ok")
-}
-
+// dataUploadHandler processes authenticated requests
+// to upload a json DataBlob
 func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
+	// ensure upload key exists and is correct
 	if key, ok := r.Header["Upload-Key"]; ok {
 		if len(key) != 1 || key[0] != uploadKey {
 			http.Error(w, "Invalid authorization key.", http.StatusUnauthorized)
@@ -170,6 +191,7 @@ func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request.", http.StatusUnauthorized)
 		return
 	}
+	// parse and import the data
 	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	ctx.Infof("upload request!")
 	decoder := json.NewDecoder(r.Body)
@@ -187,7 +209,7 @@ func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError)
 	}
 	for _, dog := range data.Dogs {
-		_, err = AddDataDog(ctx, dog)
+		_, err = addDataDog(ctx, dog)
 		ctx.Infof("Dog: %s, %v", dog.Name, err)
 		if err != nil {
 			http.Error(w, "Failed to handle import! "+err.Error(),
@@ -196,7 +218,7 @@ func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	for _, day := range data.Days {
-		_, err = AddDataDay(ctx, day)
+		_, err = addDataDay(ctx, day)
 		if err != nil {
 			http.Error(w, "Failed to handle import! "+err.Error(),
 				http.StatusInternalServerError)
@@ -205,9 +227,10 @@ func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// dataBlobHandler returns the DataBlob
 func dataBlobHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
-	data, err := GetDataBlob(ctx)
+	data, err := getDataBlob(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
@@ -215,9 +238,10 @@ func dataBlobHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+// dataDaysHandler returns all of the Day objects
 func dataDaysHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
-	data, err := GetDataDays(ctx)
+	data, err := getDataDays(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
@@ -225,9 +249,10 @@ func dataDaysHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+// dataDogsHandler returns all of the Dog objects
 func dataDogsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
-	data, err := GetDataDogs(ctx)
+	data, err := getDataDogs(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
@@ -235,9 +260,10 @@ func dataDogsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+// dataFilteredBlobHandler returns a blob filtered by FilterThreshold
 func dataFilteredBlobHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
-	data, err := GetDataFilteredBlob(ctx)
+	data, err := getDataFilteredBlob(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
@@ -245,9 +271,10 @@ func dataFilteredBlobHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+// dataFilteredDaysHandler returns days filtered by FilterThreshold
 func dataFilteredDaysHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
-	data, err := GetDataFilteredDays(ctx)
+	data, err := getDataFilteredDays(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
@@ -255,9 +282,10 @@ func dataFilteredDaysHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+// dataFilteredDogsHandler returns dogs filtered by FilterThreshold
 func dataFilteredDogsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
-	data, err := GetDataFilteredDogs(ctx)
+	data, err := getDataFilteredDogs(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
 	}
@@ -265,7 +293,10 @@ func dataFilteredDogsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+// userUploadHandler processes authenticated (by uploadKey)
+// requests to
 func userUploadHandler(w http.ResponseWriter, r *http.Request) {
+	// ensure upload key exists and is correct
 	if key, ok := r.Header["Upload-Key"]; ok {
 		if len(key) != 1 || key[0] != uploadKey {
 			http.Error(w, "Invalid authorization key.", http.StatusUnauthorized)
@@ -275,8 +306,9 @@ func userUploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request.", http.StatusUnauthorized)
 		return
 	}
+	// parse and import the data
 	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
-	ctx.Infof("upload request!")
+	ctx.Infof("upload request! (user)")
 	decoder := json.NewDecoder(r.Body)
 	var users []*User
 	err := decoder.Decode(&users)
@@ -287,7 +319,7 @@ func userUploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, user := range users {
-		_, err = AddUser(ctx, user)
+		_, err = addUser(ctx, user)
 		if err != nil {
 			http.Error(w, "Failed to handle import! "+err.Error(),
 				http.StatusInternalServerError)
