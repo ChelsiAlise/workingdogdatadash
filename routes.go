@@ -21,8 +21,11 @@ import (
 	"appengine"
 )
 
+// the name of the user login auth cookie
+const authCookieName = "auth"
+
 // set of all api routes that should be cached
-var cachedApiPaths = make(map[string]bool)
+var cachedAPIPaths = make(map[string]bool)
 
 // mux for routes that should be served behind account authorization
 var authRequiredMux = http.NewServeMux()
@@ -67,7 +70,7 @@ func init() {
 func addCachedAPI(path string, handler http.HandlerFunc) {
 	authRequiredMux.HandleFunc("/api/"+path, handler)
 	authRequiredMux.HandleFunc("/api/cached/"+path, getApiCached)
-	cachedApiPaths["/api/"+path] = true
+	cachedAPIPaths["/api/"+path] = true
 }
 
 // AES encrypt
@@ -112,16 +115,28 @@ func userhash(username, password string) string {
 // rootHandler handles authorization and login
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
-	AUTH_COOKIE_NAME := "auth"
+
+	// upload apis are seperate from auth required
+	if strings.HasPrefix(r.URL.Path, "/api/upload") {
+		// handle upload apis
+		keyRequiredMux.ServeHTTP(w, r)
+		// flush the cache after the data has been added
+		dataModifiedHook(ctx)
+		return
+	}
+
+	// handle apis that require auth, and redirect to login if necessary
 	// handle login
 	if r.URL.Path == "/login" {
 		if r.Method == "GET" {
 			http.ServeFile(w, r, "static/login.html")
+
 		} else if r.Method == "POST" {
 			r.ParseForm()
 			username := r.FormValue("username")
 			password := r.FormValue("password")
 			passwordHash := userhash(username, password)
+
 			// get info from DB and compare
 			userInfo, err := getUserCached(ctx, username)
 			if err != nil || userInfo.PasswordHash != passwordHash {
@@ -130,21 +145,21 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			cookie := http.Cookie{
-				Name:     AUTH_COOKIE_NAME,
+				Name:     authCookieName,
 				Value:    encrypt(uploadKey, username+"\r"+passwordHash),
 				Secure:   true,
 				HttpOnly: true,
 				Path:     "/",
 				Expires:  time.Now().Add(time.Hour * 24 * 7 * 3),
 			}
-			ctx.Infof("All good.")
 			http.SetCookie(w, &cookie)
 			http.Redirect(w, r, "/", 303)
 		}
 		return
 	}
+
 	// check authorization
-	c, err := r.Cookie(AUTH_COOKIE_NAME)
+	c, err := r.Cookie(authCookieName)
 	if err != nil {
 		http.Redirect(w, r, "/login", 303)
 		return
@@ -157,23 +172,21 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	username := strs[0]
 	passwordHash := strs[1]
+
 	// check memcache first then fallback to DB and compare
 	userInfo, err := getUserCached(ctx, username)
 	if err != nil || userInfo.PasswordHash != passwordHash {
 		http.Redirect(w, r, "/login?retry=true", 303)
 		return
 	}
+
 	// at this point we have a cookie and it matches, so handle normally
 	// special case / to the index
 	if r.URL.Path == "/" {
 		http.ServeFile(w, r, "static/index.html")
 		return
 	}
-	// handle upload apis
-	if strings.HasPrefix(r.URL.Path, "/api/upload") {
-		keyRequiredMux.ServeHTTP(w, r)
-		return
-	}
+
 	// handle remaining apis
 	authRequiredMux.ServeHTTP(w, r)
 }
@@ -294,7 +307,7 @@ func dataFilteredDogsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // userUploadHandler processes authenticated (by uploadKey)
-// requests to
+// requests to add users
 func userUploadHandler(w http.ResponseWriter, r *http.Request) {
 	// ensure upload key exists and is correct
 	if key, ok := r.Header["Upload-Key"]; ok {
