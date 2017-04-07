@@ -12,10 +12,8 @@ import (
 	"appengine/datastore"
 )
 
-const (
-	// 1440 minutes is a full day, we want 70% of day at least
-	FilterThreshold int = 1008
-)
+// 1440 minutes is a full day, we want 70% of day at least
+const FilterThreshold int = 1008
 
 // addUser puts a user in the datastore
 func addUser(ctx appengine.Context, u *User) (id int64, err error) {

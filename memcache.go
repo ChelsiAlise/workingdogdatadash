@@ -14,9 +14,18 @@ import (
 	"time"
 
 	"appengine"
-	"appengine/datastore"
 	"appengine/memcache"
 )
+
+// the last time the datastore was updated
+// this allows us to crudley cache results until dataModifiedHook is called
+var lastModifiedTime = time.Now()
+
+// dataModifiedHook needs to be called whenever something in the DB changes
+func dataModifiedHook(ctx appengine.Context) {
+	memcache.Flush(ctx)
+	lastModifiedTime = time.Now()
+}
 
 // getUserCached fetches UserInfo for a user, attempting to use
 // memcache before the database and to insert users into memcache
@@ -43,9 +52,8 @@ func getUserCached(ctx appengine.Context, username string) (u *User, err error) 
 		ctx.Errorf("error marshalling user: %v", err)
 	} else {
 		item := &memcache.Item{
-			Key:        userCacheKey,
-			Value:      b,
-			Expiration: CacheDuration,
+			Key:   userCacheKey,
+			Value: b,
 		}
 		if err := memcache.Set(ctx, item); err != nil {
 			ctx.Errorf("error setting user in memcache: %v", err)
@@ -53,9 +61,6 @@ func getUserCached(ctx appengine.Context, username string) (u *User, err error) 
 	}
 	return u, nil
 }
-
-// TODO: What should this be?
-var CacheDuration time.Duration = time.Hour * 24
 
 type CacheResponseWriter struct {
 	responseWriter http.ResponseWriter
@@ -111,18 +116,35 @@ type cacheEntity struct {
 var _ http.ResponseWriter = (*CacheResponseWriter)(nil)
 
 // getApiCached fetches api results for a cached api route,
-// attempting to use  memcache before the database
-// results are inserted into memcache when the database is used
+// attempting to use memcache before the live results
+// results are inserted into memcache when the live results are used
 func getApiCached(w http.ResponseWriter, r *http.Request) {
 	realPath := "/api/" + strings.TrimPrefix(r.URL.Path, "/api/cached/")
 	// make sure the api to serve should be cached
-	if _, ok := cachedApiPaths[realPath]; !ok {
+	if _, ok := cachedAPIPaths[realPath]; !ok {
 		http.Error(w, "There is no such cached api route.",
 			http.StatusInternalServerError)
 		return
 	}
-	// TODO: expire database cache automatically
-	ctx := appengine.NewContext(r)
+
+	// convert last modified time to http.TimeFormat
+	lmt := lastModifiedTime.Format(http.TimeFormat)
+
+	// set cache headers
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "private, max-age=0, must-revalidate")
+	w.Header().Set("Last-Modified", lmt)
+
+	// if the browser provides "If-Modified-Since" header,
+	// and it matches Last-Modified time, then return 304
+	ims := r.Header.Get("If-Modified-Since")
+	if ims == lmt {
+		w.WriteHeader(http.StatusNotModified)
+		return
+	}
+
+	// otherwise serve the result
+	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
 	uri := r.URL.RequestURI()
 	// attempt to serve from memcached
 	{
@@ -133,63 +155,32 @@ func getApiCached(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				ctx.Errorf("error decompressing cache value, err: %v", err)
 			} else {
-				w.Header().Set("Content-Type", "application/json")
 				io.Copy(w, reader)
 			}
 			return
 		}
 	}
-	// attempt to serve from db
-	{
-		ctx.Infof("Attempting to serve from DB")
-		key := datastore.NewKey(ctx, "Cache", uri, 0, nil)
-		entity := cacheEntity{}
-		err := datastore.Get(ctx, key, &entity)
-		if err == nil {
-			// put into memcache from DB
-			item := &memcache.Item{
-				Key:        uri,
-				Value:      entity.Value,
-				Expiration: CacheDuration,
-			}
-			if err := memcache.Set(ctx, item); err != nil {
-				ctx.Errorf("error setting item: %v", err)
-			}
-			reader, err := gzip.NewReader(bytes.NewReader(entity.Value))
-			defer reader.Close()
-			if err != nil {
-				ctx.Errorf("error decompressing cache value, err: %v", err)
-			} else {
-				w.Header().Set("Content-Type", "application/json")
-				io.Copy(w, reader)
-			}
-			return
-		}
-	}
+
+	// fallback to serving from the un-cached api,
+	// and then cache the results in memcache
 	ctx.Infof("Attempting to serve from live API result")
-	// otherwise serve from un-cached api, and then cache the results
 	r.URL.Path = realPath
 	cacheResponseWriter := NewCacheResponseWriter(w)
 	authRequiredMux.ServeHTTP(cacheResponseWriter, r)
-	// check the status code and cache the data if 200
+
+	// check the status code and cache the data if 200 (ok)
 	if cacheResponseWriter.Code() == http.StatusOK {
 		b := cacheResponseWriter.Bytes()
 		{
 			item := &memcache.Item{
-				Key:        uri,
-				Value:      b,
-				Expiration: CacheDuration,
+				Key:   uri,
+				Value: b,
 			}
 			if err := memcache.Set(ctx, item); err != nil {
 				ctx.Errorf("error setting item: %v", err)
 			}
 		}
-		// also cache in DB
-		key := datastore.NewKey(ctx, "Cache", uri, 0, nil)
-		key, err := datastore.Put(ctx, key, &cacheEntity{b})
-		if err != nil {
-			ctx.Errorf("datastoredb: could not put Cache: %v", err)
-		}
+
 	} else {
 		ctx.Errorf("cache response writer code is not http.StatusOK: %v", cacheResponseWriter.Code())
 	}
