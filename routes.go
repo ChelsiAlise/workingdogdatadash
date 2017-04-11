@@ -30,6 +30,9 @@ var cachedAPIPaths = make(map[string]bool)
 // mux for routes that should be served behind account authorization
 var authRequiredMux = http.NewServeMux()
 
+// mux for routes that should be served only to administrators
+var adminRequiredMux = http.NewServeMux()
+
 // mux for routes that should be served behind uploadKey authorization
 var keyRequiredMux = http.NewServeMux()
 
@@ -64,6 +67,12 @@ func init() {
 	keyRequiredMux.HandleFunc("/api/upload/data", dataUploadHandler)
 	// user bootstrap api
 	keyRequiredMux.HandleFunc("/api/upload/users", userUploadHandler)
+
+	// admin apis
+	adminRequiredMux.HandleFunc("/api/admin/users/delete", deleteUserHandler)
+	adminRequiredMux.HandleFunc("/api/admin/users/add", addUserHandler)
+	adminRequiredMux.HandleFunc("/api/admin/users/update", updateUserHandler)
+	adminRequiredMux.HandleFunc("/api/admin/users/list", listUsersHandler)
 }
 
 // addCachedAPI registers an api route and handler to be cached
@@ -112,12 +121,26 @@ func userhash(username, password string) string {
 	return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%x", h.Sum(nil))))
 }
 
+func makeContext(r *http.Request) appengine.Context {
+	return appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+}
+
 // rootHandler handles authorization and login
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+	ctx := makeContext(r)
 
 	// upload apis are seperate from auth required
 	if strings.HasPrefix(r.URL.Path, "/api/upload") {
+		// ensure upload key exists and is correct
+		if key, ok := r.Header["Upload-Key"]; ok {
+			if len(key) != 1 || key[0] != uploadKey {
+				http.Error(w, "Invalid authorization key.", http.StatusUnauthorized)
+				return
+			}
+		} else {
+			http.Error(w, "Invalid request.", http.StatusUnauthorized)
+			return
+		}
 		// handle upload apis
 		keyRequiredMux.ServeHTTP(w, r)
 		// flush the cache after the data has been added
@@ -125,7 +148,6 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// handle apis that require auth, and redirect to login if necessary
 	// handle login
 	if r.URL.Path == "/login" {
 		if r.Method == "GET" {
@@ -172,7 +194,6 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	username := strs[0]
 	passwordHash := strs[1]
-
 	// check memcache first then fallback to DB and compare
 	userInfo, err := getUserCached(ctx, username)
 	if err != nil || userInfo.PasswordHash != passwordHash {
@@ -180,10 +201,21 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// at this point we have a cookie and it matches, so handle normally
+	// at this point we have authorization
+
 	// special case / to the index
 	if r.URL.Path == "/" {
 		http.ServeFile(w, r, "static/index.html")
+		return
+	}
+
+	// handle administrator apis
+	if strings.HasPrefix(r.URL.Path, "/api/admin") {
+		if !userInfo.IsAdmin {
+			http.Error(w, "You are not an administrator.", http.StatusUnauthorized)
+			return
+		}
+		adminRequiredMux.ServeHTTP(w, r)
 		return
 	}
 
@@ -194,18 +226,8 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 // dataUploadHandler processes authenticated requests
 // to upload a json DataBlob
 func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
-	// ensure upload key exists and is correct
-	if key, ok := r.Header["Upload-Key"]; ok {
-		if len(key) != 1 || key[0] != uploadKey {
-			http.Error(w, "Invalid authorization key.", http.StatusUnauthorized)
-			return
-		}
-	} else {
-		http.Error(w, "Invalid request.", http.StatusUnauthorized)
-		return
-	}
 	// parse and import the data
-	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+	ctx := makeContext(r)
 	ctx.Infof("upload request!")
 	decoder := json.NewDecoder(r.Body)
 	var data DataBlob
@@ -242,7 +264,7 @@ func dataUploadHandler(w http.ResponseWriter, r *http.Request) {
 
 // dataBlobHandler returns the DataBlob
 func dataBlobHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+	ctx := makeContext(r)
 	data, err := getDataBlob(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -253,7 +275,7 @@ func dataBlobHandler(w http.ResponseWriter, r *http.Request) {
 
 // dataDaysHandler returns all of the Day objects
 func dataDaysHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+	ctx := makeContext(r)
 	data, err := getDataDays(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -264,7 +286,7 @@ func dataDaysHandler(w http.ResponseWriter, r *http.Request) {
 
 // dataDogsHandler returns all of the Dog objects
 func dataDogsHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+	ctx := makeContext(r)
 	data, err := getDataDogs(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -275,7 +297,7 @@ func dataDogsHandler(w http.ResponseWriter, r *http.Request) {
 
 // dataFilteredBlobHandler returns a blob filtered by FilterThreshold
 func dataFilteredBlobHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+	ctx := makeContext(r)
 	data, err := getDataFilteredBlob(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -286,7 +308,7 @@ func dataFilteredBlobHandler(w http.ResponseWriter, r *http.Request) {
 
 // dataFilteredDaysHandler returns days filtered by FilterThreshold
 func dataFilteredDaysHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+	ctx := makeContext(r)
 	data, err := getDataFilteredDays(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -297,7 +319,7 @@ func dataFilteredDaysHandler(w http.ResponseWriter, r *http.Request) {
 
 // dataFilteredDogsHandler returns dogs filtered by FilterThreshold
 func dataFilteredDogsHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+	ctx := makeContext(r)
 	data, err := getDataFilteredDogs(ctx)
 	if err != nil {
 		http.Error(w, "Failed to fetch data.", http.StatusInternalServerError)
@@ -309,18 +331,8 @@ func dataFilteredDogsHandler(w http.ResponseWriter, r *http.Request) {
 // userUploadHandler processes authenticated (by uploadKey)
 // requests to add users
 func userUploadHandler(w http.ResponseWriter, r *http.Request) {
-	// ensure upload key exists and is correct
-	if key, ok := r.Header["Upload-Key"]; ok {
-		if len(key) != 1 || key[0] != uploadKey {
-			http.Error(w, "Invalid authorization key.", http.StatusUnauthorized)
-			return
-		}
-	} else {
-		http.Error(w, "Invalid request.", http.StatusUnauthorized)
-		return
-	}
 	// parse and import the data
-	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+	ctx := makeContext(r)
 	ctx.Infof("upload request! (user)")
 	decoder := json.NewDecoder(r.Body)
 	var users []*User
@@ -339,4 +351,74 @@ func userUploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+}
+
+// deleteUserHandler allows authenticated admins to delete users
+func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := makeContext(r)
+	r.ParseForm()
+	username := r.FormValue("username")
+	err := deleteUser(ctx, username)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to delete user: %v", err), http.StatusInternalServerError)
+	}
+}
+
+// addUserHandler allows authenticated admins to add users
+func addUserHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := makeContext(r)
+	r.ParseForm()
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	isAdmin := r.FormValue("is_admin") == ""
+	passwordHash := userhash(username, password)
+	user := &User{
+		Username:     username,
+		PasswordHash: passwordHash,
+		IsAdmin:      isAdmin,
+	}
+	_, err := addUser(ctx, user)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to add user: %v", err), http.StatusInternalServerError)
+	}
+}
+
+// updateUserHandler allows authenticated admins to update users
+func updateUserHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := makeContext(r)
+	r.ParseForm()
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	isAdmin := r.FormValue("is_admin") == "true"
+	passwordHash := userhash(username, password)
+	user := &User{
+		Username:     username,
+		PasswordHash: passwordHash,
+		IsAdmin:      isAdmin,
+	}
+	err := deleteUser(ctx, username)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to update user: %v", err), http.StatusInternalServerError)
+		return
+	}
+	_, err = addUser(ctx, user)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to update user: %v", err), http.StatusInternalServerError)
+	}
+}
+
+// listUsersHandler returns a list of serialized users (With passwords scrubbed)
+// to administrators using the api
+func listUsersHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := makeContext(r)
+	users, err := getUsers(ctx)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to list users: %v", err), http.StatusInternalServerError)
+		return
+	}
+	// blank out passwords
+	for _, user := range users {
+		user.PasswordHash = ""
+	}
+	json.NewEncoder(w).Encode(users)
 }
