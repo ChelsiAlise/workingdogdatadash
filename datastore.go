@@ -35,6 +35,24 @@ func getUser(ctx appengine.Context, username string) (u *User, err error) {
 	return u, err
 }
 
+// deleteUsers delets a user from the datastore if they exist
+func deleteUser(ctx appengine.Context, username string) error {
+	key := datastore.NewKey(ctx, "Users", username, 0, nil)
+	return datastore.Delete(ctx, key)
+}
+
+// getUsers returns all of the users in the datastore
+func getUsers(ctx appengine.Context) ([]*User, error) {
+	var users []*User
+	q := datastore.NewQuery("Users")
+	_, err := q.GetAll(ctx, &users)
+	if err != nil {
+		ctx.Errorf("datastore: could not list users: %v", err)
+		return nil, fmt.Errorf("datastore: could not list users: %v", err)
+	}
+	return users, nil
+}
+
 // addDataDog adds a dog to the datastore
 func addDataDog(ctx appengine.Context, d *Dog) (id int64, err error) {
 	key := datastore.NewKey(ctx, "Dog", "", int64(d.ID), nil)
