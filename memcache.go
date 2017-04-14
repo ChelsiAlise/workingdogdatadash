@@ -115,11 +115,11 @@ type cacheEntity struct {
 
 var _ http.ResponseWriter = (*CacheResponseWriter)(nil)
 
-// getApiCached fetches api results for a cached api route,
+// getAPICached fetches api results for a cached api route,
 // attempting to use memcache before the live results
 // results are inserted into memcache when the live results are used
-func getApiCached(w http.ResponseWriter, r *http.Request) {
-	realPath := "/api/" + strings.TrimPrefix(r.URL.Path, "/api/cached/")
+func getAPICached(w http.ResponseWriter, r *http.Request) {
+	realPath := baseAPIPrefix + strings.TrimPrefix(r.URL.Path, cachedAPIPrefix)
 	// make sure the api to serve should be cached
 	if _, ok := cachedAPIPaths[realPath]; !ok {
 		http.Error(w, "There is no such cached api route.",
@@ -144,7 +144,7 @@ func getApiCached(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// otherwise serve the result
-	ctx := appengine.Timeout(appengine.NewContext(r), 30*time.Second)
+	ctx := makeContext(r)
 	uri := r.URL.RequestURI()
 	// attempt to serve from memcached
 	{
@@ -166,7 +166,7 @@ func getApiCached(w http.ResponseWriter, r *http.Request) {
 	ctx.Infof("Attempting to serve from live API result")
 	r.URL.Path = realPath
 	cacheResponseWriter := NewCacheResponseWriter(w)
-	authRequiredMux.ServeHTTP(cacheResponseWriter, r)
+	http.DefaultServeMux.ServeHTTP(cacheResponseWriter, r)
 
 	// check the status code and cache the data if 200 (ok)
 	if cacheResponseWriter.Code() == http.StatusOK {

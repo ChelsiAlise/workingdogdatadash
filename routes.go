@@ -6,20 +6,19 @@
 package main
 
 import (
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/rand"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 	"time"
-
-	"appengine"
 )
+
+/* route prefixes */
+
+const baseAPIPrefix = "/api/"
+const cachedAPIPrefix = "/api/cached/"
+const uploadAPIPrefix = "/api/upload/"
+const adminAPIPrefix = "/api/admin/"
 
 // the name of the user login auth cookie
 const authCookieName = "auth"
@@ -27,20 +26,20 @@ const authCookieName = "auth"
 // set of all api routes that should be cached
 var cachedAPIPaths = make(map[string]bool)
 
-// mux for routes that should be served behind account authorization
-var authRequiredMux = http.NewServeMux()
+// mux for apis
+var baseAPIMux = http.NewServeMux()
 
-// mux for routes that should be served only to administrators
-var adminRequiredMux = http.NewServeMux()
+// mux for admin apis
+var adminAPIMux = http.NewServeMux()
 
-// mux for routes that should be served behind uploadKey authorization
-var keyRequiredMux = http.NewServeMux()
+// mux for upload apis
+var uploadAPIMux = http.NewServeMux()
 
 // TODO: have "/" be the homepage (?)
 func init() {
 	// set up http handlers
 	http.HandleFunc("/", rootHandler)
-	http.HandleFunc("/login", rootHandler)
+	http.HandleFunc("/login", loginHandler)
 
 	// we don't want anyone crawling our site
 	http.HandleFunc("/robots.txt",
@@ -54,6 +53,9 @@ func init() {
 			fmt.Fprint(w, "ok")
 		})
 
+	// NOTE: routes below are not in the main router, and are only served
+	// behind the appropriate authorization in the root handler (/)
+
 	// api routes
 	// dogs and their minute totals (initial dataset + outcomes)
 	addCachedAPI("data/blob", dataBlobHandler)
@@ -64,73 +66,48 @@ func init() {
 	addCachedAPI("data/filtered/dogs", dataFilteredDogsHandler)
 
 	// data upload api (dogs, minute totals, outcomes)
-	keyRequiredMux.HandleFunc("/api/upload/data", dataUploadHandler)
+	addUploadAPI("data", dataUploadHandler)
 	// user bootstrap api
-	keyRequiredMux.HandleFunc("/api/upload/users", userUploadHandler)
+	addUploadAPI("users", userUploadHandler)
 
 	// admin apis
-	adminRequiredMux.HandleFunc("/api/admin/users/delete", deleteUserHandler)
-	adminRequiredMux.HandleFunc("/api/admin/users/add", addUserHandler)
-	adminRequiredMux.HandleFunc("/api/admin/users/update", updateUserHandler)
-	adminRequiredMux.HandleFunc("/api/admin/users/list", listUsersHandler)
+	addAdminAPI("users/delete", deleteUserHandler)
+	addAdminAPI("users/add", addUserHandler)
+	addAdminAPI("users/update", updateUserHandler)
+	addAdminAPI("users/list", listUsersHandler)
 }
 
-// addCachedAPI registers an api route and handler to be cached
-func addCachedAPI(path string, handler http.HandlerFunc) {
-	authRequiredMux.HandleFunc("/api/"+path, handler)
-	authRequiredMux.HandleFunc("/api/cached/"+path, getApiCached)
-	cachedAPIPaths["/api/"+path] = true
+// addAPI registers a basic API handler
+func addAPI(subPath string, handler http.HandlerFunc) {
+	baseAPIMux.HandleFunc(baseAPIPrefix+subPath, handler)
 }
 
-// AES encrypt
-func encrypt(keyString, textString string) string {
-	key := []byte(keyString)
-	text := []byte(textString)
-	block, _ := aes.NewCipher(key)
-	ciphertext := make([]byte, aes.BlockSize+len(text))
-	iv := ciphertext[:aes.BlockSize]
-	io.ReadFull(rand.Reader, iv)
-	cfb := cipher.NewCFBEncrypter(block, iv)
-	cfb.XORKeyStream(ciphertext[aes.BlockSize:], text)
-	b := base64.StdEncoding.EncodeToString(ciphertext)
-	return b
+// addCachedAPI registers an API route and handler to be cached
+func addCachedAPI(subPath string, handler http.HandlerFunc) {
+	addAPI(subPath, handler)
+	baseAPIMux.HandleFunc(cachedAPIPrefix+subPath, getAPICached)
+	cachedAPIPaths[baseAPIPrefix+subPath] = true
 }
 
-// AES decrypt
-func decrypt(keyString, textString string) string {
-	key := []byte(keyString)
-	textDecoded, _ := base64.StdEncoding.DecodeString(textString)
-	text := []byte(textDecoded)
-	block, _ := aes.NewCipher(key)
-	iv := text[:aes.BlockSize]
-	text = text[aes.BlockSize:]
-	cfb := cipher.NewCFBDecrypter(block, iv)
-	cfb.XORKeyStream(text, text)
-	return string(text)
+// addAdminAPI registers an API route and handler that require administrator
+// authorization
+func addAdminAPI(subPath string, handler http.HandlerFunc) {
+	adminAPIMux.HandleFunc(adminAPIPrefix+subPath, handler)
 }
 
-// SHA256 hash with two salts
-// Note: using the user name also prevents rainbow tables
-// returns Base-64(SHA-256(salt1 + username + salt2 + password))
-func userhash(username, password string) string {
-	h := sha256.New()
-	io.WriteString(h, salt1)
-	io.WriteString(h, username)
-	io.WriteString(h, salt2)
-	io.WriteString(h, password)
-	return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%x", h.Sum(nil))))
+// addUploadAPI registers an API route and handler that require upload-key
+// authorization
+func addUploadAPI(subPath string, handler http.HandlerFunc) {
+	uploadAPIMux.HandleFunc(uploadAPIPrefix+subPath, handler)
 }
 
-func makeContext(r *http.Request) appengine.Context {
-	return appengine.Timeout(appengine.NewContext(r), 30*time.Second)
-}
-
-// rootHandler handles authorization and login
+// rootHandler handles authorization and forwarding authorized requests
+// to the relevant request handler
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := makeContext(r)
 
 	// upload apis are seperate from auth required
-	if strings.HasPrefix(r.URL.Path, "/api/upload") {
+	if strings.HasPrefix(r.URL.Path, uploadAPIPrefix) {
 		// ensure upload key exists and is correct
 		if key, ok := r.Header["Upload-Key"]; ok {
 			if len(key) != 1 || key[0] != uploadKey {
@@ -142,41 +119,9 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// handle upload apis
-		keyRequiredMux.ServeHTTP(w, r)
+		uploadAPIMux.ServeHTTP(w, r)
 		// flush the cache after the data has been added
 		dataModifiedHook(ctx)
-		return
-	}
-
-	// handle login
-	if r.URL.Path == "/login" {
-		if r.Method == "GET" {
-			http.ServeFile(w, r, "static/login.html")
-
-		} else if r.Method == "POST" {
-			r.ParseForm()
-			username := r.FormValue("username")
-			password := r.FormValue("password")
-			passwordHash := userhash(username, password)
-
-			// get info from DB and compare
-			userInfo, err := getUserCached(ctx, username)
-			if err != nil || userInfo.PasswordHash != passwordHash {
-				ctx.Infof("Failed to match hashes (login)! %s %s", userInfo.PasswordHash, passwordHash)
-				http.Redirect(w, r, "/login?retry=true", 303)
-				return
-			}
-			cookie := http.Cookie{
-				Name:     authCookieName,
-				Value:    encrypt(uploadKey, username+"\r"+passwordHash),
-				Secure:   true,
-				HttpOnly: true,
-				Path:     "/",
-				Expires:  time.Now().Add(time.Hour * 24 * 7 * 3),
-			}
-			http.SetCookie(w, &cookie)
-			http.Redirect(w, r, "/", 303)
-		}
 		return
 	}
 
@@ -201,7 +146,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// at this point we have authorization
+	// NOTE from this point the user has authorization
 
 	// special case / to the index
 	if r.URL.Path == "/" {
@@ -210,17 +155,50 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// handle administrator apis
-	if strings.HasPrefix(r.URL.Path, "/api/admin") {
+	if strings.HasPrefix(r.URL.Path, adminAPIPrefix) {
 		if !userInfo.IsAdmin {
 			http.Error(w, "You are not an administrator.", http.StatusUnauthorized)
 			return
 		}
-		adminRequiredMux.ServeHTTP(w, r)
+		adminAPIMux.ServeHTTP(w, r)
 		return
 	}
 
 	// handle remaining apis
-	authRequiredMux.ServeHTTP(w, r)
+	baseAPIMux.ServeHTTP(w, r)
+}
+
+// loginHandler handles /login ..
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := makeContext(r)
+	// serve the page to get, otherwise handle attempts to login
+	if r.Method == "GET" {
+		http.ServeFile(w, r, "static/login.html")
+
+	} else if r.Method == "POST" {
+		r.ParseForm()
+		username := r.FormValue("username")
+		password := r.FormValue("password")
+		passwordHash := userhash(username, password)
+
+		// get info from DB and compare
+		userInfo, err := getUserCached(ctx, username)
+		if err != nil || userInfo.PasswordHash != passwordHash {
+			ctx.Infof("Failed to match hashes (login)! %s %s", userInfo.PasswordHash, passwordHash)
+			http.Redirect(w, r, "/login?retry=true", 303)
+			return
+		}
+		cookie := http.Cookie{
+			Name:     authCookieName,
+			Value:    encrypt(uploadKey, username+"\r"+passwordHash),
+			Secure:   true,
+			HttpOnly: true,
+			Path:     "/",
+			Expires:  time.Now().Add(time.Hour * 24 * 7 * 3),
+		}
+		http.SetCookie(w, &cookie)
+		http.Redirect(w, r, "/", 303)
+	}
 }
 
 // dataUploadHandler processes authenticated requests
