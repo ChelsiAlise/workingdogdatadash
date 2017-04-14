@@ -29,7 +29,7 @@ Linux you likely have this installed by default.
 - [Google App Engine SDK for GO](https://cloud.google.com/appengine/docs/standard/go/download)
  -- used to build and deploy to App Engine.
 
-- Ideally a bash shell, again if you are on macOS or Linux oyu likely have this
+- Ideally a bash shell, again if you are on macOS or Linux you likely have this
  already.
 
 Steps: 
