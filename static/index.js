@@ -978,8 +978,8 @@ function createChartNine() {
             items: [{
                 html: 'Number of Total Dogs Tracked per Status',
                 style: {
-                    left: '175px',
-                    top: '40px',
+                    left: '100px',
+                    top: '0px',
                     color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
                 }
             }]
@@ -1030,11 +1030,11 @@ function createChartNine() {
         }, {
             type: 'pie',
             name: '# of Total Dogs Tracked',
-            center: [250, 120],
+            center: [190, 40],
             size: 80,
             showInLegend: false,
             dataLabels: {
-                enabled: true
+                enabled: false
             }
         }]
     };
@@ -1228,19 +1228,17 @@ function fieldcheck() {
         if(filterValue == "Region"){
             region = true;
             var j = 0;
-            //console.log(filtered_blob);
             JSONstring1 = filtered_blob;
             var uniques = [];
             barchoicesRegion = [];
             for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                 if (uniques.indexOf(JSONstring1.dogs[i].regional_center) > -1) {
-                    //console.log(JSONstring1.dogs[i].regional_center);
-                    //test;
+                    
                     continue;
                 }
                 helper = {"value": JSONstring1.dogs[i].regional_center, "text": JSONstring1.dogs[i].regional_center}
                 uniques.push(JSONstring1.dogs[i].regional_center);
-                //console.log(uniques);
+                
 
                 barchoicesRegion[j] = helper;
                 j++;
@@ -1250,18 +1248,15 @@ function fieldcheck() {
         } else if(filterValue == "Dog Status"){
             status = true;
             var j = 0;
-            //console.log(filtered_blob);
+            
             JSONstring1 = filtered_blob;
             var uniques = [];
             for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                 if (uniques.indexOf(JSONstring1.dogs[i].dog_status) > -1) {
-                    //console.log(JSONstring1.dogs[i].regional_center);
-                    //test;
                     continue;
                 }
                 helper = {"value": JSONstring1.dogs[i].dog_status, "text": JSONstring1.dogs[i].dog_status}
                 uniques.push(JSONstring1.dogs[i].dog_status);
-                //console.log(uniques);
 
                 barchoicesStatus[j] = helper;
                 j++;
@@ -1271,20 +1266,18 @@ function fieldcheck() {
         } else if(filterValue == "Sex"){
             status = true;
             var j = 0;
-            //console.log(filtered_blob);
+            
             JSONstring1 = filtered_blob;
             var uniques = [];
             barchoicesSex = [];
 
             for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
                 if (uniques.indexOf(JSONstring1.dogs[i].sex) > -1) {
-                    //console.log(JSONstring1.dogs[i].regional_center);
-                    //test;
                     continue;
                 }
                 helper = {"value": JSONstring1.dogs[i].sex, "text": JSONstring1.dogs[i].sex}
                 uniques.push(JSONstring1.dogs[i].sex);
-                //console.log(uniques);
+                
 
                 barchoicesSex[j] = helper;
                 j++;
@@ -1372,7 +1365,7 @@ function fieldcheck2() {
                 if (temp2 == "Line") {
                     barOptions('#mySelect3', barchoices2);
                     $('#mySelect3').show();
-                    //console.log("aa");
+                    
 
                 } else {
                     console.log("eee");
@@ -1392,9 +1385,7 @@ function fieldcheck2() {
             barchoicesStatus2 = [];
 
             for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
-                // console.log(JSONstring1.dogs[i].region);
-                // console.log(tempfilter);
-                // console.log("-------");
+                
                 if (tempfilter == JSONstring1.dogs[i].dog_status) {
                     helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                     barchoicesStatus2[j] = helper;
@@ -1428,9 +1419,7 @@ function fieldcheck2() {
             JSONstring1 = filtered_blob;
             barchoicesSex2 = [];
             for (var i = 0; i < Object.keys(filtered_blob.dogs).length; i++) {
-                // console.log(JSONstring1.dogs[i].sex);
-                // console.log(tempfilter);
-                // console.log("-------");
+                
                 if (tempfilter == JSONstring1.dogs[i].sex) {
                     helper = {"value": JSONstring1.dogs[i].name, "text": JSONstring1.dogs[i].name}
                     barchoicesSex2[j] = helper;
@@ -1638,11 +1627,10 @@ function generateGraph() {
         } else if (temp1 == "Line") {
             var select1 = $("#mySelect2 option:selected").text();
             var type = $("#mySelect3 option:selected").text();
-            // console.log("!");
-            // console.log($("#mySelect2 option:selected").text());
+           
             var filterVar = $("#myFilter3").css('display')
             if ($("#myFilter3").css('display') != "none") {
-                //console.log("!!");
+                
 
                 select1 = $("#myFilter3 option:selected").text();
             }
@@ -1703,8 +1691,7 @@ function filterCheck() {
     } else if (filterTxt == 'Sex') {
         return barchoicesSex2;
     } else if (filterTxt == 'Dog Status') {
-        // console.log("zzz");
-        // console.log(barchoicesStatus2);
+        
         return barchoicesStatus2;
     }
 }
@@ -1721,8 +1708,7 @@ function filterCheck2() {
     } else if (filterTxt == 'Sex') {
         return barchoicesSex;
     } else if (filterTxt == 'Dog Status') {
-        // console.log("zzz");
-        // console.log(barchoicesStatus2);
+        
         return barchoicesStatus;
     }
 }
