@@ -53,3 +53,26 @@ type DataBlob struct {
 	Dogs []*Dog `json:"dogs"`
 	Days []*Day `json:"days"`
 }
+
+// PointsEntryDay are used to store date -> data blob
+// entries in the database, so that we can cheaply pull any day's data
+// we will place these in per-dog tables so there is no point in storing
+// that here.
+type PointsEntryDay struct {
+	// YYYYMMDD
+	Date string `json:"date"`
+	// note that we don't index these to reduce costs
+	// Data is {"timestamp": value}
+	Data string `json:"entries" datastore:",noindex"`
+}
+
+// PointsEntryDayDeserialized is a PointsEntryDay with the Entries
+// field desterialized
+// This is what we serve from the api
+type PointsEntryDayDeserialized struct {
+	// YYYYMMDD
+	Date string `json:"date"`
+	// note that we don't index these to reduce costs
+	// Data is {"timestamp": value}
+	Data map[string]float64 `json:"entries"`
+}

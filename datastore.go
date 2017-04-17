@@ -100,11 +100,11 @@ func getDataDays(ctx appengine.Context) ([]*Day, error) {
 func getDataBlob(ctx appengine.Context) (data DataBlob, err error) {
 	dogs, err := getDataDogs(ctx)
 	if err != nil {
-		return data, fmt.Errorf("datastore: Failed to get dogs!")
+		return data, fmt.Errorf("datastore: Failed to get dogs")
 	}
 	days, err := getDataDays(ctx)
 	if err != nil {
-		return data, fmt.Errorf("datastore: Failed to get days!")
+		return data, fmt.Errorf("datastore: Failed to get days")
 	}
 	data.Dogs = dogs
 	data.Days = days
@@ -198,4 +198,45 @@ func getDataFilteredBlob(ctx appengine.Context) (data DataBlob, err error) {
 	data.Dogs = dogs
 	data.Days = days
 	return data, nil
+}
+
+// pointsEntryKind returns a "kind" to use for storing a dog's data in
+// cloud datastore
+func pointsEntryKind(dogID string) string {
+	return "points/dog_id=" + dogID
+}
+
+// addPointsEntryDay adds a PointsEntryDay to the database
+func addPointsEntryDay(ctx appengine.Context, p *PointsEntryDay, dogID string) (id int64, err error) {
+	key := datastore.NewKey(ctx, pointsEntryKind(dogID), p.Date, 0, nil)
+	key, err = datastore.Put(ctx, key, p)
+	if err != nil {
+		return 0, fmt.Errorf("datastoredb: could not put PointsEntryDay: %v", err)
+	}
+	return key.IntID(), nil
+}
+
+// getsPointsDays returns a slice of date strings for entries matching dog id
+func getPointsDays(ctx appengine.Context, dogID string) (dates []string, err error) {
+	query := datastore.NewQuery(pointsEntryKind(dogID)).KeysOnly()
+	keys, err := query.GetAll(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	dates = make([]string, len(keys))
+	for i := 0; i < len(keys); i++ {
+		dates[i] = keys[i].StringID()
+	}
+	return dates, nil
+}
+
+// getPointsEntryDay gets the points entry associated with a date string and
+// dog id from the datestore
+func getPointsEntryDay(ctx appengine.Context, dogID string, date string) (p *PointsEntryDay, err error) {
+	p = new(PointsEntryDay)
+	key := datastore.NewKey(ctx, pointsEntryKind(dogID), date, 0, nil)
+	if err = datastore.Get(ctx, key, p); err != nil {
+		return nil, fmt.Errorf("datastoredb: could not get PointsEntryDay with dogID: %s date: %s Err: %v", dogID, date, err)
+	}
+	return p, nil
 }
