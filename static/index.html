@@ -238,85 +238,87 @@
       <!-- the custom chart content is in this div -->
       <div id="custom-chart-content" class="page-content col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style="display: none;">
         <h1 class="page-header">Custom Graphs</h1>
-          <div class="row">
-              <div id="popup2">
-           <div class="popup">
-             <h2>Select Filter Dog Options:</h2>
-             <div class="content" style="font-size:1.5em">
-               <div>
-                 <select id="myFilter" onchange="fieldcheck()" style="">
-                             <option value = "All" selected>All Dogs</option>
-                             <option value = "Status">Dog Status</option>
-                             <option value = "Sex">Sex</option>
-                             <option value = "Region">Region</option>
-                         </select>
-
-                 <select id="myFilter2" onchange="fieldcheck2()" style="display:none">
-                             <option value = "A">A</option>
-                             <option value = " Orange">Orange</option>
-                             <option value = "Pineapple">Pineapple</option>
-                             <option value ="Banana">Banana</option>
-                         </select>
-
-                 <select id="myFilter3" onchange="fieldcheck3()" style="display:none">
-                             <option value = "B">B</option>
-                             <option value = " Orange">Orange</option>
-                             <option value = "Pineapple">Pineapple</option>
-                             <option value ="Banana">Banana</option>
-                         </select>
-
-                 <select id="myFilter4" onchange="fieldcheck4()" style="display:none">
-                             <option value = "C">C</option>
-                             <option value = " Orange">Orange</option>
-                             <option value = "Pineapple">Pineapple</option>
-                             <option value ="Banana">Banana</option>
-                         </select>
-               </div>
-             </div>
-           </div>
-         </div>
-          <div id="popup1">
+        <div class="row">
+          <div class="custom-graph-form">
             <div class="popup">
-              <h2>Select Graph Options:</h2>
-              <div class="content custom-graph-form" style="font-size:1.5em">
+              <h2>Select Filter Dog Options:</h2>
+              <div class="content" style="font-size:1.5em">
                 <div>
-                  <select id="mySelect" onchange="fieldcheck()" style="">
-                              <option value = "Select" selected>Select One</option>
-                              <option value = "Bar">Bar</option>
-                              <option value = "Pie">Pie</option>
-                              <option value = "Line">Line</option>
-                              <option value = "Box">Box</option>
+                  <select id="myFilter" onchange="fieldcheck()" style="">
+                              <option value = "All" selected>All Dogs</option>
+                              <option value = "Status">Dog Status</option>
+                              <option value = "Sex">Sex</option>
+                              <option value = "Region">Region</option>
                           </select>
 
-                  <select id="mySelect2" onchange="fieldcheck2()" style="display:none">
-                              <option value = "Apple">Apple</option>
+                  <select id="myFilter2" onchange="fieldcheck2()" style="display:none">
+                              <option value = "A">A</option>
                               <option value = " Orange">Orange</option>
                               <option value = "Pineapple">Pineapple</option>
                               <option value ="Banana">Banana</option>
                           </select>
 
-                  <select id="mySelect3" onchange="fieldcheck3()" style="display:none">
-                              <option value = "Apple">Apple</option>
+                  <select id="myFilter3" onchange="fieldcheck3()" style="display:none">
+                              <option value = "B">B</option>
                               <option value = " Orange">Orange</option>
                               <option value = "Pineapple">Pineapple</option>
                               <option value ="Banana">Banana</option>
                           </select>
 
-                  <select id="mySelect4" onchange="fieldcheck4()" style="display:none">
-                              <option value = "Apple">Apple</option>
+                  <select id="myFilter4" onchange="fieldcheck4()" style="display:none">
+                              <option value = "C">C</option>
                               <option value = " Orange">Orange</option>
                               <option value = "Pineapple">Pineapple</option>
                               <option value ="Banana">Banana</option>
                           </select>
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div>
+              <div class="popup">
+                <h2>Select Graph Options:</h2>
+                <div class="content" style="font-size:1.5em">
+                  <div>
+                    <select id="mySelect" onchange="fieldcheck()" style="">
+                                <option value = "Select" selected>Select One</option>
+                                <option value = "Bar">Bar</option>
+                                <option value = "Pie">Pie</option>
+                                <option value = "Line">Line</option>
+                                <option value = "Box">Box</option>
+                            </select>
+
+                    <select id="mySelect2" onchange="fieldcheck2()" style="display:none">
+                                <!--<option value = "Apple">Apple</option>
+                                <option value = " Orange">Orange</option>
+                                <option value = "Pineapple">Pineapple</option>
+                                <option value ="Banana">Banana</option>-->
+                            </select>
+
+                    <select id="mySelect3" onchange="fieldcheck3()" style="display:none">
+                                <!--<option value = "Apple">Apple</option>
+                                <option value = " Orange">Orange</option>
+                                <option value = "Pineapple">Pineapple</option>
+                                <option value ="Banana">Banana</option>-->
+                            </select>
+
+                    <select id="mySelect4" onchange="fieldcheck4()" style="display:none">
+                                <!--<option value = "Apple">Apple</option>
+                                <option value = " Orange">Orange</option>
+                                <option value = "Pineapple">Pineapple</option>
+                                <option value ="Banana">Banana</option>-->
+                            </select>
 
 
-                  <button onclick="generateGraph()" style="color:white;">Create</button>
+                    <button onclick="generateGraph()" style="color:white;">Create</button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div id="custom-graphs"></div>
+          <div id="custom-graphs">
           </div>
+        </div>
       </div>
       <!--/custom-chart-content-->
 

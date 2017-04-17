@@ -83,6 +83,7 @@ body {
   border-color: black;
 }
 hr {
+  width: 100%;
   border: none;
   border-bottom: .5px solid black;
 }
@@ -134,7 +135,7 @@ hr {
 
 .custom-graph-form {
   margin: 10px auto;
-  font-size:1.5em;
+  font-size:1em;
   float: left;
   padding: 20px;
   /*background: lightyellow;*/
@@ -171,9 +172,6 @@ hr {
 }
 
 .custom-graph-form button {
-  /*position: absolute;
-  bottom: 20px;
-  right: 20px;*/
   background:#016197; 
   color:white;
   border-radius: .5em;
@@ -182,6 +180,7 @@ hr {
   font-weight: bold;
   padding-left: .5em;
   padding-right: .5em;
+  margin: .25em .75em;
 }
 
 .custom-graph-form button:hover {
@@ -205,6 +204,12 @@ ul.nav > li > a.selected {
     color: white !important;*/
     background-color: white !important;
     color: #016197 !important;
+}
+
+
+#custom-graphs .row {
+  padding-top: 2em;
+  padding-bottom: 2em;
 }
 
 .delete-button {
