@@ -210,7 +210,7 @@ def normalize_dog_name(name):
     """removes adjacent spaces as seen in one of the dogs' data.
     Args:
         name (string): the name to normalize
-    
+
     Returns:
         the normalized name (string)
     """

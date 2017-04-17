@@ -8,6 +8,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -65,10 +66,19 @@ func init() {
 	addCachedAPI("data/filtered/days", dataFilteredDaysHandler)
 	addCachedAPI("data/filtered/dogs", dataFilteredDogsHandler)
 
+	// points data
+	// GET /api/data/points/day?dog_id="11111"&date="YYYY-MM-DD"
+	addCachedAPI("data/points/day", pointsHandler)
+	// api to get points available for dog
+	// GET /api/data/points/days?dog_id="11111"
+	addCachedAPI("data/points/days", pointsListHandler)
+
 	// data upload api (dogs, minute totals, outcomes)
 	addUploadAPI("data", dataUploadHandler)
 	// user bootstrap api
 	addUploadAPI("users", userUploadHandler)
+	// points data upload api
+	addUploadAPI("points", pointsUploadHandler)
 
 	// admin apis
 	addAdminAPI("users/delete", deleteUserHandler)
@@ -398,5 +408,94 @@ func listUsersHandler(w http.ResponseWriter, r *http.Request) {
 	for _, user := range users {
 		user.PasswordHash = ""
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(users)
+}
+
+// pointsUploadHandler
+func pointsUploadHandler(w http.ResponseWriter, r *http.Request) {
+	// parse and import the data
+	ctx := makeContext(r)
+	ctx.Infof("upload request! (user)")
+	// get dog_id and date query parameters
+	values := r.URL.Query()
+	dogID := values.Get("dog_id")
+	if dogID == "" {
+		http.Error(w, "dog_id query parameter must be present", http.StatusBadRequest)
+		return
+	}
+	date := values.Get("date")
+	if date == "" {
+		http.Error(w, "date query parameter must be present", http.StatusBadRequest)
+		return
+	}
+	// get uploaded data
+	defer r.Body.Close()
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to handle import! "+err.Error(),
+			http.StatusInternalServerError)
+		return
+	}
+	entry := PointsEntryDay{
+		Date: date,
+		Data: string(body),
+	}
+	// put the data in the datastore
+	_, err = addPointsEntryDay(ctx, &entry, dogID)
+	if err != nil {
+		http.Error(w, "Failed to handle import! "+err.Error(),
+			http.StatusInternalServerError)
+		return
+	}
+}
+
+// pointsHandler returns a points entry for a date and dog_id
+func pointsHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := makeContext(r)
+	// get dog_id and date query parameters
+	values := r.URL.Query()
+	date := values.Get("date")
+	if date == "" {
+		http.Error(w, "date query parameter must be present", http.StatusBadRequest)
+		return
+	}
+	dogID := values.Get("dog_id")
+	if dogID == "" {
+		http.Error(w, "dog_id query parameter must be present", http.StatusBadRequest)
+		return
+	}
+	// get the data
+	day, err := getPointsEntryDay(ctx, dogID, date)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to get day err: %v", err), http.StatusInternalServerError)
+		return
+	}
+	var entries map[string]float64
+	json.NewDecoder(strings.NewReader(day.Data)).Decode(&entries)
+	data := PointsEntryDayDeserialized{
+		Date: day.Date,
+		Data: entries,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(data)
+}
+
+// pointsListHandler returns json list of available days for a dog
+func pointsListHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := makeContext(r)
+	// get dog_id query parameter
+	values := r.URL.Query()
+	dogID := values.Get("dog_id")
+	if dogID == "" {
+		http.Error(w, "dog_id query parameter must be present", http.StatusBadRequest)
+		return
+	}
+	dates, err := getPointsDays(ctx, dogID)
+	if err != nil {
+		http.Error(w, "failed to get a list of days", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(dates)
 }
