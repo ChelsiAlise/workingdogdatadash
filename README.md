@@ -3,7 +3,7 @@
 This is Team Pawsitive's / JDC162's Jr. Design Design project:
  "Working Dog Data Dash". 
 
-This project implements a dashbaord and custom graphing application for a
+This project implements a dashboard and custom graphing application for a
  private working dog dataset. It runs on Google 
  [App Engine](https://cloud.google.com/appengine/) using 
  [Cloud Datastore](https://cloud.google.com/datastore/).
@@ -42,7 +42,7 @@ Steps:
 
 4) [Clone this repository](https://help.github.com/articles/cloning-a-repository/).
 
-5) Open a shell to the proejct and run `utils/gen_keys.py`
+5) Open a shell to the project and run `utils/gen_keys.py`
  to generate the secret keys.
 
 6) From the same shell run `appcfg.py -A your-cloud-project-name-here ./`.
