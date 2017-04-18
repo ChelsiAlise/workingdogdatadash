@@ -1051,32 +1051,13 @@ function createPieGraph(data){
         plotBorderWidth: null,
         plotShadow: false,
         renderTo: 'chart10'
-        //type: 'pie'
         },
         title: {
             text: 'Number of Dogs Tracked in Above Graph For Each Dog Status'
         },
-        // tooltip: {
-        //     pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-        // },
-        // plotOptions: {
-        //     pie: {
-        //         allowPointSelect: true,
-        //         cursor: 'pointer',
-        //         dataLabels: {
-        //             enabled: true,
-        //             format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-        //             style: {
-        //                 color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-        //             }
-        //         }
-        //     }
-        // },
         series: [{
            type: 'pie',
             name: '# of Total Dogs Tracked',
-            // center: [190, 40],
-            // size: 80,
             showInLegend: false,
             dataLabels: {
                 enabled: false
