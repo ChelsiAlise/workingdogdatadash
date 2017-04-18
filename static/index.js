@@ -1042,6 +1042,7 @@ function createChartNine() {
     options.series[2].data = processed_json_awake;
     var chart = new Highcharts.Chart(options);
     createPieGraph(pie_data);
+    
 };
 
 function createPieGraph(data){
