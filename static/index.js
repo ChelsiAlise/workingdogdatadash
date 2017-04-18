@@ -974,16 +974,6 @@ function createChartNine() {
             text: document.ontouchstart === undefined ?
                 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
         },
-         labels: {
-            items: [{
-                html: 'Number of Total Dogs Tracked per Status',
-                style: {
-                    left: '100px',
-                    top: '0px',
-                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
-                }
-            }]
-        },
         xAxis: {
             type: 'category',
             title: {
@@ -1027,15 +1017,6 @@ function createChartNine() {
             name: 'Active Average Percent',
         }, {
             name: 'Awake Average Percent',
-        }, {
-            type: 'pie',
-            name: '# of Total Dogs Tracked',
-            center: [190, 40],
-            size: 80,
-            showInLegend: false,
-            dataLabels: {
-                enabled: false
-            }
         }]
     };
     // convert the filtered_data to the appropriate arrays
@@ -1059,9 +1040,33 @@ function createChartNine() {
     options.series[0].data = processed_json_rest;
     options.series[1].data = processed_json_active;
     options.series[2].data = processed_json_awake;
-    options.series[3].data = pie_data;
     var chart = new Highcharts.Chart(options);
+    createPieGraph(pie_data);
 };
+
+function createPieGraph(data){
+    var options = {
+        chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        renderTo: 'chart10'
+        },
+        title: {
+            text: 'Number of Dogs Tracked in Above Graph For Each Dog Status'
+        },
+        series: [{
+           type: 'pie',
+            name: '# of Total Dogs Tracked',
+            showInLegend: false,
+            dataLabels: {
+                enabled: false
+            }
+        }]
+    };
+    options.series[0].data = data;
+    var chart = new Highcharts.Chart(options);
+}
 
 
 // creates arrays for each individual field of the json data
