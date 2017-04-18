@@ -1661,7 +1661,7 @@ function insertNewGraphRow() {
     custom_graph_id += 1;
     var id = "custom-graph-"+custom_graph_id.toString();
     var graphs = document.getElementById("custom-graphs");
-    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">x</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto;"></div></div>';
+    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">Delete</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto;"></div></div>';
 
     graphs.insertAdjacentHTML('afterbegin', newElement);
     return id;
