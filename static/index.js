@@ -178,7 +178,7 @@ function makeDogPoints(dogs, setPointKeysFunc) {
 
 /*
     returns the dog object with matching dog.name from data
-    data should be one of: 
+    data should be one of:
         [filtered_dogs, unfiltered_dogs, filtered_blob, unfitered_blob]
 */
 function getDogByName(data, name) {
@@ -284,10 +284,13 @@ function updateCustomGraphOptions() {
 */
 function datasetOnChange() {
     var dataset = $("#select-graph-dataset").val();
-    var graphTypes = ["Line Graph", "Spline Graph"];
+    var graphTypes = ["Line Graph", "Spline Graph", "Column Graph"];
     // pie chart currently only works for all `Active %, Awake %, Rest %`
     if (dataset == "Active %, Awake %, Rest %") {
         graphTypes.push("Pie Chart");
+    }
+    if (dataset != "Total") {
+        graphTypes.push("Box Graph");
     }
     setSelectOptions("#select-graph-type", graphTypes);
 }
@@ -434,12 +437,12 @@ function generateGraph() {
         } else {
             options["chart"] = { zoomType: 'x'};
         }
-    
+
     // pie chart
     } else if (graphType == "Pie Chart") {
         options = {
             chart: { type: "pie"},
-            title: { 
+            title: {
                 text: 'Time Spent As a Percentage of Total Time For ' + selectedDog
             },
             tooltip: {
@@ -473,8 +476,152 @@ function generateGraph() {
                 }]
             }]
         };
-    }
+    } else if (graphType == "Box Graph"){
+        var id = dog.id;
+        var series = [];
+        var boxData = [];
+        for (var i = 0; i < chosenDatasets.length; i++) {
+            boxData.push({
+                name: chosenDatasets[i],
+                data: [],
+            });
+        }
+        for (var i = 0; i < Object.keys(data.days).length; i++) {
+            var day = data.days[i];
+            for (var m = 0; m < Object.keys(day.dogs).length; m++) {
+                var day_dog = day.dogs[m];
+                // skip dogs that don't match
+                if (day_dog.id != id) {
+                    continue;
+                }
+                // otherwise add the data point to the series
+                for (var k = 0; k < chosenDatasets.length; k++) {
+                    var dataset = chosenDatasets[k];
+                    if (dataset == "Total") {
+                        boxData[k]["data"].push(day_dog.total);
+                    } else if (dataset == "Rest %") {
+                        boxData[k]["data"].push(day_dog.rest);
+                    } else if (dataset == "Active %") {
+                        boxData[k]["data"].push(day_dog.active);
+                    } else if (dataset == "Awake %") {
+                        boxData[k]["data"].push(day_dog.awake);
+                    }
+                }
+            }
+        }
+        function sortNumber(a,b) {
+            return a - b;
+        }
+        for(var m = 0; m < chosenDatasets.length; m++) {
+            var plotPoints = [];
+            boxData[m]["data"] = boxData[m]["data"].sort(sortNumber);
+            plotPoints.push(boxData[m]["data"][0]);
+            plotPoints.push(boxData[m]["data"][Math.floor(boxData[m]["data"].length/4)]);
+            plotPoints.push(boxData[m]["data"][Math.floor(boxData[m]["data"].length/2)]);
+            plotPoints.push(boxData[m]["data"][Math.floor(boxData[m]["data"].length - boxData[m]["data"].length/4)]);
+            plotPoints.push(boxData[m]["data"][Math.floor(boxData[m]["data"].length -1)]);
+            series.push(plotPoints);
+        }
+        var label = [];
+        for(var n = 0; n < chosenDatasets.length; n++) {
+            label.push(chosenDatasets[n].split(" ")[0])
+        }
 
+        options = {
+                chart: {
+                    type: 'boxplot'
+                },
+
+                title: {
+                    text: selectedDog+' '+label+' Box Plot Series (' + filterType + ')'
+                },
+
+                legend: {
+                    enabled: false
+                },
+
+                xAxis: {
+                    endOnTick: true,
+                    max: chosenDatasets.length - 1,
+                    categories: label,
+                    title: {
+                        text: "Type of activity"
+                    }
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Number of minutes'
+                    },
+                },
+
+                series: [{
+                    name: 'Observations',
+                    data: series,
+                    tooltip: {
+                        headerFormat: '<em>Experiment No {point.key}</em><br/>'
+                    }
+                }]
+        }
+    } else if (graphType == "Column Graph") {
+        var series = [];
+        var label = [];
+        for(var n = 0; n < chosenDatasets.length; n++) {
+            label.push(chosenDatasets[n].split(" ")[0])
+        }
+        for (var k = 0; k < chosenDatasets.length; k++) {
+            var dataset = chosenDatasets[k];
+            if (dataset == "Total") {
+                series.push(dog.total);
+            } else if (dataset == "Rest %") {
+                series.push(dog.rest);
+            } else if (dataset == "Active %") {
+                series.push(dog.active);
+            } else if (dataset == "Awake %") {
+                series.push(dog.awake);
+            }
+        }
+        options = {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: selectedDog+' '+label+' Column Chart (' + filterType + ')'
+            },
+            subtitle: {
+                text: 'Dog activity tracked in minutes'
+            },
+            xAxis: {
+                categories: label,
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Minutes'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b>{point.y:.1f} minutes</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: [{
+                name: selectedDog,
+                data: series
+
+            }]
+        };
+    }
     // render
     renderNewCustomGraph(options);
 }
