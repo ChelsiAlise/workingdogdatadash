@@ -231,27 +231,31 @@
         <div class="row">
           <div class="custom-graph-form">
             <div class="content" style="font-size:1.5em">
-              <h2>Graph Type:&nbsp;<select id="select-graph-type" onchange="graphTypeOnChange()">
+              <!-- select for dataset and graphType -->
+              <h2>Make a Graph of&nbsp;<select id="select-graph-dataset" onchange="datasetOnChange()">
+                  <option value="Active %">Active %</option>
+                  <option value="Awake %">Awake %</option>
+                  <option value="Rest %">Rest %</option>
+                  <option value="Active %, Awake %">Active %, Awake%</option>
+                  <option value="Active %, Rest %">Active %, Rest%</option>
+                  <option value="Active %, Awake %, Rest %" selected>Active %, Awake %, Rest %</option>
+                  <option value="Total">Total</option>
+                </select>&nbsp;in&nbsp;a&nbsp;<select id="select-graph-type">
                     <option value="Line Graph" selected>Line Graph</option>
                     <option value="Spline Graph">Spline Graph</option>
-                    <option value="Column Graph">Column Graph</option>
                     <option value="Pie Chart">Pie Chart</option>
-                    <option value="Box Plot">Box Plot</option>
-                </select>&nbsp;of&nbsp;<select id="select-graph-dataset">
-                  <option value="Awake" selected>Awake %</option>
                 </select>
               </h2>
               <hr>
-              <h2>Filtering<sup>1</sup>:&nbsp;<select id="select-filter-type" onchange="filterTypeOnChange()">
+              <!-- select for filterType -->
+              <h2>Filtered to&nbsp;<select id="select-filter-type" onchange="filterTypeOnChange()">
                     <option value="Filtered" selected>&ge; 70% of a day</option>
                     <option value="Unfiltered">Unfiltered</option>
                   </select>
-                  <!-- spacer -->
-                  <div style="width:0;height:0.5em"></div>
-                  <p style="font-size:0.5em">1: Note: Not Currently Applied to Intensity Data</p>
               </h2>
               <hr>
-              <h2>Dog:&nbsp;<select id="select-dog-type" onchange="dogTypeOnChange()">
+              <!-- select for dog(s) -->
+              <h2>For:&nbsp;<select id="select-dog-type" onchange="dogTypeOnChange()">
                     <option value="All Dogs" selected>All Dogs</option>
                 </select>&nbsp;<span style="font-size:1.3em">&rarr;</span>&nbsp;<select id="select-dog">
                   <option value="">Loading Options...</option>

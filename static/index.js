@@ -190,6 +190,14 @@ function getDogByName(data, name) {
     }
 }
 
+/*
+    this pushes value to object[key] or creates an array then pushes
+*/
+function default_push(object, key, value) {
+    (object[key] = object[key] || []).push(value);
+}
+
+
 // shared format for the beginning of formatting points with the dog's name
 // and outcome data.
 var dogPointFormat = '<b>{point.name}</b><hr style="margin-top: .5em">'+
@@ -205,29 +213,42 @@ var dogPointFormat = '<b>{point.name}</b><hr style="margin-top: .5em">'+
     use query to get selectSelector item and clear it,
     adding <option value=v>v</option> for each v in newOptions
     temporarily make select box more noticable
-    preserve selected val if present in newOptions
+    preserve selected val if present in newOptions, otherwise select
+    defaultIndex
 */
-function setSelectOptions(selectSelector, newOptions) {
+function setSelectOptions(selectSelector, newOptions, defaultIndex) {
     var el = $(selectSelector);
+    // get the old value
     var val = el.val();
+    // get the default index paramater
+    defaultIndex = typeof defaultIndex !== 'undefined' ? defaultIndex : 0;
+    // clear the select
     el.empty();
+    // add the new options, search for the old value and the default index value
+    var i = 0;
+    var defaultIndexValue;
+    var inNewArray = false;
     $.each(newOptions, function(key, value) {
         el.append($("<option></option>").attr("value", value).text(value));
+        if (i == defaultIndex) {
+            defaultIndexValue = value;
+        }
+        if (value == val) {
+            inNewArray = true;
+        }
+        i++;
     });
-    if ($.inArray(val, newOptions)) {
+    // set the old value if present, or the default index
+    if (inNewArray) {
         el.val(val);
+    } else {
+        el.val(defaultIndexValue);
     }
+    // flash the select box to alert the user
     el.addClass("select-alert");
     setTimeout(function(){
         el.removeClass("select-alert");
     }, 750);
-}
-
-/*
-    this pushes value to object[key] or creates an array then pushes
-*/
-function default_push(object, key, value) {
-    (object[key] = object[key] || []).push(value);
 }
 
 /*
@@ -251,66 +272,24 @@ function updateCustomGraphOptions() {
         default_push(dog_type_to_dogs, "Region: "+dog.regional_center, name);
     }
     for (k in dog_type_to_dogs) {
-        dog_type_to_dogs[k].sort();
+        dog_type_to_dogs[k] = (["All("+k+")"]).concat(dog_type_to_dogs[k]).sort();
     }
     setSelectOptions("#select-dog-type", Object.keys(dog_type_to_dogs).sort());
-    graphTypeOnChange();
+    datasetOnChange();
     dogTypeOnChange();
 }
 
 /*
-    Utility Method to create combination strings of strings in array
-    Based on: http://stackoverflow.com/a/5752056
+    The `onchange=` callback for #select-graph-dataset in the Custom Graphs UI
 */
-function combine_and_join(a) {
-    var fn = function(n, src, got, all) {
-        if (n == 0) {
-            if (got.length > 0) {
-                all[all.length] = got;
-            }
-            return;
-        }
-        for (var j = 0; j < src.length; j++) {
-            fn(n - 1, src.slice(j + 1), got.concat([src[j]]), all);
-        }
-        return;
+function datasetOnChange() {
+    var dataset = $("#select-graph-dataset").val();
+    var graphTypes = ["Line Graph", "Spline Graph"];
+    // pie chart currently only works for all `Active %, Awake %, Rest %`
+    if (dataset == "Active %, Awake %, Rest %") {
+        graphTypes.push("Pie Chart");
     }
-    var all = [];
-    for (var i = 1; i < a.length; i++) {
-        fn(i, a, [], all);
-    }
-    all.push(a);
-    for (var i = 0; i < all.length; i++) {
-        if (typeof all[i] != "string") {
-            all[i] = all[i].sort().join(", ");
-        }
-    }
-    return all;
-}
-
-/*
-    The `onchange=` callback for #select-graph-type in the Custom Graphs UI
-*/
-// lazy-loaded-precomputed set of common data set options
-var active_awake_rest_total_data_sets = false;
-function graphTypeOnChange() {
-    if (!active_awake_rest_total_data_sets) {
-        active_awake_rest_total_data_sets = ["Awake %", "Rest %", "Active %"];
-        active_awake_rest_total_data_sets = combine_and_join(active_awake_rest_total_data_sets);
-        active_awake_rest_total_data_sets.push("Total");
-    }
-    // get graph type and set the possible data sets
-    var graphType = $("#select-graph-type").val();
-    var datasets = active_awake_rest_total_data_sets;
-    if (graphType == "Box Graph") {
-        // we want to add another option without modifying the original
-        datasets = ([]).concat(datasets)
-        datasets.push("Intensity (Minutes)");
-    } if (graphType == "Pie Chart") {
-        datasets = ["Active %, Awake %, Rest %"];
-    }
-
-    setSelectOptions("#select-graph-dataset", datasets);
+    setSelectOptions("#select-graph-type", graphTypes);
 }
 
 /*
@@ -319,7 +298,8 @@ function graphTypeOnChange() {
 function dogTypeOnChange() {
     // get dog selection type and then set the possible dogs
     var dogType = $("#select-dog-type").val();
-    setSelectOptions("#select-dog", dog_type_to_dogs[dogType]);
+    // the last parameter is 1 so we don't default to the one after "All(...)"
+    setSelectOptions("#select-dog", dog_type_to_dogs[dogType], 1);
 }
 
 /*
@@ -337,18 +317,13 @@ function insertNewGraphRow() {
 }
 
 /*
-    This inserts a new custom graph dom object and renders
-     the Highcharts options to it.
+    This inserts a new custom graph dom object
+     and renders the Highcharts options to it.
 */
-function renderNewCustomGraph(options, compare) {
+function renderNewCustomGraph(options) {
     var id = insertNewGraphRow();
     options.chart.renderTo = id;
     var chart = new Highcharts.Chart(options);
-    if (compare == "compare") {
-        insertNewStatsTable2();
-    } else if (compare == "normal"){
-        insertNewStatsTable();
-    }
 }
 
 /*
@@ -362,6 +337,8 @@ function deleteGraph(e) {
     Handler for the "Create" button in the Custom Graphs UI
 */
 function generateGraph() {
+    // TODO: All(...)
+    // TODO: other graph types
     var graphType = $("#select-graph-type").val();
     var dataSet = $("#select-graph-dataset").val();
     var filterType = $("#select-filter-type").val();
@@ -373,13 +350,14 @@ function generateGraph() {
         return;
     }
 
-    // compute graph settings
+    // compute common graph settings
     var data = filterType == "Unfiltered" ? unfiltered_blob : filtered_blob;
     var dog = getDogByName(data, selectedDog);
     // get all the datasets selected
     var chosenDatasets = dataSet.split(", ");
 
-    // setup graph options
+
+    // setup graph options by graph type
     var options = {};
     // line graph and spline graph are the same minus the spline graph
     // having interpolation, this is one setting
@@ -499,148 +477,6 @@ function generateGraph() {
 
     // render
     renderNewCustomGraph(options);
-}
-
-/*
-    inserts a new stats table alongside the new custom graph row
-*/
-var stats_table_id = 0;
-function insertNewStatsTable() {
-    stats_table_id += 1;
-    var id = "stats"+stats_table_id.toString();
-    var graph = document.getElementById("custom-graph-"+custom_graph_id.toString());
-    var newTable =
-    '<table class="table table-hover stats" id="'+id+'">'
-        +'<thead>'
-            +'<tr style="background-color: #016197; color: white;">'
-                +'<th>Statistic</th>'
-                +'<th>Series One Value</th>'
-            +'</tr>'
-            +'</thead><tbody></tbody>'
-    +'</table>';
-    graph.insertAdjacentHTML('afterend', newTable);
-}
-function insertNewStatsTable2() {
-    stats_table_id += 1;
-    var id = "stats"+stats_table_id.toString()+"Comp";
-    var graph = document.getElementById("custom-graph-"+custom_graph_id.toString());
-    var newTable =
-        '<table class="table table-hover stats" id="'+id+'">'
-        +'<thead>'
-            +'<tr style="background-color: #016197; color: white;">'
-                +'<th>Statistic</th>'
-                +'<th>Series One Value</th>'
--                +'<th>Series Two Value</th>'
-            +'</tr>'
-            +'</thead><tbody></tbody>'
-    +'</table>';
-    graph.insertAdjacentHTML('afterend', newTable);
-}
-
-//handles stats calculations and tests
-//data is from the first dog
-//type specifies if it's a comparison bar chart
-//data2 is from the second dog (if a comparison)
-function statsData(data, type, data2) {
-    if(type == "compare") {
-        var table = document.getElementById("stats"+stats_table_id.toString()+"Comp");
-
-        //mean
-        var tData = jStat.mean(data);
-        var tData2 = jStat.mean(data2);
-        editStatsTable2(0, "Mean", round(tData,2), round(tData2,2));
-        //min and max
-        tData = jStat.min(data);
-        var tDataM = jStat.max(data);
-        tData2 = jStat.min(data2);
-        var tData2M = jStat.max(data2);
-        editStatsTable2(1, "Min, Max", tData + ", " + tDataM, tData2 + ", " + tData2M);
-        //variance
-        tData = jStat.variance(data);
-        tData1 = jStat.variance(data2);
-        editStatsTable2(2, "Variance", round(tData,2), round(tData2,2));
-        //standard deviation
-        tData = jStat.stdev(data);
-        tData2 = jStat.stdev(data2);
-        editStatsTable2(3, "Standard Deviation", round(tData,2), round(tData2,2));
-        //Quartiles
-        tData = jStat.quartiles(data);
-        tData2 = jStat.quartiles(data2);
-        //tValue = tData[0] + ", " + tData[1] + ", " + tData[2];
-        editStatsTable2(4, "Quartiles", tData[0] + ", " + tData[1] + ", " + tData[2], tData2[0] + ", " + tData2[1] + ", " + tData2[2]);
-        //skewness
-        tData = jStat.skewness(data);
-        tData2 = jStat.skewness(data2);
-        editStatsTable2(5, "Skewness", round(tData, 8), round(tData2, 8));
-        //covariance
-        tData = jStat.covariance(data, data2);
-        editStatsTable2(6, "Covariance", round(tData, 2), "comp");
-        //rho correlation
-        tData = jStat.corrcoeff(data, data2);
-        editStatsTable2(7, "Correlation Coefficient", round(tData, 4), "comp");
-    } else {
-        var table = document.getElementById("stats"+stats_table_id.toString());
-
-        var tData = jStat.mean(data);
-        editStatsTable(0, "Mean", round(tData,2));
-        //min and max
-        tData = jStat.min(data);
-        var tData2 = jStat.max(data);
-        editStatsTable(1, "Min, Max", tData + ", " + tData2);
-        //variance
-        tData = jStat.variance(data);
-        editStatsTable(2, "Variance", round(tData,2));
-        //standard deviation
-        tData = jStat.stdev(data);
-        editStatsTable(3, "Standard Deviation", round(tData,2));
-        //Quartiles
-        tData = jStat.quartiles(data);
-        //tValue = tData[0] + ", " + tData[1] + ", " + tData[2];
-        editStatsTable(4, "Quartiles", tData[0] + ", " + tData[1] + ", " + tData[2]);
-        //skewness
-        tData = jStat.skewness(data);
-        editStatsTable(5, "Skewness", round(tData, 8));
-    }
-}
-
-//handles inserting data into the stats table
-//label is the name/type of statistic
-//value is the calculated value of the statistic
-function editStatsTable(rowNum, label, value) {
-    var table = document.getElementById("stats"+stats_table_id.toString());
-    table = table.getElementsByTagName("tbody")[0];
-    var tRow = table.insertRow(rowNum);
-    var tLabel = tRow.insertCell(0);
-    var tValue = tRow.insertCell(1);
-    tLabel.innerHTML = label;
-    tValue.innerHTML = value;
-}
-
-//handles inserting data into comparison stats table
-//label is the name/type of statistic
-//value is the calculated value of the statistic
-//value2 is for the second dog
-function editStatsTable2(rowNum, label, value1, value2) {
-    var table = document.getElementById("stats"+stats_table_id.toString()+"Comp");
-    table = table.getElementsByTagName("tbody")[0];
-    var tRow = table.insertRow(rowNum);
-    var tLabel = tRow.insertCell(0);
-    tLabel.innerHTML = label;
-    if(value2 == "comp") {
-        var tValue = tRow.insertCell(1);
-        tValue.innerHTML = value1;
-        tValue.colspan = 2;
-        tValue.style.align = "center";
-    } else {
-        var tValue = tRow.insertCell(1);
-        var tValue2 = tRow.insertCell(2);
-        tValue.innerHTML = value1;
-        tValue2.innerHTML = value2;
-    }
-}
-
-function round(value, decimals) {
-  return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
 //============= /javascript for custom graphs ==================================
 
