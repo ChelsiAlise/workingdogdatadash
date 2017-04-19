@@ -83,9 +83,8 @@ function loadDataAndInitialize() {
         async: true,
         datatype: 'json',
         success: function(data) {
-            // store the data
+            // store and normalize the data
             filtered_blob = data;
-            // normalize data
             normalizeDogData(filtered_blob.dogs);
         }
     });
@@ -96,12 +95,11 @@ function loadDataAndInitialize() {
         async: true,
         datatype: 'json',
         success: function(data) {
-            // store the data
+            // store and normalize the data
             unfiltered_dogs = data;
+            normalizeDogData(unfiltered_dogs);
             // precompute maximum total for scaling
             unfiltered_dogs_max_total = getMaxTotal(unfiltered_dogs);
-            // normalize data
-            normalizeDogData(unfiltered_dogs);
         }
     });
     $.ajax({
@@ -120,25 +118,20 @@ function loadDataAndInitialize() {
 
 /* utility methods for interacting with the dog data */
 
-// normalizes and array of dog data
-// replaces empty outcome data strings with "Unknown"
+/*
+ normalizes and array of dog data
+ replaces empty outcome data strings with "Unknown"
+*/
 function normalizeDogData(dogs) {
-    for (i = 0; i < dogs.length; i++) {
-        var dog = dogs[i];
-        if (dog.birth_date == "") {
-            dog.birth_date = "Unknown";
-        }
-        if (dog.breed == "") {
-            dog.breed = "Unknown";
-        }
-        if (dog.dog_status == "") {
-            dog.dog_status = "Unknown";
-        }
-        if (dog.sex == "") {
-            dog.sex = "Unknown";
-        }
-        if (dog.regional_center == "") {
-            dog.regional_center = "Unknown";
+    var normalize_fields = [
+        "birth_date", "breed", "dog_status", "sex", "regional_center"
+    ];
+    for (var i = 0; i < dogs.length; i++) {
+        for (var j = 0; j < normalize_fields.length; j++) {
+            var field = normalize_fields[j];
+            if (dogs[i][field] == "") {
+                dogs[i][field] = "Unknown";
+            }
         }
     }
 }
@@ -211,13 +204,23 @@ var dogPointFormat = '<b>{point.name}</b><hr style="margin-top: .5em">'+
 /*
     use query to get selectSelector item and clear it,
     adding <option value=v>v</option> for each v in newOptions
+    temporarily make select box more noticable
+    preserve selected val if present in newOptions
 */
 function setSelectOptions(selectSelector, newOptions) {
     var el = $(selectSelector);
+    var val = el.val();
     el.empty();
     $.each(newOptions, function(key, value) {
         el.append($("<option></option>").attr("value", value).text(value));
     });
+    if ($.inArray(val, newOptions)) {
+        el.val(val);
+    }
+    el.addClass("select-alert");
+    setTimeout(function(){
+        el.removeClass("select-alert");
+    }, 750);
 }
 
 /*
@@ -230,10 +233,9 @@ function default_push(object, key, value) {
 /*
     Dog type selection options to array of dog names.
     This is computed in updateCustomGraphOptions.
-    It is used for the dog selection UI.
+    It is used for the dog selection UI (see dogTypeOnChange).
 */
-var dog_type_to_dogs = {}; 
-
+var dog_type_to_dogs = {};
 /*
     This should be called once the "dogs" dataset is loaded.
     It updates the custom graph selection options.
@@ -257,9 +259,9 @@ function updateCustomGraphOptions() {
 }
 
 /*
-    Utility Method to creat combination strings of strings in array
+    Utility Method to create combination strings of strings in array
+    Based on: http://stackoverflow.com/a/5752056
 */
-// http://stackoverflow.com/a/5752056
 function combine_and_join(a) {
     var fn = function(n, src, got, all) {
         if (n == 0) {
@@ -279,8 +281,8 @@ function combine_and_join(a) {
     }
     all.push(a);
     for (var i = 0; i < all.length; i++) {
-        if (typeof a[i] != "string") {
-            all[i] = all[i].join(", ");
+        if (typeof all[i] != "string") {
+            all[i] = all[i].sort().join(", ");
         }
     }
     return all;
@@ -300,12 +302,12 @@ function graphTypeOnChange() {
     // get graph type and set the possible data sets
     var graphType = $("#select-graph-type").val();
     var datasets = active_awake_rest_total_data_sets;
-    if (graphType == "Box Plot") {
+    if (graphType == "Box Graph") {
         // we want to add another option without modifying the original
         datasets = ([]).concat(datasets)
         datasets.push("Intensity (Minutes)");
     } if (graphType == "Pie Chart") {
-        datasets = ["Awake, Active, Rest"];
+        datasets = ["Active %, Awake %, Rest %"];
     }
 
     setSelectOptions("#select-graph-dataset", datasets);
@@ -499,9 +501,9 @@ function generateGraph() {
     renderNewCustomGraph(options);
 }
 
-
-
-//inserts a new stats table alongside the new custom graph row
+/*
+    inserts a new stats table alongside the new custom graph row
+*/
 var stats_table_id = 0;
 function insertNewStatsTable() {
     stats_table_id += 1;
@@ -635,295 +637,6 @@ function editStatsTable2(rowNum, label, value1, value2) {
         tValue.innerHTML = value1;
         tValue2.innerHTML = value2;
     }
-}
-
-function makeBar(data, type) {
-    var arr = new Array();
-    var arr1 = new Array();
-    JSONstring1 = data;
-    var j = 0;
-    var tempArr = filterCheck();
-    var arr2 = [];
-    if (tempArr != null) {
-        arr2 = tempArr.map(function(item) {
-            return item['text'];
-        });
-    }
-    // console.log("test");
-    // console.log(arr2);
-    for (var i =0; i < JSONstring1.length; i++) {
-        if (tempArr == null) {
-            arr[j] = JSONstring1[i].name;
-            var ratio = getBarInfo(JSONstring1[i], type);
-            arr1[j] = ratio;
-            j++;
-        } else {
-            //console.log(JSONstring1[i].name);
-            if(arr2.includes(JSONstring1[i].name)) {
-                arr[j] = JSONstring1[i].name;
-                var ratio = getBarInfo(JSONstring1[i], type);
-                arr1[j] = ratio;
-                j++;
-            }
-        }
-
-    };
-    var options = {
-        chart: {
-            type: 'column'
-        },
-        title: {
-            text: 'Distribution of minutes spent ' + type
-        },
-        subtitle: {
-            text: 'Dog activity tracked in minutes'
-        },
-        xAxis: {
-            categories: arr,
-            crosshair: true
-        },
-        yAxis: {
-            min: 0,
-            title: {
-                text: 'Minutes'
-            }
-        },
-        tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.1f} minutes</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
-        },
-        plotOptions: {
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0
-            }
-        },
-        series: [{
-            name: type,
-            data: arr1
-
-        }]
-    };
-    renderNewCustomGraph(options, "normal");
-    statsData(arr1)
-}
-
-//Used to generate the comparison bar graph
-function makeBar2(data, typeA, typeB) {
-    var arr = new Array();
-    var arr1 = new Array();
-    var arr2 = new Array();
-    JSONstring1 = data;
-    var j = 0;
-    var tempArr = filterCheck();
-    var arr2 = [];
-    if (tempArr != null) {
-        arr2 = tempArr.map(function(item) {
-            return item['text'];
-        });
-    }
-    for (var i =0; i < JSONstring1.length; i++) {
-        if (tempArr == null) {
-
-            arr[j] = JSONstring1[i].name;
-            var ratio = getBarInfo(JSONstring1[i], typeA);
-            var ratio2 = getBarInfo(JSONstring1[i], typeB);
-            arr1[j] = ratio;
-            arr2[j] = ratio2;
-            j++;
-        } else {
-            if(arr2.includes(JSONstring1[i].name)) {
-                arr[j] = JSONstring1[i].name;
-                var ratio = getBarInfo(JSONstring1[i], typeA);
-                var ratio2 = getBarInfo(JSONstring1[i], typeB);
-                arr1[j] = ratio;
-                arr2[j] = ratio2;
-                j++;
-            }
-
-        }
-    }
-    console.log("aa");
-    console.log(arr);
-    var options = {
-            chart: {
-                type: 'column'
-            },
-            title: {
-                text: 'Distribution of minutes spent ' + typeA + " and " + typeB
-            },
-            subtitle: {
-                text: 'Dog activity tracked in minutes'
-            },
-            xAxis: {
-                endOnTick: true,
-                max: arr.length-1,
-                categories: arr,
-                crosshair: true
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Minutes'
-                }
-            },
-            tooltip: {
-                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b>{point.y:.1f} minutes</b></td></tr>',
-                footerFormat: '</table>',
-                shared: true,
-                useHTML: true
-            },
-            plotOptions: {
-                column: {
-                    pointPadding: 0.2,
-                    borderWidth: 0
-                }
-            },
-            series: [{
-            name: typeA,
-            data: arr1
-        }, {
-            name: typeB,
-            data: arr2
-
-        }]
-    };
-    renderNewCustomGraph(options, "compare");
-    statsData(arr1, "compare", arr2);
-}
-
-//Creates the box graph, can use filters to change aspects of the box
-function makeBox(data, type) {
-    // var arr = new Array();
-    var arr1 = new Array();
-    JSONstring1 = data;
-    var arr = filterCheck2();
-    var arr2 = ['All Dogs'];
-    // var tempArr = filterCheck();
-    // var arr2 = [];
-    if (arr != null) {
-        arr2 = arr.map(function(item) {
-            return item['text'];
-        });
-    }
-    // console.log("test");
-    // console.log(arr2);
-    var arrData = [];
-    var filterSelected = $("#myFilter option:selected").text();
-    for (var m=0; m < arr2.length; m++) {
-        var arrTemp = [];
-        var j = 0;
-        for (var i =0; i < JSONstring1.length; i++) {
-                if(filterSelected == "By Region" && JSONstring1[i].regional_center == arr2[m]) {
-                    var ratio = getBarInfo(JSONstring1[i], type);
-                    arrTemp[j] = ratio;
-                    j++;
-                } else if(filterSelected == "By Status" && JSONstring1[i].dog_status == arr2[m]) {
-                    var ratio = getBarInfo(JSONstring1[i], type);
-                    arrTemp[j] = ratio;
-                    j++;
-                } else if(filterSelected == "By Sex" && JSONstring1[i].sex == arr2[m]) {
-                    var ratio = getBarInfo(JSONstring1[i], type);
-                    arrTemp[j] = ratio;
-                    j++;
-                } else if(filterSelected == "All Dogs") {
-                    var ratio = getBarInfo(JSONstring1[i], type);
-                    arrTemp[j] = ratio;
-                    j++;
-                }
-                // } else {
-                //     var ratio = getBarInfo(JSONstring1[i], type);
-                //     arr1[j] = ratio;
-                //     j++;
-                // }
-
-        };
-        arrData[m] = arrTemp;
-    }
-    // console.log(arrData);
-    // console.log(arr1);
-    //arrNum = arr1;
-    function sortNumber(a,b) {
-        return a - b;
-    }
-    var finalData = [];
-    for (var k=0; k < arrData.length; k++) {
-        var boxData = [];
-        arrData[k] = arrData[k].sort(sortNumber);
-        var arrNum = [];
-        arrNum = arrData[k];
-        boxData[0] = arrNum[0];
-        console.log("testing");
-        //console.log(arrNum[Math.floor(arrNum.length/2)]);
-        boxData[1] = arrNum[Math.floor(arrNum.length/4)];
-        boxData[2] = arrNum[Math.floor(arrNum.length/2)];
-        boxData[3] = arrNum[Math.floor(arrNum.length - arrNum.length/4)];
-        boxData[4] = arrNum[Math.floor(arrNum.length -1)];
-        finalData[k] = boxData;
-    }
-    console.log(finalData);
-
-
-
-    console.log(arr1);
-    var options = {
-
-    chart: {
-        type: 'boxplot'
-    },
-
-    title: {
-        text: 'Box plot series for ' + filterSelected
-    },
-
-    legend: {
-        enabled: false
-    },
-
-    xAxis: {
-        endOnTick: true,
-        max: arr2.length-1,
-        categories: arr2,
-        title: {
-            text: filterSelected
-        }
-    },
-
-    yAxis: {
-        title: {
-            text: 'Minutes ' + type
-        },
-        // plotLines: [{
-        //     value: 932,
-        //     color: 'red',
-        //     width: 1,
-        //     label: {
-        //         text: 'Theoretical mean: 932',
-        //         align: 'center',
-        //         style: {
-        //             color: 'gray'
-        //         }
-        //     }
-        // }]
-    },
-
-    series: [{
-        name: 'Observations',
-        data: finalData,
-        tooltip: {
-            headerFormat: '<em>Experiment No {point.key}</em><br/>'
-        }
-    }]
-
-};
-    renderNewCustomGraph(options);
-    //statsData(arr1)
 }
 
 function round(value, decimals) {
@@ -1337,11 +1050,7 @@ function createChartSix() {
                 text: 'Dogs, Sorted From Least to Most Rest Time'
             }
         },
-        yAxis: {
-            title: {
-                text: 'Rest Percentage of Total Time'
-            }
-        },
+        yAxis: { title: { text: 'Rest Percentage of Total Time' } },
         legend: {
             layout: 'vertical',
             align: 'right',

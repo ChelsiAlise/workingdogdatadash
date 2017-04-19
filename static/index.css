@@ -184,9 +184,24 @@ hr {
   margin-top: .3em;
 }
 
+.custom-graph-form select.select-alert {
+  border: .08em solid #efc403;
+}
+.custom-graph-form select {
+  border: .08em solid #0381c7;
+}
+
 .custom-graph-form button:hover {
   background: #0381c7;
   color: white;
+}
+.custom-graph-form button:focus {
+  background: #0381c7;
+  color: white;
+}
+
+button:focus {
+    outline: none;   
 }
 
 .overlay:target {
@@ -268,6 +283,7 @@ body > .container-fluid {
 #series-rows {
   width: 100%;
 }
+
 #series-rows select {
   margin-left: 1em;
 }
