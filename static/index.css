@@ -296,11 +296,11 @@ body > .container-fluid {
 }
 
 .raw-data-table-container {
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
   height: 40em;
   width: 100%;
-  border: .15em solid black;
-  border-right-width: 0.2em;
+  /*border: .15em solid black;
+  border-right-width: 0.2em;*/
 }
 
 .raw-data-table-container .stats {

@@ -232,7 +232,7 @@
           <div class="custom-graph-form">
             <div class="content" style="font-size:1.5em">
               <!-- select for dataset and graphType -->
-              <h2>Make a Graph of&nbsp;<select id="select-graph-dataset" onchange="datasetOnChange()">
+              <h2>Display&nbsp;<select id="select-graph-dataset" onchange="datasetOnChange()">
                   <option value="Active %">Active %</option>
                   <option value="Awake %">Awake %</option>
                   <option value="Rest %">Rest %</option>
@@ -344,6 +344,10 @@
   <script>
     window.jQuery || document.write('<script src="/static/assets/js/vendor/jquery.min.js"><\/script>')
   </script>
+  <!--datatables-->
+  <script type="text/javascript"
+  src="/static/assets/js/vendor/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" href="/static/assets/css/jquery.dataTables.min.css"></script>
   <!-- Bootstrap core JavaScript -->
   <!-- Placed at the end of the document so the pages load faster -->
   <script src="/static/dist/js/bootstrap.min.js"></script>
@@ -352,9 +356,6 @@
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
   <script src="/static/assets/js/ie10-viewport-bug-workaround.js"></script>
   <script type="text/javascript" src="/static/index.js"></script>
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
-
 </body>
 
 </html>

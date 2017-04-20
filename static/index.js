@@ -347,7 +347,7 @@ function createRawDataTable(series) {
     var newElement =
         '<div>'
             +'<h2>Raw Dailies for '+series[0].dog+'</h2>'
-            +'<div class="raw-data-table-container">'
+            +'<div class="raw-data-table-container table">'
                 +'<table class="stats" style="margin-top:0" id="'+t_id+'">'
                     +'<thead>'
                         +'<th>Date</th>'
@@ -362,7 +362,6 @@ function createRawDataTable(series) {
         +'</div>';
     $('#'+id).append(newElement);
     for (var i in series[0]["data"]) {
-        console.log(i);
         $('#'+t_id+' tbody').append(
             "<tr>"
                 +"<td>"+series[0]["data"][i].date+"</td>"
@@ -372,6 +371,7 @@ function createRawDataTable(series) {
             +"</tr>"
         );
     }
+    $('#'+t_id).DataTable();
 }
 
 /*
