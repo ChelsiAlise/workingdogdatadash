@@ -45,7 +45,11 @@ function loadDataAndInitialize() {
         },
         title: { style: { fontSize: '18px' } },
         xAxis: { title: { style: { fontSize: '16px' } } },
-        yAxis: { title: { style: { fontSize: '16px' } } }
+        yAxis: { title: { style: { fontSize: '16px' } } },
+        exporting: {
+            sourceWidth: 1920,
+            sourceHeight: 1080,
+        }
     });
     // load the smaller dog dataset first
     $.ajax({
@@ -272,7 +276,7 @@ function updateCustomGraphOptions() {
         default_push(dog_type_to_dogs, "Region: "+dog.regional_center, name);
     }
     for (k in dog_type_to_dogs) {
-        dog_type_to_dogs[k] = (["All("+k+")"]).concat(dog_type_to_dogs[k]).sort();
+        dog_type_to_dogs[k].sort();
     }
     setSelectOptions("#select-dog-type", Object.keys(dog_type_to_dogs).sort());
     datasetOnChange();
@@ -288,7 +292,7 @@ function datasetOnChange() {
     var graphTypes = ["Line Graph", "Spline Graph", "Column Graph"];
     // chart types by black list
     if (dataset != "Total" && dataset != "Raw Dailies") {
-        graphTypes.push("Box Graph");
+        graphTypes.push("Box Plot");
     }
     // chart types types by white list
     if (dataset == "Active %, Awake %, Rest %") {
@@ -306,8 +310,7 @@ function datasetOnChange() {
 function dogTypeOnChange() {
     // get dog selection type and then set the possible dogs
     var dogType = $("#select-dog-type").val();
-    // the last parameter is 1 so we don't default to the one after "All(...)"
-    setSelectOptions("#select-dog", dog_type_to_dogs[dogType], 1);
+    setSelectOptions("#select-dog", dog_type_to_dogs[dogType], 0);
 }
 
 /*
@@ -520,7 +523,8 @@ function generateGraph() {
             }]
         };
     
-    } else if (graphType == "Box Graph"){
+    // box plot
+    } else if (graphType == "Box Plot"){
         var id = dog.id;
         var series = [];
         var boxData = [];
@@ -530,6 +534,7 @@ function generateGraph() {
                 data: [],
             });
         }
+        // get the data
         for (var i = 0; i < Object.keys(data.days).length; i++) {
             var day = data.days[i];
             for (var m = 0; m < Object.keys(day.dogs).length; m++) {
@@ -556,7 +561,7 @@ function generateGraph() {
         function sortNumber(a,b) {
             return a - b;
         }
-        for(var m = 0; m < chosenDatasets.length; m++) {
+        for (var m = 0; m < chosenDatasets.length; m++) {
             var plotPoints = [];
             boxData[m]["data"] = boxData[m]["data"].sort(sortNumber);
             plotPoints.push(boxData[m]["data"][0]);
@@ -570,20 +575,13 @@ function generateGraph() {
         for(var n = 0; n < chosenDatasets.length; n++) {
             label.push(chosenDatasets[n].split(" ")[0])
         }
-
+        // setup optoins
         options = {
-                chart: {
-                    type: 'boxplot'
-                },
-
+                chart: { type: 'boxplot' },
                 title: {
-                    text: selectedDog+' '+label+' Box Plot Series (' + filterType + ')'
+                    text: selectedDog+' '+label+' (' + filterType + ')'
                 },
-
-                legend: {
-                    enabled: false
-                },
-
+                legend: { enabled: false },
                 xAxis: {
                     endOnTick: true,
                     max: chosenDatasets.length - 1,
@@ -592,13 +590,11 @@ function generateGraph() {
                         text: "Type of activity"
                     }
                 },
-
                 yAxis: {
                     title: {
                         text: 'Number of minutes'
                     },
                 },
-
                 series: [{
                     name: 'Observations',
                     data: series,
@@ -627,15 +623,11 @@ function generateGraph() {
             }
         }
         options = {
-            chart: {
-                type: 'column'
-            },
+            chart: { type: 'column' },
             title: {
-                text: selectedDog+' '+label+' Column Chart (' + filterType + ')'
+                text: selectedDog+' '+label+' (' + filterType + ')'
             },
-            subtitle: {
-                text: 'Dog activity tracked in minutes'
-            },
+            subtitle: { text: 'Dog activity tracked in minutes' },
             xAxis: {
                 categories: label,
                 crosshair: true
@@ -667,6 +659,8 @@ function generateGraph() {
             }]
         };
     
+    // NOTE: table behaves specially and inserts the graph itself,
+    // not in the shared call to renderNewCustomGraph at the end
     } else if (graphType == "Table") {
         var series = [];
         for (var i = 0; i < chosenDatasets.length; i++) {
