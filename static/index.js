@@ -284,16 +284,19 @@ function updateCustomGraphOptions() {
 */
 function datasetOnChange() {
     var dataset = $("#select-graph-dataset").val();
+    // chart types most graphs have
     var graphTypes = ["Line Graph", "Spline Graph", "Column Graph"];
-    // pie chart currently only works for all `Active %, Awake %, Rest %`
-    if (dataset == "Active %, Awake %, Rest %") {
-        graphTypes.push("Pie Chart");
-    } else if (dataset == "Raw Data") {
-        graphTypes = ["Raw Data Table"];
-    }
-    if (dataset != "Total") {
+    // chart types by black list
+    if (dataset != "Total" && dataset != "Raw Dailies") {
         graphTypes.push("Box Graph");
     }
+    // chart types types by white list
+    if (dataset == "Active %, Awake %, Rest %") {
+        graphTypes.push("Pie Chart");
+    } else if (dataset == "Raw Dailies") {
+        graphTypes = ["Table"];
+    }
+    // set types
     setSelectOptions("#select-graph-type", graphTypes);
 }
 
@@ -316,7 +319,7 @@ function insertNewGraphRow() {
     custom_graph_id += 1;
     var id = "custom-graph-"+custom_graph_id.toString();
     var graphs = document.getElementById("custom-graphs");
-    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">Remove Graph</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto;"></div></div>';
+    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">Remove</button><div id="'+id+'" class="custom-graph"></div></div>';
     graphs.insertAdjacentHTML('afterbegin', newElement);
     return id;
 }
@@ -331,46 +334,38 @@ function renderNewCustomGraph(options) {
     var chart = new Highcharts.Chart(options);
 }
 
-/*
-    This creates the dive for the table for the raw data
-*/
-function insertRawDataTable() {
-    custom_graph_id += 1;
-    var id = "custom-graph-"+custom_graph_id.toString();
-    var graphs = document.getElementById("custom-graphs");
-    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">Remove Table</button><div id="'+id+'" style="width: 80%; height: 40em; margin: 0 auto; overflow: scroll;"></div></div>';
-    graphs.insertAdjacentHTML('afterbegin', newElement);
-    return id;
-}
 
 /*
     This creates the actual HTML table and adds the data to it
 */
-function createRawDataTable(options) {
-    var id = insertRawDataTable();
-    var t_id = "raw-"+id;
+function createRawDataTable(series) {
+    var id = insertNewGraphRow();
+    var t_id = id + '-table';
     var newElement =
-    '<table class="raw data table" id="'+t_id+'">'
-        +'<caption>'+options[0].dog+'</caption>'
-        +'<thead>'
-            +'<th>Date</th>'
-            +'<th>Minutes Awake</th>'
-            +'<th>Minutes Active</th>'
-            +'<th>Minutes Resting</th>'
-        +'</thead>'
-        +'<tbody>'
-        +'</tbody>'
-    '</table>'
+        '<div>'
+            +'<h2>Raw Dailies for '+series[0].dog+'</h2>'
+            +'<div class="raw-data-table-container">'
+                +'<table class="stats" style="margin-top:0" id="'+t_id+'">'
+                    +'<thead>'
+                        +'<th>Date</th>'
+                        +'<th>Minutes Awake</th>'
+                        +'<th>Minutes Active</th>'
+                        +'<th>Minutes Resting</th>'
+                    +'</thead>'
+                    +'<tbody>'
+                    +'</tbody>'
+                +'</table>'
+            +'</div>'
+        +'</div>';
     $('#'+id).append(newElement);
-    var newcontent = "<tr><td>hiiiiii</td></tr>"
-
-    for (var i in options[0]["data"]) {
-        $('#'+t_id).append(
+    for (var i in series[0]["data"]) {
+        console.log(i);
+        $('#'+t_id+' tbody').append(
             "<tr>"
-                +"<td>"+options[0]["data"][i].date+"</td>"
-                +"<td>"+options[0]["data"][i].awake+"</td>"
-                +"<td>"+options[0]["data"][i].active+"</td>"
-                +"<td>"+options[0]["data"][i].rest+"</td>"
+                +"<td>"+series[0]["data"][i].date+"</td>"
+                +"<td>"+series[0]["data"][i].awake+"</td>"
+                +"<td>"+series[0]["data"][i].active+"</td>"
+                +"<td>"+series[0]["data"][i].rest+"</td>"
             +"</tr>"
         );
     }
@@ -406,9 +401,10 @@ function generateGraph() {
     // get all the datasets selected
     var chosenDatasets = dataSet.split(", ");
 
-
     // setup graph options by graph type
-    var options = {};
+    // default to false for EG raw data table
+    // options will contain an object for a highcharts graph otherwise
+    var options = false; 
     // line graph and spline graph are the same minus the spline graph
     // having interpolation, this is one setting
     if (graphType == "Line Graph" || graphType == "Spline Graph") {
@@ -523,6 +519,7 @@ function generateGraph() {
                 }]
             }]
         };
+    
     } else if (graphType == "Box Graph"){
         var id = dog.id;
         var series = [];
@@ -610,6 +607,7 @@ function generateGraph() {
                     }
                 }]
         }
+    
     } else if (graphType == "Column Graph") {
         var series = [];
         var label = [];
@@ -668,8 +666,8 @@ function generateGraph() {
 
             }]
         };
-    }
-    else if (graphType == "Raw Data Table") {
+    
+    } else if (graphType == "Table") {
         var series = [];
         for (var i = 0; i < chosenDatasets.length; i++) {
             series.push({
@@ -700,13 +698,12 @@ function generateGraph() {
                 }
             }
         }
-        options = series;
+        // create the table
+        createRawDataTable(series);
     }
 
-    // render
-    if (graphType == "Raw Data Table") {
-        createRawDataTable(options);
-    } else {
+    // render highcharts graphs
+    if (options) {
         renderNewCustomGraph(options);
     }
 }
