@@ -178,7 +178,7 @@ function makeDogPoints(dogs, setPointKeysFunc) {
 
 /*
     returns the dog object with matching dog.name from data
-    data should be one of: 
+    data should be one of:
         [filtered_dogs, unfiltered_dogs, filtered_blob, unfitered_blob]
 */
 function getDogByName(data, name) {
@@ -288,6 +288,8 @@ function datasetOnChange() {
     // pie chart currently only works for all `Active %, Awake %, Rest %`
     if (dataset == "Active %, Awake %, Rest %") {
         graphTypes.push("Pie Chart");
+    } else if (dataset == "Raw Data") {
+        graphTypes = ["Raw Data Table"];
     }
     if (dataset != "Total") {
         graphTypes.push("Box Graph");
@@ -327,6 +329,51 @@ function renderNewCustomGraph(options) {
     var id = insertNewGraphRow();
     options.chart.renderTo = id;
     var chart = new Highcharts.Chart(options);
+}
+
+/*
+    This creates the dive for the table for the raw data
+*/
+function insertRawDataTable() {
+    custom_graph_id += 1;
+    var id = "custom-graph-"+custom_graph_id.toString();
+    var graphs = document.getElementById("custom-graphs");
+    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">Remove Table</button><div id="'+id+'" style="width: 80%; height: 40em; margin: 0 auto; overflow: scroll;"></div></div>';
+    graphs.insertAdjacentHTML('afterbegin', newElement);
+    return id;
+}
+
+/*
+    This creates the actual HTML table and adds the data to it
+*/
+function createRawDataTable(options) {
+    var id = insertRawDataTable();
+    var t_id = "raw-"+id;
+    var newElement =
+    '<table class="raw data table" id="'+t_id+'">'
+        +'<caption>'+options[0].dog+'</caption>'
+        +'<thead>'
+            +'<th>Date</th>'
+            +'<th>Minutes Awake</th>'
+            +'<th>Minutes Active</th>'
+            +'<th>Minutes Resting</th>'
+        +'</thead>'
+        +'<tbody>'
+        +'</tbody>'
+    '</table>'
+    $('#'+id).append(newElement);
+    var newcontent = "<tr><td>hiiiiii</td></tr>"
+
+    for (var i in options[0]["data"]) {
+        $('#'+t_id).append(
+            "<tr>"
+                +"<td>"+options[0]["data"][i].date+"</td>"
+                +"<td>"+options[0]["data"][i].awake+"</td>"
+                +"<td>"+options[0]["data"][i].active+"</td>"
+                +"<td>"+options[0]["data"][i].rest+"</td>"
+            +"</tr>"
+        );
+    }
 }
 
 /*
@@ -622,9 +669,46 @@ function generateGraph() {
             }]
         };
     }
+    else if (graphType == "Raw Data Table") {
+        var series = [];
+        for (var i = 0; i < chosenDatasets.length; i++) {
+            series.push({
+                dog: selectedDog,
+                name: chosenDatasets[i],
+                data: [],
+            });
+        }
+        var id = dog.id;
+        for (var i = 0; i < Object.keys(data.days).length; i++) {
+            var day = data.days[i];
+            for (var m = 0; m < Object.keys(day.dogs).length; m++) {
+                var day_dog = day.dogs[m];
+                // skip dogs that don't match
+                if (day_dog.id != id) {
+                    continue;
+                }
+                // otherwise add the data point to the series
+                var dateSplit = day.date.split("-");
+                var date = Date.UTC(dateSplit[0], dateSplit[1], dateSplit[2]);
+                for (var k = 0; k < chosenDatasets.length; k++) {
+                    series[k]["data"].push({
+                        date: day.date,
+                        awake: day_dog.awake,
+                        rest: day_dog.rest,
+                        active: day_dog.active
+                    });
+                }
+            }
+        }
+        options = series;
+    }
 
     // render
-    renderNewCustomGraph(options);
+    if (graphType == "Raw Data Table") {
+        createRawDataTable(options);
+    } else {
+        renderNewCustomGraph(options);
+    }
 }
 //============= /javascript for custom graphs ==================================
 
