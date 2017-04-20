@@ -178,7 +178,7 @@ function makeDogPoints(dogs, setPointKeysFunc) {
 
 /*
     returns the dog object with matching dog.name from data
-    data should be one of:
+    data should be one of: 
         [filtered_dogs, unfiltered_dogs, filtered_blob, unfitered_blob]
 */
 function getDogByName(data, name) {
@@ -622,6 +622,7 @@ function generateGraph() {
             }]
         };
     }
+
     // render
     renderNewCustomGraph(options);
 }
