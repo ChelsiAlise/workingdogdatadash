@@ -193,6 +193,8 @@
           </div>
         </div>
 
+        <br><br>
+
         <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -201,6 +203,8 @@
           </div>
         </div>
 
+        <br><br>
+
         <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -208,6 +212,8 @@
             </div>
           </div>
         </div>
+
+        <br><br>
 
         <div class="row">
           <div class="container-fluid">
@@ -231,13 +237,14 @@
         <div class="row">
           <div class="custom-graph-form" style="min-width:51em">
             <div class="content" style="font-size:1.5em">
-              <!-- select for dataset and graphType -->
+              <!-- all select boxes are in this h2 -->
               <h2>Display&nbsp;<span class="underline"><select id="select-graph-dataset" onchange="datasetOnChange()">
                   <option value="Active %">Active %</option>
                   <option value="Awake %">Awake %</option>
                   <option value="Rest %">Rest %</option>
                   <option value="Active %, Awake %">Active %, Awake %</option>
                   <option value="Active %, Rest %">Active %, Rest %</option>
+                  <option value="Awake %, Rest %">Awake %, Rest %</option>
                   <option value="Active %, Awake %, Rest %" selected>Active %, Awake %, Rest %</option>
                   <option value="Total">Total Minutes</option>
                   <option value="Raw Dailies">Raw Dailies</option>
@@ -247,7 +254,7 @@
                     <option value="Pie Chart">Pie Chart</option>
                 </select></span><span class="small-space"></span>,&nbsp;<span class="nowrap">filtered to&nbsp;<span class="underline"><select id="select-filter-type">
                     <option value="Filtered" selected>&ge; 70% of a day recorded</option>
-                    <option value="Unfiltered">all data</option>
+                    <option value="Unfiltered">all data (unfiltered)</option>
                   </select></span></span><span class="small-space"></span>, <span class="nowrap">for&nbsp;<span class="underline"><select id="select-dog-type" onchange="dogTypeOnChange()">
                     <option value="All Dogs" selected>All Dogs</option>
                 </select>&nbsp;<span style="font-size:1.3em">&rarr;</span>&nbsp;<select id="select-dog">
