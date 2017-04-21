@@ -26,6 +26,8 @@ $(document).ready(function () {
 $.getScript("/static/dist/js/jstat.min.js");
 
 function loadDataAndInitialize() {
+    // make sure UI reflects currently available graph types
+    datasetOnChange();
     // set default plot options
     Highcharts.setOptions({
         // NOTE: animation interacts poorly with inserting graphs
@@ -41,11 +43,22 @@ function loadDataAndInitialize() {
                 relativeTo: 'chart'
             },
             spacingLeft: 0,
-            spacingRight: 0
+            spacingRight: 0,
+            fontFamily: 'Arial, "Helvetica Neue", Helvetica, sans-serif',
         },
         title: { style: { fontSize: '18px' } },
-        xAxis: { title: { style: { fontSize: '16px' } } },
-        yAxis: { title: { style: { fontSize: '16px' } } }
+        xAxis: { 
+            title: { style: { fontSize: '16px' } },
+            labels: { style: { fontSize: '14px' } },
+        },
+        yAxis: { 
+            title: { style: { fontSize: '16px' } },
+            labels: { style: { fontSize: '14px' } },
+        },
+        exporting: {
+            sourceWidth: 1920,
+            sourceHeight: 1080,
+        }
     });
     // load the smaller dog dataset first
     $.ajax({
@@ -272,30 +285,12 @@ function updateCustomGraphOptions() {
         default_push(dog_type_to_dogs, "Region: "+dog.regional_center, name);
     }
     for (k in dog_type_to_dogs) {
-        dog_type_to_dogs[k] = (["All("+k+")"]).concat(dog_type_to_dogs[k]).sort();
+        dog_type_to_dogs[k].sort();
     }
     setSelectOptions("#select-dog-type", Object.keys(dog_type_to_dogs).sort());
-    datasetOnChange();
     dogTypeOnChange();
 }
 
-/*
-    The `onchange=` callback for #select-graph-dataset in the Custom Graphs UI
-*/
-function datasetOnChange() {
-    var dataset = $("#select-graph-dataset").val();
-    var graphTypes = ["Line Graph", "Spline Graph", "Column Graph"];
-    // pie chart currently only works for all `Active %, Awake %, Rest %`
-    if (dataset == "Active %, Awake %, Rest %") {
-        graphTypes.push("Pie Chart");
-    } else if (dataset == "Raw Data") {
-        graphTypes = ["Raw Data Table"];
-    }
-    if (dataset != "Total") {
-        graphTypes.push("Box Graph");
-    }
-    setSelectOptions("#select-graph-type", graphTypes);
-}
 
 /*
     The `onchange=` callback for #select-dog-type in the Custom Graphs UI
@@ -303,8 +298,7 @@ function datasetOnChange() {
 function dogTypeOnChange() {
     // get dog selection type and then set the possible dogs
     var dogType = $("#select-dog-type").val();
-    // the last parameter is 1 so we don't default to the one after "All(...)"
-    setSelectOptions("#select-dog", dog_type_to_dogs[dogType], 1);
+    setSelectOptions("#select-dog", dog_type_to_dogs[dogType], 0);
 }
 
 /*
@@ -316,7 +310,7 @@ function insertNewGraphRow() {
     custom_graph_id += 1;
     var id = "custom-graph-"+custom_graph_id.toString();
     var graphs = document.getElementById("custom-graphs");
-    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">Remove Graph</button><div id="'+id+'" style="width: 100%; height: 40em; margin: 0 auto;"></div></div>';
+    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">Remove</button><div id="'+id+'" class="custom-graph"></div></div>';
     graphs.insertAdjacentHTML('afterbegin', newElement);
     return id;
 }
@@ -328,52 +322,44 @@ function insertNewGraphRow() {
 function renderNewCustomGraph(options) {
     var id = insertNewGraphRow();
     options.chart.renderTo = id;
-    var chart = new Highcharts.Chart(options);
+    return new Highcharts.Chart(options);
 }
 
-/*
-    This creates the dive for the table for the raw data
-*/
-function insertRawDataTable() {
-    custom_graph_id += 1;
-    var id = "custom-graph-"+custom_graph_id.toString();
-    var graphs = document.getElementById("custom-graphs");
-    var newElement = '<div class="row"><button class="delete-button" onclick="deleteGraph(this)" align="right">Remove Table</button><div id="'+id+'" style="width: 80%; height: 40em; margin: 0 auto; overflow: scroll;"></div></div>';
-    graphs.insertAdjacentHTML('afterbegin', newElement);
-    return id;
-}
 
 /*
     This creates the actual HTML table and adds the data to it
 */
-function createRawDataTable(options) {
-    var id = insertRawDataTable();
-    var t_id = "raw-"+id;
+function createRawDataTable(series) {
+    var id = insertNewGraphRow();
+    var t_id = id + '-table';
     var newElement =
-    '<table class="raw data table" id="'+t_id+'">'
-        +'<caption>'+options[0].dog+'</caption>'
-        +'<thead>'
-            +'<th>Date</th>'
-            +'<th>Minutes Awake</th>'
-            +'<th>Minutes Active</th>'
-            +'<th>Minutes Resting</th>'
-        +'</thead>'
-        +'<tbody>'
-        +'</tbody>'
-    '</table>'
+        '<div>'
+            +'<h2>Raw Dailies for '+series[0].dog+'</h2>'
+            +'<div class="raw-data-table-container table">'
+                +'<table class="stats" style="margin-top:0" id="'+t_id+'">'
+                    +'<thead>'
+                        +'<th>Date</th>'
+                        +'<th>Minutes Awake</th>'
+                        +'<th>Minutes Active</th>'
+                        +'<th>Minutes Resting</th>'
+                    +'</thead>'
+                    +'<tbody>'
+                    +'</tbody>'
+                +'</table>'
+            +'</div>'
+        +'</div>';
     $('#'+id).append(newElement);
-    var newcontent = "<tr><td>hiiiiii</td></tr>"
-
-    for (var i in options[0]["data"]) {
-        $('#'+t_id).append(
+    for (var i in series[0]["data"]) {
+        $('#'+t_id+' tbody').append(
             "<tr>"
-                +"<td>"+options[0]["data"][i].date+"</td>"
-                +"<td>"+options[0]["data"][i].awake+"</td>"
-                +"<td>"+options[0]["data"][i].active+"</td>"
-                +"<td>"+options[0]["data"][i].rest+"</td>"
+                +"<td>"+series[0]["data"][i].date+"</td>"
+                +"<td>"+series[0]["data"][i].awake+"</td>"
+                +"<td>"+series[0]["data"][i].active+"</td>"
+                +"<td>"+series[0]["data"][i].rest+"</td>"
             +"</tr>"
         );
     }
+    $('#'+t_id).DataTable();
 }
 
 /*
@@ -383,12 +369,55 @@ function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
 }
 
+// these map the values set in datasetOnChange
+var percent_dataset_graph_types = [
+    "Line Graph", "Line Graph (Area)", "Spline Graph",
+    "Box Plot", "Column Graph"
+];
+var dataset_to_graph_types = {
+    "Active %": percent_dataset_graph_types,
+    "Awake %": percent_dataset_graph_types,
+    "Rest %": percent_dataset_graph_types,
+    "Active %, Awake %": percent_dataset_graph_types,
+    "Active %, Rest %": percent_dataset_graph_types,
+    "Awake %, Rest %": percent_dataset_graph_types,
+    "Active %, Awake %, Rest %": ([]).concat(percent_dataset_graph_types).concat(["Pie Chart"]),
+    "Total": ["Line Graph", "Line Graph (Area)", "Spline Graph", "Box Plot"],
+    "Raw Dailies": ["Table"],
+    "Activity Intensity Minutes": ["Column Graph"],
+};
+/*
+    The `onchange=` callback for #select-graph-dataset in the Custom Graphs UI
+*/
+function datasetOnChange() {
+    var dataset = $("#select-graph-dataset").val();
+    // get and set types
+    var graphTypes = dataset_to_graph_types[dataset];
+    setSelectOptions("#select-graph-type", graphTypes);
+}
+
+// based on:
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
+function endsWith(searchIn, searchFor, position) {
+    if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > searchIn.length) {
+    position = searchIn.length;
+    }
+    position -= searchFor.length;
+    var lastIndex = searchIn.lastIndexOf(searchFor, position);
+    return lastIndex !== -1 && lastIndex === position;
+};
+// based on:
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith
+function startsWith(searchIn, searchFor, position){
+    position = position || 0;
+    return searchIn.substr(position, searchFor.length) === searchFor;
+};
+
 /*
     Handler for the "Create" button in the Custom Graphs UI
 */
 function generateGraph() {
-    // TODO: All(...)
-    // TODO: other graph types
+    // TODO: stats
     var graphType = $("#select-graph-type").val();
     var dataSet = $("#select-graph-dataset").val();
     var filterType = $("#select-filter-type").val();
@@ -401,53 +430,29 @@ function generateGraph() {
     }
 
     // compute common graph settings
-    var data = filterType == "Unfiltered" ? unfiltered_blob : filtered_blob;
+    var shouldFilter = filterType != "Unfiltered";
+    var data = shouldFilter ? filtered_blob : unfiltered_blob ;
     var dog = getDogByName(data, selectedDog);
     // get all the datasets selected
     var chosenDatasets = dataSet.split(", ");
 
-
     // setup graph options by graph type
+    var needRender = true; 
     var options = {};
     // line graph and spline graph are the same minus the spline graph
     // having interpolation, this is one setting
-    if (graphType == "Line Graph" || graphType == "Spline Graph") {
-        // set common options for spline and line graphs
-        options = {
-            title: {
-                text: selectedDog+' '+dataSet+' Recorded Minutes Over Time (' + filterType + ')'
-            },
-            subtitle: {
-                text: document.ontouchstart === undefined ?
-                    'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
-            },
-            xAxis: { type: 'datetime'},
-            yAxis: { title: { text: dataSet } },
-            legend: { enabled: false },
-            plotOptions: {
-                area: {
-                    fillColor: {
-                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
-                        stops: [
-                            [0, Highcharts.getOptions().colors[0]],
-                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                        ]
-                    },
-                    marker: { radius: 2 },
-                    lineWidth: 1,
-                    states: { hover: { lineWidth: 1 } },
-                    threshold: null
-                }
-            }
-        };
-        // create and set series
+    if (graphType == "Line Graph" || graphType == "Spline Graph"
+        || graphType == "Line Graph (Area)" || graphType == "Spline Graph (Area)") {
+        var isArea = endsWith(graphType, "(Area)");
+        var isLine = startsWith(graphType, "Line Graph");
+        // create series
         var series = [];
         for (var i = 0; i < chosenDatasets.length; i++) {
             series.push({
                 name: chosenDatasets[i],
                 data: [],
             });
-            if (graphType == "Line Graph") {
+            if (isArea && isLine) {
                 series[i]["type"] = "area";
             }
         }
@@ -477,12 +482,56 @@ function generateGraph() {
                 }
             }
         }
-        options["series"] = series;
-        // set chart options
+        // set common options for spline and line graphs
+        options = {
+            chart: { zoomType: 'x'},
+            title: {
+                text: selectedDog+' '+dataSet+' Recorded Minutes Over Time (' + filterType + ')'
+            },
+            subtitle: {
+                text: document.ontouchstart === undefined ?
+                    'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+            },
+            yAxis: { 
+                title: { text: dataSet },
+                min: 0
+            },
+            legend: { enabled: true, },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    marker: { radius: 2 },
+                    lineWidth: 1,
+                    states: { hover: { lineWidth: 1 } },
+                    threshold: null
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:14px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="padding:0"><span style="color:{series.color}">•</span>&nbsp;{series.name}&nbsp;</td>' +
+                    '<td style="padding:0"><b>{point.y:.3f}</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            series: series,
+        };
+        options["xAxis"] = { 
+            type: 'datetime',
+            title: { text: 'Date' },
+        };
+        if (dataSet == "Activity Intensity Minutes") {
+            options["chart"] = {type: "column"};
+        }
+        // set chart options for spline or line
         if (graphType == "Spline Graph") {
             options["chart"] = { type: 'spline' };
-        } else {
-            options["chart"] = { zoomType: 'x'};
         }
 
     // pie chart
@@ -523,7 +572,9 @@ function generateGraph() {
                 }]
             }]
         };
-    } else if (graphType == "Box Graph"){
+    
+    // box plot
+    } else if (graphType == "Box Plot"){
         var id = dog.id;
         var series = [];
         var boxData = [];
@@ -533,6 +584,7 @@ function generateGraph() {
                 data: [],
             });
         }
+        // get the data
         for (var i = 0; i < Object.keys(data.days).length; i++) {
             var day = data.days[i];
             for (var m = 0; m < Object.keys(day.dogs).length; m++) {
@@ -541,25 +593,28 @@ function generateGraph() {
                 if (day_dog.id != id) {
                     continue;
                 }
+                var percent_ratio = 100.0 / day_dog.total;
                 // otherwise add the data point to the series
                 for (var k = 0; k < chosenDatasets.length; k++) {
+                    var val;
                     var dataset = chosenDatasets[k];
                     if (dataset == "Total") {
-                        boxData[k]["data"].push(day_dog.total);
+                        val = day_dog.total;
                     } else if (dataset == "Rest %") {
-                        boxData[k]["data"].push(day_dog.rest);
+                        val = day_dog.rest * percent_ratio;
                     } else if (dataset == "Active %") {
-                        boxData[k]["data"].push(day_dog.active);
+                        val = day_dog.active * percent_ratio;
                     } else if (dataset == "Awake %") {
-                        boxData[k]["data"].push(day_dog.awake);
+                        val = day_dog.awake * percent_ratio;
                     }
+                    boxData[k]["data"].push(val);
                 }
             }
         }
         function sortNumber(a,b) {
             return a - b;
         }
-        for(var m = 0; m < chosenDatasets.length; m++) {
+        for (var m = 0; m < chosenDatasets.length; m++) {
             var plotPoints = [];
             boxData[m]["data"] = boxData[m]["data"].sort(sortNumber);
             plotPoints.push(boxData[m]["data"][0]);
@@ -569,89 +624,57 @@ function generateGraph() {
             plotPoints.push(boxData[m]["data"][Math.floor(boxData[m]["data"].length -1)]);
             series.push(plotPoints);
         }
-        var label = [];
-        for(var n = 0; n < chosenDatasets.length; n++) {
-            label.push(chosenDatasets[n].split(" ")[0])
-        }
-
+        // setup options
         options = {
-                chart: {
-                    type: 'boxplot'
-                },
-
+                chart: { type: 'boxplot' },
                 title: {
-                    text: selectedDog+' '+label+' Box Plot Series (' + filterType + ')'
+                    text: selectedDog+' '+dataSet+' (' + filterType + ')'
                 },
-
-                legend: {
-                    enabled: false
-                },
-
+                legend: { enabled: false },
                 xAxis: {
                     endOnTick: true,
                     max: chosenDatasets.length - 1,
-                    categories: label,
+                    categories: chosenDatasets,
                     title: {
                         text: "Type of activity"
                     }
                 },
-
-                yAxis: {
-                    title: {
-                        text: 'Number of minutes'
-                    },
-                },
-
+                yAxis: { title: { text: dataSet } },
                 series: [{
-                    name: 'Observations',
+                    name: dataSet,
                     data: series,
                     tooltip: {
-                        headerFormat: '<em>Experiment No {point.key}</em><br/>'
+                        headerFormat: '<span style="color:{point.color}">•</span>  <b>{point.key}</b><br/>',
+                        pointFormat: 'Maximum: {point.high:.3f}<br>'
+                            +'Upper quartile: {point.q3:.3f}<br>'
+                            +'Median: {point.median:.3f}<br>'
+                            +'Lower quartile {point.q1:.3f}<br>'
+                            +'Minimum: {point.low:.3f}',
                     }
                 }]
         }
+    
     } else if (graphType == "Column Graph") {
-        var series = [];
-        var label = [];
-        for(var n = 0; n < chosenDatasets.length; n++) {
-            label.push(chosenDatasets[n].split(" ")[0])
-        }
-        for (var k = 0; k < chosenDatasets.length; k++) {
-            var dataset = chosenDatasets[k];
-            if (dataset == "Total") {
-                series.push(dog.total);
-            } else if (dataset == "Rest %") {
-                series.push(dog.rest);
-            } else if (dataset == "Active %") {
-                series.push(dog.active);
-            } else if (dataset == "Awake %") {
-                series.push(dog.awake);
-            }
-        }
         options = {
-            chart: {
-                type: 'column'
-            },
+            chart: { type: 'column' },
             title: {
-                text: selectedDog+' '+label+' Column Chart (' + filterType + ')'
+                text: selectedDog+' '+dataSet+' (' + filterType + ')'
             },
-            subtitle: {
-                text: 'Dog activity tracked in minutes'
-            },
+            subtitle: { text: 'Dog activity tracked in minutes' },
             xAxis: {
-                categories: label,
+                categories: chosenDatasets,
                 crosshair: true
             },
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Minutes'
+                    text: '% Of Total Time'
                 }
             },
             tooltip: {
-                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b>{point.y:.1f} minutes</b></td></tr>',
+                headerFormat: '<span style="font-size:12px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="padding:0"><span style="color:{series.color}">•</span>&nbsp;{series.name}:&nbsp;</td>' +
+                    '<td style="padding:0"><b>{point.y:.3f}</b></td></tr>',
                 footerFormat: '</table>',
                 shared: true,
                 useHTML: true
@@ -664,12 +687,92 @@ function generateGraph() {
             },
             series: [{
                 name: selectedDog,
-                data: series
-
+                data: []
             }]
         };
-    }
-    else if (graphType == "Raw Data Table") {
+        if (dataSet == "Activity Intensity Minutes") {
+            options["chart"]["zoomType"] = 'x';
+            options["xAxis"] = { 
+                type: 'datetime',
+                title: { text: 'Date' },
+            };
+            options["subtitle"] = {
+                text: "zero valued entries not shown"
+            }
+            options["series"] = [];
+            var chart = renderNewCustomGraph(options)
+            needRender = false;
+            var chartSeries = chart.addSeries({
+                data: [],
+                name: 'Activity Intensity',
+            });
+            var id = dog.id;
+            var dates;
+            $.when($.ajax({
+                url: '/api/cached/data/points/days?dog_id='+id,
+                datatype: 'json',
+                success: function(data) {
+                    dates = data;
+                },
+                async: true,
+            })).done(function() {
+                var reqs = [];
+                var count = -1;
+                for (var i = 0; i < dates.length; i++) {
+                    var date = dates[i];
+                    reqs.push($.ajax({
+                        url: '/api/cached/data/points/day?dog_id='+id+'&date='+date,
+                        datatype: 'json',
+                        success: function(data) {
+                            count += 1;
+                            var entries = data.entries;
+                            if (shouldFilter) {
+                                var len = $.map(entries, function(n, i) { return i; }).length;
+                                // if less than 70% of a day of minutes
+                                if (len < 1008) {
+                                    return;
+                                }
+                            }
+                            for (var entry in entries) {
+                                var val = entries[entry];
+                                if (val == 0) continue;
+                                chartSeries.addPoint({x: Date.parse(entry), y: entries[entry]}, false);
+                            }
+                            // don't redraw on _every_ load
+                            if (count % 30 == 0) {
+                                chart.redraw();
+                                console.log(count);
+                            }
+                        },
+                        async: true,
+                    }));
+                }
+                $.when.apply($, reqs).done(function() {
+                    console.log("done loading");
+                    chart.redraw();
+                })
+            });
+            return;
+        }
+        var series = [];
+        var percent_ratio = 100.0 / dog.total; 
+        for (var k = 0; k < chosenDatasets.length; k++) {
+            var dataset = chosenDatasets[k];
+            if (dataset == "Rest %") {
+                series.push(dog.rest * percent_ratio);
+            } else if (dataset == "Active %") {
+                series.push(dog.active * percent_ratio);
+            } else if (dataset == "Awake %") {
+                series.push(dog.awake * percent_ratio);
+            }
+        }
+        options["series"]["data"] = series;
+        
+    
+    // NOTE: table behaves specially and inserts the graph itself,
+    // not in the shared call to renderNewCustomGraph at the end
+    } else if (graphType == "Table") {
+        needRender = false;
         var series = [];
         for (var i = 0; i < chosenDatasets.length; i++) {
             series.push({
@@ -700,13 +803,12 @@ function generateGraph() {
                 }
             }
         }
-        options = series;
+        // create the table
+        createRawDataTable(series);
     }
 
-    // render
-    if (graphType == "Raw Data Table") {
-        createRawDataTable(options);
-    } else {
+    // render highcharts graphs
+    if (needRender) {
         renderNewCustomGraph(options);
     }
 }
@@ -1194,9 +1296,9 @@ function createChartSeven() {
             }
         },
         tooltip: {
-            headerFormat: '<span style="font-weight:bold;">{point.key}</span><hr style="margin-top:.5em;"><table>',
-            pointFormat: '<tr><td style="padding:0">{series.name}:&nbsp;</td>' +
-            '<td style="padding:0">{point.y:.0f} mins</td></tr>',
+            headerFormat: '<span style="font-size:14px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="padding:0"><span style="color:{series.color}">•</span>&nbsp;{series.name}&nbsp;</td>' +
+                '<td style="padding:0"><b>{point.y:.0f} (minutes)</b></td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
@@ -1280,9 +1382,9 @@ function createChartEight() {
             }
         },
         tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.0f} percent</b></td></tr>',
+            headerFormat: '<span style="font-size:14px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="padding:0"><span style="color:{series.color}">•</span>&nbsp;{series.name}&nbsp;</td>' +
+                '<td style="padding:0"><b>{point.y:.3f}</b></td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
@@ -1294,18 +1396,12 @@ function createChartEight() {
             }
         },
         legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'top',
-            x: -5,
-            y: 60,
-            floating: true,
             backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
             borderWidth: 1
         },
-        series: [{ name: 'Rest Average' },
-                 { name: 'Active Average' },
-                 { name: 'Awake Average' }],
+        series: [{ name: 'Average Rest %' },
+                 { name: 'Average Active %' },
+                 { name: 'Average Awake %' }],
     };
     // convert the filtered_data to the appropriate arrays
     for (i = 0; i < regions.length; i++) {
@@ -1367,9 +1463,9 @@ function createChartNine() {
             }
         },
         tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.0f}</b></td></tr>',
+            headerFormat: '<span style="font-size:14px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="padding:0"><span style="color:{series.color}">•</span>&nbsp;{series.name}&nbsp;</td>' +
+                '<td style="padding:0"><b>{point.y:.3f}</b></td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
@@ -1381,18 +1477,12 @@ function createChartNine() {
             }
         },
         legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'top',
-            x: -5,
-            y: 60,
-            floating: true,
             backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
             borderWidth: 1
         },
-        series: [{ name: 'Rest Average Percent' },
-                 { name: 'Active Average Percent' },
-                 { name: 'Awake Average Percent' }],
+        series: [{ name: 'Average Rest %' },
+                 { name: 'Average Active %' },
+                 { name: 'Average Awake %' }],
     };
     // convert the filtered_data to the appropriate arrays
     for (i = 0; i < statuses.length; i++) {

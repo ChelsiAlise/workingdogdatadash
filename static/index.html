@@ -58,7 +58,7 @@
         <ul class="nav navbar-nav navbar-right">
           <li><a id="dashboard-content-nav" class="selected" href="#" onclick="display('dashboard-content'); return false;">Dashboard</a></li>
           <li><a id="custom-chart-content-nav" href="#" onclick="display('custom-chart-content'); return false;">Custom Graphs</a></li>
-          <li><a id="settings-content-nav" href="#" onclick="display('settings-content'); return false;">Settings</a></li>
+          <!--<li><a id="settings-content-nav" href="#" onclick="display('settings-content'); return false;">Settings</a></li>-->
           <li><a id="help-content-nav" href="#" onclick="display('help-content'); return false;">Help</a></li>
         </ul>
         <!--<form class="navbar-form navbar-right">
@@ -193,6 +193,8 @@
           </div>
         </div>
 
+        <br><br>
+
         <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -201,6 +203,8 @@
           </div>
         </div>
 
+        <br><br>
+
         <div class="row">
           <div class="container-fluid">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -208,6 +212,8 @@
             </div>
           </div>
         </div>
+
+        <br><br>
 
         <div class="row">
           <div class="container-fluid">
@@ -229,42 +235,33 @@
       <div id="custom-chart-content" class="page-content col-sm-9 col-sm-offset-0 col-md-10 col-md-offset-0 main" style="display: none;">
         <h1 class="page-header">Custom Graphs</h1>
         <div class="row">
-          <div class="custom-graph-form">
+          <div class="custom-graph-form" style="min-width:51em">
             <div class="content" style="font-size:1.5em">
-              <!-- select for dataset and graphType -->
-              <h2>Make a Graph of&nbsp;<select id="select-graph-dataset" onchange="datasetOnChange()">
+              <!-- all select boxes are in this h2 -->
+              <h2>Display&nbsp;<span class="underline"><select id="select-graph-dataset" onchange="datasetOnChange()">
                   <option value="Active %">Active %</option>
                   <option value="Awake %">Awake %</option>
                   <option value="Rest %">Rest %</option>
                   <option value="Active %, Awake %">Active %, Awake %</option>
                   <option value="Active %, Rest %">Active %, Rest %</option>
+                  <option value="Awake %, Rest %">Awake %, Rest %</option>
                   <option value="Active %, Awake %, Rest %" selected>Active %, Awake %, Rest %</option>
-                  <option value="Total">Total</option>
-                  <option value="Raw Data">Raw Data</option>
-                </select>&nbsp;in&nbsp;a&nbsp;<select id="select-graph-type">
+                  <option value="Total">Total Minutes</option>
+                  <option value="Raw Dailies">Raw Dailies</option>
+                  <option value="Activity Intensity Minutes">Activity Intensity Minutes</option>
+                </select></span>&nbsp;in&nbsp;a&nbsp;<span class="underline"><select id="select-graph-type">
                     <option value="Line Graph" selected>Line Graph</option>
                     <option value="Spline Graph">Spline Graph</option>
                     <option value="Pie Chart">Pie Chart</option>
-                    <option value="Raw Date Table">Raw Data Table</option>
-                </select>
-              </h2>
-              <hr>
-              <!-- select for filterType -->
-              <h2>Filtered to&nbsp;<select id="select-filter-type">
-                    <option value="Filtered" selected>&ge; 70% of a Day Recorded</option>
-                    <option value="Unfiltered">Unfiltered</option>
-                  </select>
-              </h2>
-              <hr>
-              <!-- select for dog(s) -->
-              <h2>For:&nbsp;<select id="select-dog-type" onchange="dogTypeOnChange()">
+                </select></span><span class="small-space"></span>,&nbsp;<span class="nowrap">filtered to&nbsp;<span class="underline"><select id="select-filter-type">
+                    <option value="Filtered" selected>&ge; 70% of a day recorded</option>
+                    <option value="Unfiltered">all data (unfiltered)</option>
+                  </select></span></span><span class="small-space"></span>, <span class="nowrap">for&nbsp;<span class="underline"><select id="select-dog-type" onchange="dogTypeOnChange()">
                     <option value="All Dogs" selected>All Dogs</option>
                 </select>&nbsp;<span style="font-size:1.3em">&rarr;</span>&nbsp;<select id="select-dog">
                   <option value="">Loading Options...</option>
-                </select>
-              <h2>
-              <hr>
-              <button onclick="generateGraph()" style="color:white;">Create</button>
+                </select></span><span class="small-space"></span>.</span><h2>
+              <button onclick="generateGraph()" style="float: right">Create</button>
             </div>
           </div>
           <!-- custom graphs go into the graph below -->
@@ -345,6 +342,10 @@
   <script>
     window.jQuery || document.write('<script src="/static/assets/js/vendor/jquery.min.js"><\/script>')
   </script>
+  <!--datatables-->
+  <script type="text/javascript"
+  src="/static/assets/js/vendor/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" href="/static/assets/css/jquery.dataTables.min.css"></script>
   <!-- Bootstrap core JavaScript -->
   <!-- Placed at the end of the document so the pages load faster -->
   <script src="/static/dist/js/bootstrap.min.js"></script>
@@ -353,9 +354,6 @@
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
   <script src="/static/assets/js/ie10-viewport-bug-workaround.js"></script>
   <script type="text/javascript" src="/static/index.js"></script>
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
-
 </body>
 
 </html>
