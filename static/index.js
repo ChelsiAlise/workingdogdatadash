@@ -41,11 +41,18 @@ function loadDataAndInitialize() {
                 relativeTo: 'chart'
             },
             spacingLeft: 0,
-            spacingRight: 0
+            spacingRight: 0,
+            fontFamily: 'Arial, "Helvetica Neue", Helvetica, sans-serif',
         },
         title: { style: { fontSize: '18px' } },
-        xAxis: { title: { style: { fontSize: '16px' } } },
-        yAxis: { title: { style: { fontSize: '16px' } } },
+        xAxis: { 
+            title: { style: { fontSize: '16px' } },
+            labels: { style: { fontSize: '14px' } },
+        },
+        yAxis: { 
+            title: { style: { fontSize: '16px' } },
+            labels: { style: { fontSize: '14px' } },
+        },
         exporting: {
             sourceWidth: 1920,
             sourceHeight: 1080,
@@ -420,9 +427,15 @@ function generateGraph() {
                 text: document.ontouchstart === undefined ?
                     'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
             },
-            xAxis: { type: 'datetime'},
-            yAxis: { title: { text: dataSet } },
-            legend: { enabled: false },
+            xAxis: { 
+                type: 'datetime',
+                title: { text: 'Date' },
+             },
+            yAxis: { 
+                title: { text: dataSet },
+                min: 0
+            },
+            legend: { enabled: true, },
             plotOptions: {
                 area: {
                     fillColor: {
