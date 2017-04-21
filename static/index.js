@@ -770,7 +770,7 @@ function generateGraph() {
                 series.push(dog.awake * percent_ratio);
             }
         }
-        options["series"]["data"] = series;
+        options["series"][0]["data"] = series;
         
     
     // NOTE: table behaves specially and inserts the graph itself,
