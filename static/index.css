@@ -151,7 +151,7 @@ hr {
   margin-top: 0;
   color: #333;
   font-family: Tahoma, Arial, sans-serif;
-  line-height: 1.5em;
+  line-height: 2.5em;
 }
 
 .custom-graph-form .close {
@@ -183,6 +183,7 @@ hr {
   padding-right: .5em;
   margin: .2em .2em;
   margin-top: .3em;
+  line-height: 1.5em;
 }
 
 .custom-graph-form select.select-alert {
@@ -304,8 +305,7 @@ body > .container-fluid {
 }
 
 .raw-data-table-container .stats {
-  font-size: 1.5em;
-  border: none;
+  font-size: 1.25em;
 }
 
 .stats {
@@ -314,7 +314,7 @@ body > .container-fluid {
   margin-top: 2em;
   padding-right: 0em;
   border-collapse: initial;
-  border: .1em solid black;
+  border: .05em solid black;
 }
 
 .stats > thead {
@@ -332,13 +332,28 @@ body > .container-fluid {
 
 
 .stats > thead > tr > th {
-  border: .1em solid black !important;
+  border: .05em solid black !important;
   padding: .2em;
   padding-left: .5em;
 }
 
 .stats > tbody > tr > td {
-  border: .1em solid black !important;
+  border: .05em solid black !important;
   padding: .2em;
   padding-left: .5em;
+}
+
+span.underline {
+  padding-bottom: .3em;
+  border-bottom: .1em solid black;
+}
+
+.small-space {
+  width: .25em;
+  height: 1em;
+  display: inline-block;
+}
+
+.nowrap {
+  display: inline-block;
 }
