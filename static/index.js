@@ -482,6 +482,10 @@ function generateGraph() {
                 }
             }
         }
+        // make sure data is sorted
+        for (var k = 0; k < chosenDatasets.length; k++) {
+            series[k]["data"].sort();
+        }
         // set common options for spline and line graphs
         options = {
             chart: { zoomType: 'x'},
