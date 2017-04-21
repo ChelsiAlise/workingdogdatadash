@@ -290,26 +290,6 @@ function updateCustomGraphOptions() {
     dogTypeOnChange();
 }
 
-/*
-    The `onchange=` callback for #select-graph-dataset in the Custom Graphs UI
-*/
-function datasetOnChange() {
-    var dataset = $("#select-graph-dataset").val();
-    // chart types most graphs have
-    var graphTypes = ["Line Graph", "Spline Graph", "Column Graph"];
-    // chart types by black list
-    if (dataset != "Total" && dataset != "Raw Dailies") {
-        graphTypes.push("Box Plot");
-    }
-    // chart types types by white list
-    if (dataset == "Active %, Awake %, Rest %") {
-        graphTypes.push("Pie Chart");
-    } else if (dataset == "Raw Dailies") {
-        graphTypes = ["Table"];
-    }
-    // set types
-    setSelectOptions("#select-graph-type", graphTypes);
-}
 
 /*
     The `onchange=` callback for #select-dog-type in the Custom Graphs UI
@@ -386,6 +366,27 @@ function createRawDataTable(series) {
 */
 function deleteGraph(e) {
     e.parentNode.parentNode.removeChild(e.parentNode);
+}
+
+/*
+    The `onchange=` callback for #select-graph-dataset in the Custom Graphs UI
+*/
+function datasetOnChange() {
+    var dataset = $("#select-graph-dataset").val();
+    // chart types most graphs have
+    var graphTypes = ["Line Graph", "Spline Graph", "Column Graph"];
+    // chart types by black list
+    if (dataset != "Raw Dailies") {
+        graphTypes.push("Box Plot");
+    }
+    // chart types types by white list
+    if (dataset == "Active %, Awake %, Rest %") {
+        graphTypes.push("Pie Chart");
+    } else if (dataset == "Raw Dailies") {
+        graphTypes = ["Table"];
+    }
+    // set types
+    setSelectOptions("#select-graph-type", graphTypes);
 }
 
 /*
@@ -556,18 +557,21 @@ function generateGraph() {
                 if (day_dog.id != id) {
                     continue;
                 }
+                var percent_ratio = 100.0 / day_dog.total;
                 // otherwise add the data point to the series
                 for (var k = 0; k < chosenDatasets.length; k++) {
+                    var val;
                     var dataset = chosenDatasets[k];
                     if (dataset == "Total") {
-                        boxData[k]["data"].push(day_dog.total);
+                        val = day_dog.total;
                     } else if (dataset == "Rest %") {
-                        boxData[k]["data"].push(day_dog.rest);
+                        val = day_dog.rest * percent_ratio;
                     } else if (dataset == "Active %") {
-                        boxData[k]["data"].push(day_dog.active);
+                        val = day_dog.active * percent_ratio;
                     } else if (dataset == "Awake %") {
-                        boxData[k]["data"].push(day_dog.awake);
+                        val = day_dog.awake * percent_ratio;
                     }
+                    boxData[k]["data"].push(val);
                 }
             }
         }
@@ -584,35 +588,32 @@ function generateGraph() {
             plotPoints.push(boxData[m]["data"][Math.floor(boxData[m]["data"].length -1)]);
             series.push(plotPoints);
         }
-        var label = [];
-        for(var n = 0; n < chosenDatasets.length; n++) {
-            label.push(chosenDatasets[n].split(" ")[0])
-        }
-        // setup optoins
+        // setup options
         options = {
                 chart: { type: 'boxplot' },
                 title: {
-                    text: selectedDog+' '+label+' (' + filterType + ')'
+                    text: selectedDog+' '+dataSet+' (' + filterType + ')'
                 },
                 legend: { enabled: false },
                 xAxis: {
                     endOnTick: true,
                     max: chosenDatasets.length - 1,
-                    categories: label,
+                    categories: chosenDatasets,
                     title: {
                         text: "Type of activity"
                     }
                 },
-                yAxis: {
-                    title: {
-                        text: 'Number of minutes'
-                    },
-                },
+                yAxis: { title: { text: dataSet } },
                 series: [{
-                    name: 'Observations',
+                    name: dataSet,
                     data: series,
                     tooltip: {
-                        headerFormat: '<em>Experiment No {point.key}</em><br/>'
+                        headerFormat: '<span style="color:{point.color}">•</span>  <b>{point.key}</b><br/>',
+                        pointFormat: 'Maximum: {point.high:.3f}<br>'
+                            +'Upper quartile: {point.q3:.3f}<br>'
+                            +'Median: {point.median:.3f}<br>'
+                            +'Lower quartile {point.q1:.3f}<br>'
+                            +'Minimum: {point.low:.3f}',
                     }
                 }]
         }
@@ -668,7 +669,6 @@ function generateGraph() {
             series: [{
                 name: selectedDog,
                 data: series
-
             }]
         };
     
