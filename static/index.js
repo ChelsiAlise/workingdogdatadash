@@ -322,7 +322,7 @@ function insertNewGraphRow() {
 function renderNewCustomGraph(options) {
     var id = insertNewGraphRow();
     options.chart.renderTo = id;
-    var chart = new Highcharts.Chart(options);
+    return new Highcharts.Chart(options);
 }
 
 
@@ -384,6 +384,7 @@ var dataset_to_graph_types = {
     "Active %, Awake %, Rest %": ([]).concat(percent_dataset_graph_types).concat(["Pie Chart"]),
     "Total": ["Line Graph", "Line Graph (Area)", "Spline Graph", "Box Plot"],
     "Raw Dailies": ["Table"],
+    "Activity Intensity Minutes": ["Column Graph"],
 };
 /*
     The `onchange=` callback for #select-graph-dataset in the Custom Graphs UI
@@ -416,8 +417,7 @@ function startsWith(searchIn, searchFor, position){
     Handler for the "Create" button in the Custom Graphs UI
 */
 function generateGraph() {
-    // TODO: All(...)
-    // TODO: other graph types
+    // TODO: stats
     var graphType = $("#select-graph-type").val();
     var dataSet = $("#select-graph-dataset").val();
     var filterType = $("#select-filter-type").val();
@@ -430,15 +430,15 @@ function generateGraph() {
     }
 
     // compute common graph settings
-    var data = filterType == "Unfiltered" ? unfiltered_blob : filtered_blob;
+    var shouldFilter = filterType != "Unfiltered";
+    var data = shouldFilter ? filtered_blob : unfiltered_blob ;
     var dog = getDogByName(data, selectedDog);
     // get all the datasets selected
     var chosenDatasets = dataSet.split(", ");
 
     // setup graph options by graph type
-    // default to false for EG raw data table
-    // options will contain an object for a highcharts graph otherwise
-    var options = false; 
+    var needRender = true; 
+    var options = {};
     // line graph and spline graph are the same minus the spline graph
     // having interpolation, this is one setting
     if (graphType == "Line Graph" || graphType == "Spline Graph"
@@ -492,10 +492,6 @@ function generateGraph() {
                 text: document.ontouchstart === undefined ?
                     'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
             },
-            xAxis: { 
-                type: 'datetime',
-                title: { text: 'Date' },
-             },
             yAxis: { 
                 title: { text: dataSet },
                 min: 0
@@ -526,6 +522,13 @@ function generateGraph() {
             },
             series: series,
         };
+        options["xAxis"] = { 
+            type: 'datetime',
+            title: { text: 'Date' },
+        };
+        if (dataSet == "Activity Intensity Minutes") {
+            options["chart"] = {type: "column"};
+        }
         // set chart options for spline or line
         if (graphType == "Spline Graph") {
             options["chart"] = { type: 'spline' };
@@ -652,18 +655,6 @@ function generateGraph() {
         }
     
     } else if (graphType == "Column Graph") {
-        var series = [];
-        var percent_ratio = 100.0 / dog.total; 
-        for (var k = 0; k < chosenDatasets.length; k++) {
-            var dataset = chosenDatasets[k];
-            if (dataset == "Rest %") {
-                series.push(dog.rest * percent_ratio);
-            } else if (dataset == "Active %") {
-                series.push(dog.active * percent_ratio);
-            } else if (dataset == "Awake %") {
-                series.push(dog.awake * percent_ratio);
-            }
-        }
         options = {
             chart: { type: 'column' },
             title: {
@@ -696,13 +687,92 @@ function generateGraph() {
             },
             series: [{
                 name: selectedDog,
-                data: series
+                data: []
             }]
         };
+        if (dataSet == "Activity Intensity Minutes") {
+            options["chart"]["zoomType"] = 'x';
+            options["xAxis"] = { 
+                type: 'datetime',
+                title: { text: 'Date' },
+            };
+            options["subtitle"] = {
+                text: "zero valued entries not shown"
+            }
+            options["series"] = [];
+            var chart = renderNewCustomGraph(options)
+            needRender = false;
+            var chartSeries = chart.addSeries({
+                data: [],
+                name: 'Activity Intensity',
+            });
+            var id = dog.id;
+            var dates;
+            $.when($.ajax({
+                url: '/api/cached/data/points/days?dog_id='+id,
+                datatype: 'json',
+                success: function(data) {
+                    dates = data;
+                },
+                async: true,
+            })).done(function() {
+                var reqs = [];
+                var count = -1;
+                for (var i = 0; i < dates.length; i++) {
+                    var date = dates[i];
+                    reqs.push($.ajax({
+                        url: '/api/cached/data/points/day?dog_id='+id+'&date='+date,
+                        datatype: 'json',
+                        success: function(data) {
+                            count += 1;
+                            var entries = data.entries;
+                            if (shouldFilter) {
+                                var len = $.map(entries, function(n, i) { return i; }).length;
+                                // if less than 70% of a day of minutes
+                                if (len < 1008) {
+                                    return;
+                                }
+                            }
+                            for (var entry in entries) {
+                                var val = entries[entry];
+                                if (val == 0) continue;
+                                chartSeries.addPoint({x: Date.parse(entry), y: entries[entry]}, false);
+                            }
+                            // don't redraw on _every_ load
+                            if (count % 30 == 0) {
+                                chart.redraw();
+                                console.log(count);
+                            }
+                        },
+                        async: true,
+                    }));
+                }
+                $.when.apply($, reqs).done(function() {
+                    console.log("done loading");
+                    chart.redraw();
+                })
+            });
+            return;
+        }
+        var series = [];
+        var percent_ratio = 100.0 / dog.total; 
+        for (var k = 0; k < chosenDatasets.length; k++) {
+            var dataset = chosenDatasets[k];
+            if (dataset == "Rest %") {
+                series.push(dog.rest * percent_ratio);
+            } else if (dataset == "Active %") {
+                series.push(dog.active * percent_ratio);
+            } else if (dataset == "Awake %") {
+                series.push(dog.awake * percent_ratio);
+            }
+        }
+        options["series"]["data"] = series;
+        
     
     // NOTE: table behaves specially and inserts the graph itself,
     // not in the shared call to renderNewCustomGraph at the end
     } else if (graphType == "Table") {
+        needRender = false;
         var series = [];
         for (var i = 0; i < chosenDatasets.length; i++) {
             series.push({
@@ -738,7 +808,7 @@ function generateGraph() {
     }
 
     // render highcharts graphs
-    if (options) {
+    if (needRender) {
         renderNewCustomGraph(options);
     }
 }
