@@ -16,7 +16,7 @@ You can find new help content in the "help tab"
 
 ## Release Notes
 
-The final release for spring 2017 is here.  
+The final release for Spring 2017 is here.  
 
 ### New Features:
  - Improved graphs and graph types are now available
@@ -109,8 +109,7 @@ For more information on this, look at `utils/README.md`
 
 ## Accessing the service
 
-Finally, you can go to the [Google Cloud Console](https://console.cloud.google.com/) and open your project, there should be a
- link to the running service here.
+After you have complete the steps above you can go to the [Google Cloud Console](https://console.cloud.google.com/) and open your project, there should be a link to the running service here.
 
 ## Troubleshooting
 
