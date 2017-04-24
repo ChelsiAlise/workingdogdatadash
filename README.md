@@ -54,6 +54,8 @@ From our extended / stretch-goals the following features are missing:
 
 ## Deploying / Install Guide
 
+### Prerequesites
+
 To deploy the service yourself you will need:
 
 - [Go](https://golang.org/) ([installation](https://golang.org/doc/install)) --
@@ -72,20 +74,29 @@ Linux you likely have this installed by default.
 - Ideally a bash shell, again if you are on macOS or Linux you likely have this
  already.
 
+
+### Dependent Libraries
+ - This project will build and deploy with the standard libraries included with the runtimes mentioned above.
+
+### Download Instructions
+
+1) Click the "clone and download" button near the top of this page.
+
+2) Click "Download zip" in the setup or [clone the repository with git](https://help.github.com/articles/cloning-a-repository/).
+
+### Build Instructions and Deployment to App Engine
+
 Steps: 
 
 1) Install the tools above.
 
-2) Open a shell. Run `gcloud init` to login to your Google Cloud account.
+2) Download the project as described above, open a terminal to the project.
 
-3) [Create a project on Google Cloud](https://cloud.google.com/appengine/docs/standard/go/quickstart).
+3) Run `gcloud init` from the terminal to login to your Google Cloud account.
 
-4) [Clone this repository](https://help.github.com/articles/cloning-a-repository/).
+4) Run `utils/gen_keys.py` to generate the secret keys.
 
-5) Open a shell to the project and run `utils/gen_keys.py`
- to generate the secret keys.
-
-6) From the same shell run `appcfg.py -A your-cloud-project-name-here ./`.
+5) From the same terminal run `appcfg.py -A your-cloud-project-name-here ./`.
 
 You can now import the data. 
 Next to where you have cloned the project, create a folder "CCI Puppy Data".
@@ -96,7 +107,16 @@ an account from the machine you ran `utils/gen_keys.py` on. Using this account's
 
 For more information on this, look at `utils/README.md`
 
+## Accessing the service
+
 Finally, you can go to the [Google Cloud Console](https://console.cloud.google.com/) and open your project, there should be a
  link to the running service here.
+
+## Troubleshooting
+
+- The upload scripts will only work if your keys file matches the deployed application's key. To fix this run `utils/gen_keys.py` and then re-deploy the service.
+
+- Make sure you have created a user before opening the service, no users are generate by default for security reasons.
+
 
 
